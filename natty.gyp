@@ -38,7 +38,7 @@
         'libjingle.gyp:libjingle_p2p',
       ],
       'sources': [
-        'lib/natty_main.cc',
+        'src/natty_main.cc',
       ],
     },  # target relayserver
   ],
