@@ -1,0 +1,17 @@
+* build/trunk/out/Debug/build.ninja -> subninja obj/talk/natty.ninja AND add to build all target
+* cp natty.ninja -> build/trunk/out/Debug/obj/talk
+* build/trunk/all.gyp -> add talk/natty.gyp to dependencies
+* cp ninja.gyp -> build/trunk/talk
+
+
+# add natty subninja and add to build all target
+mv build.ninja build/trunk/out/Debug/
+# move natty gyp file to trunk
+mv natty.gyp build/trunk
+# move ninja file to debug build directory
+mv natty.ninja build/trunk/out/Debug/obj
+# compile the project
+ninja -C build/trunk/out/Debug
+# execute natty
+build/trunk/out/Debug/natty
+

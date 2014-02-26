@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Change directory to the PRODUCT_DIR (e.g. out/Release).
+export LD_LIBRARY_PATH=`pwd`
+
+mkdir build2
+cd build2
+gclient config http://webrtc.googlecode.com/svn/trunk
+gclient sync --force
+cd trunk
+ninja -C out/Release
+#cd ../../
+# move jar and shared native lib to libs dir
+#mv build/trunk/out/Release/libjingle_peerconnection.jar libs/
+#mv build/trunk/out/Release/libjingle_peerconnection_so.so libs/
+# remove old build files
+#rm -rf build/*
