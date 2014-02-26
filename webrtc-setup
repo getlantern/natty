@@ -3,12 +3,12 @@
 # Change directory to the PRODUCT_DIR (e.g. out/Release).
 export LD_LIBRARY_PATH=`pwd`
 
-mkdir build2
-cd build2
+cd build
 gclient config http://webrtc.googlecode.com/svn/trunk
+gclient runhooks --force
 gclient sync --force
-cd trunk
-ninja -C out/Release
+cd ..
+ninja -C build/trunk/out/Debug
 #cd ../../
 # move jar and shared native lib to libs dir
 #mv build/trunk/out/Release/libjingle_peerconnection.jar libs/

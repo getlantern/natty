@@ -1,12 +1,7 @@
-
-# add natty subninja and add to build all target
-mv build.ninja build/trunk/out/Debug/
-# move natty gyp file to trunk
-mv natty.gyp build/trunk
-# move ninja file to debug build directory
-mv natty.ninja build/trunk/out/Debug/obj
 # compile the project
-ninja -C build/trunk/out/Debug
+ninja -f natty.ninja
+# clean up
+ninja -f natty.ninja -t clean
 # execute natty
-build/trunk/out/Debug/natty
+./natty
 

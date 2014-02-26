@@ -25,7 +25,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "talk/examples/natty/natty_portallocator.h"
+#include "natty_portallocator.h"
 
 #include <string>
 #include <vector>

@@ -27,9 +27,11 @@
 
 #include <iostream>  // NOLINT
 
+#include "natty_server.h"
+#include "natty_socket.h"
+
 #include "talk/base/thread.h"
 #include "talk/p2p/base/relayserver.h"
-#include "talk/examples/natty/natty_server.h"
 #include "talk/app/webrtc/portallocatorfactory.h"
 #include "talk/base/crc32.h"
 #include "talk/base/helpers.h"
@@ -40,7 +42,6 @@
 #include "talk/base/scoped_ptr.h"
 #include "talk/base/socketaddress.h"
 #include "talk/base/ssladapter.h"
-#include "talk/examples/natty/natty_socket.h"
 #include "talk/base/flags.h"
 #include "talk/p2p/base/basicpacketsocketfactory.h"
 #include "talk/p2p/base/portproxy.h"
@@ -58,12 +59,7 @@
 typedef std::vector<NattySocket*> SocketArray;
 typedef talk_base::BasicPacketSocketFactory NattySocketFactory;
 
-using talk_base::PacketSocketFactory;
-using talk_base::SocketAddress;
-using talk_base::AsyncPacketSocket;
-using talk_base::scoped_ptr;
-using talk_base::Socket;
-using talk_base::ByteBuffer;
+using namespace talk_base;
 using namespace cricket;
 
 static const SocketAddress kLocalAddr1("192.168.1.2", 0);
@@ -348,16 +344,24 @@ UDPPort* CreateUdpPort(const SocketAddress& addr,
 
 
 
+void outdated() {
+  //FakeAsyncPacketSocket *s1 = new FakeAsyncPacketSocket();
+  //FakePacketSocketFactory socket_factory;
+
+  //socket_factory.set_next_udp_socket(s1);
+  //talk_base::Network *network = new talk_base::Network("unittest", "unittest", talk_base::IPAddress(INADDR_ANY), 32);
+
+  //delete network;
+  //delete s1;
+
+}
 
 int main(int argc, char **argv) {
-  FakeAsyncPacketSocket *s1 = new FakeAsyncPacketSocket();
-  FakePacketSocketFactory socket_factory;
 
-  socket_factory.set_next_udp_socket(s1);
-  talk_base::Network *network = new talk_base::Network("unittest", "unittest", talk_base::IPAddress(INADDR_ANY), 32);
+  Thread* main = Thread::Current();
+  /*NATServer* natty = new NATServer(NAT_OPEN_CONE, ss, kLocalAddr1, ss, kLocalAddr2);
 
-  delete network;
-
+  main->Run();*/
 
   return 0;
 }

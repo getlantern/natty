@@ -27,7 +27,7 @@
 
 {
   'includes': [
-    'build/common.gypi',
+    'build/trunk/build/common.gypi',
   ],
   'targets': [
     {
@@ -38,7 +38,7 @@
         'libjingle.gyp:libjingle_p2p',
       ],
       'sources': [
-        'natty/natty_main.cc',
+        'lib/natty_main.cc',
       ],
     },  # target relayserver
   ],

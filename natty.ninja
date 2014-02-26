@@ -1,6 +1,64 @@
-build obj/natty.actions_depends.stamp: stamp $
-    obj/net/third_party/nss/libcrssl.a obj/talk/libjingle.a $
-    obj/net/third_party/nss/libcrssl.a obj/third_party/jsoncpp/libjsoncpp.a
+cc = cc
+cxx = c++
+ld = $cc
+ldxx = $cxx
+ar = ar
+
+pool link_pool
+  depth = 1
+
+rule cc
+  command = $cc -MMD -MF $out.d $defines $includes $cflags $cflags_c $cflags_pch_c -c $in -o $out
+  description = CC $out
+  depfile = $out.d
+  deps = gcc
+rule cc_s
+  command = $cc $defines $includes $cflags $cflags_c $cflags_pch_c -c $in -o $out
+  description = CC $out
+rule cxx
+  command = $cxx -MMD -MF $out.d $defines $includes $cflags $cflags_cc $cflags_pch_cc -c $in -o $out
+  description = CXX $out
+  depfile = $out.d
+  deps = gcc
+rule alink
+  command = rm -f $out && $ar rcs $out $in
+  description = AR $out
+rule alink_thin
+  command = rm -f $out && $ar rcsT $out $in
+  description = AR $out
+rule solink
+  command = if [ ! -e $lib -o ! -e ${lib}.TOC ]; then $ld -shared $ldflags -o $lib -Wl,-soname=$soname $
+      -Wl,--whole-archive $in $solibs -Wl,--no-whole-archive $libs && { readelf -d ${lib} | grep SONAME ; nm -gD -f p $
+      ${lib} | cut -f1-2 -d' '; } > ${lib}.TOC; else $ld -shared $ldflags -o $lib -Wl,-soname=$soname $
+      -Wl,--whole-archive $in $solibs -Wl,--no-whole-archive $libs && { readelf -d ${lib} | grep SONAME ; nm -gD -f p $
+      ${lib} | cut -f1-2 -d' '; } > ${lib}.tmp && if ! cmp -s ${lib}.tmp ${lib}.TOC; then mv ${lib}.tmp ${lib}.TOC ; $
+      fi; fi
+  description = SOLINK $lib
+  pool = link_pool
+  restat = 1
+rule solink_module
+  command = if [ ! -e $lib -o ! -e ${lib}.TOC ]; then $ld -shared $ldflags -o $lib -Wl,-soname=$soname $
+      -Wl,--start-group $in $solibs -Wl,--end-group $libs && { readelf -d ${lib} | grep SONAME ; nm -gD -f p ${lib} | $
+      cut -f1-2 -d' '; } > ${lib}.TOC; else $ld -shared $ldflags -o $lib -Wl,-soname=$soname -Wl,--start-group $in $
+      $solibs -Wl,--end-group $libs && { readelf -d ${lib} | grep SONAME ; nm -gD -f p ${lib} | cut -f1-2 -d' '; } > $
+      ${lib}.tmp && if ! cmp -s ${lib}.tmp ${lib}.TOC; then mv ${lib}.tmp ${lib}.TOC ; fi; fi
+  description = SOLINK(module) $lib
+  pool = link_pool
+  restat = 1
+rule link
+  command = $ld $ldflags -o $out -Wl,--start-group $in $solibs -Wl,--end-group $libs
+  description = LINK $out
+  pool = link_pool
+rule stamp
+  command = ${postbuilds}touch $out
+  description = STAMP $out
+rule copy
+  command = ln -f $in $out 2>/dev/null || (rm -rf $out && cp -af $in $out)
+  description = COPY $in $out
+ 
+build build/trunk/out/Debug/obj/natty.actions_depends.stamp: stamp $
+    build/trunk/out/Debug/obj/net/third_party/nss/libcrssl.a build/trunk/out/Debug/obj/talk/libjingle.a $
+    build/trunk/out/Debug/obj/net/third_party/nss/libcrssl.a build/trunk/out/Debug/obj/third_party/jsoncpp/libjsoncpp.a
 
 defines = -DV8_DEPRECATION_WARNINGS -DEXPAT_RELATIVE_PATH $
     -DFEATURE_ENABLE_VOICEMAIL -DGTEST_RELATIVE_PATH $
@@ -25,10 +83,10 @@ defines = -DV8_DEPRECATION_WARNINGS -DEXPAT_RELATIVE_PATH $
     -DHASH_NAMESPACE=__gnu_cxx -DPOSIX -DDISABLE_DYNAMIC_CAST -D_REENTRANT $
     -DSSL_USE_NSS -DHAVE_NSS_SSL_H -DSSL_USE_NSS_RNG -DNDEBUG -DNVALGRIND $
     -DDYNAMIC_ANNOTATIONS_ENABLED=0
-includes = -I../.. -I../../third_party -I../../third_party/webrtc $
-    -I../../webrtc -I../../net/third_party/nss/ssl $
-    -I../../third_party/jsoncpp/overrides/include $
-    -I../../third_party/jsoncpp/source/include
+includes = -Ibuild/trunk -Ibuild/trunk/third_party -Ibuild/trunk/third_party/webrtc $
+    -Ibuild/trunk/webrtc -Ibuild/trunk/net/third_party/nss/ssl $
+    -Ibuild/trunk/third_party/jsoncpp/overrides/include $
+    -Ibuild/trunk/third_party/jsoncpp/source/include
 cflags = -fstack-protector --param=ssp-buffer-size=4 -pthread $
     -fno-exceptions -fno-strict-aliasing -Wno-unused-parameter $
     -Wno-missing-field-initializers -fvisibility=hidden -pipe -fPIC $
@@ -39,34 +97,30 @@ cflags_c =
 cflags_cc = -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden $
     -Wno-deprecated
 
-build obj/natty/libjingle_p2p.constants.o: cxx $
-    ../../talk/p2p/base/constants.cc
-build obj/natty/libjingle_p2p.helpers.o: cxx $
-    ../../talk/base/helpers.cc
-build obj/natty/libjingle_p2p.portproxy.o: cxx $
-    ../../talk/p2p/base/portproxy.cc
-build obj/natty/libjingle_p2p.stun.o: cxx $
-    ../../talk/p2p/base/stun.cc
-build obj/natty/libjingle_p2p.stunport.o: cxx $
-    ../../talk/p2p/base/stunport.cc
-build obj/natty/libjingle_p2p.asyncstuntcpsocket.o: $
-    cxx ../../talk/p2p/base/asyncstuntcpsocket.cc
+build out/natty/libjingle_p2p.portproxy.o: cxx $
+    build/trunk/talk/p2p/base/portproxy.cc
+build out/natty/libjingle_p2p.stun.o: cxx $
+    build/trunk/talk/p2p/base/stun.cc
+build out/natty/libjingle_p2p.stunport.o: cxx $
+    build/trunk/talk/p2p/base/stunport.cc
+build out/natty/libjingle_p2p.asyncstuntcpsocket.o: $
+    cxx build/trunk/talk/p2p/base/asyncstuntcpsocket.cc
 build $
-    obj/natty/libjingle_p2p.basicpacketsocketfactory.o: $
-    cxx ../../talk/p2p/base/basicpacketsocketfactory.cc
-build obj/natty/libjingle_p2p.stunrequest.o: cxx $
-    ../../talk/p2p/base/stunrequest.cc
-build obj/natty/libjingle_p2p.stunserver.o: cxx $
-    ../../talk/p2p/base/stunserver.cc
+    out/natty/libjingle_p2p.basicpacketsocketfactory.o: $
+    cxx build/trunk/talk/p2p/base/basicpacketsocketfactory.cc
+build out/natty/libjingle_p2p.stunrequest.o: cxx $
+    build/trunk/talk/p2p/base/stunrequest.cc
+build out/natty/libjingle_p2p.stunserver.o: cxx $
+    build/trunk/talk/p2p/base/stunserver.cc
 build $
-    obj/natty/natty_socket.o: $
-    cxx ../../natty/natty_socket.cc
-build obj/natty/libjingle_p2p.port.o: cxx ../../talk/p2p/base/port.cc
+    out/natty/natty_socket.o: $
+    cxx src/natty_socket.cc
+build out/natty/libjingle_p2p.port.o: cxx build/trunk/talk/p2p/base/port.cc
 build $
-    obj/natty/natty_portallocator.o: $
-    cxx ../../natty/natty_portallocator.cc
-build obj/natty/natty_main.o: $
-    cxx ../../natty/natty_main.cc
+    out/natty/natty_portallocator.o: $
+    cxx src/natty_portallocator.cc
+build out/natty/natty_main.o: $
+    cxx src/natty_main.cc
 
 ldflags = -Wl,-z,now -Wl,-z,relro -pthread -Wl,-z,noexecstack -fPIC $
     -B/home/todd/Dev/lantern/natty/build/trunk/third_party/gold $
@@ -74,19 +128,17 @@ ldflags = -Wl,-z,now -Wl,-z,relro -pthread -Wl,-z,noexecstack -fPIC $
 libs =  -lnss3 -lnssutil3 -lsmime3 -lplds4 -lplc4 -lnspr4 -ldl -lcrypto $
     -lrt -lXext -lX11 -lXcomposite -lXrender -lexpat
 build natty: link $
-    obj/natty/natty_socket.o $
-    obj/natty/libjingle_p2p.constants.o $
-    obj/natty/libjingle_p2p.helpers.o $
-    obj/natty/libjingle_p2p.stun.o $
-    obj/natty/libjingle_p2p.stunrequest.o $
-    obj/natty/libjingle_p2p.stunserver.o $
-    obj/natty/libjingle_p2p.portproxy.o $
-    obj/natty/libjingle_p2p.stunport.o $
-    obj/natty/libjingle_p2p.port.o $
-    obj/natty/libjingle_p2p.asyncstuntcpsocket.o $
-    obj/natty/libjingle_p2p.basicpacketsocketfactory.o $
-    obj/natty/natty_portallocator.o $
-    obj/natty/natty_main.o $
-    obj/talk/libjingle.a obj/net/third_party/nss/libcrssl.a $
-    obj/third_party/jsoncpp/libjsoncpp.a | obj/net/third_party/nss/libcrssl.a
+    out/natty/natty_socket.o $
+    out/natty/libjingle_p2p.stun.o $
+    out/natty/libjingle_p2p.stunrequest.o $
+    out/natty/libjingle_p2p.stunserver.o $
+    out/natty/libjingle_p2p.portproxy.o $
+    out/natty/libjingle_p2p.stunport.o $
+    out/natty/libjingle_p2p.port.o $
+    out/natty/libjingle_p2p.asyncstuntcpsocket.o $
+    out/natty/libjingle_p2p.basicpacketsocketfactory.o $
+    out/natty/natty_portallocator.o $
+    out/natty/natty_main.o $
+    build/trunk/out/Debug/obj/talk/libjingle.a build/trunk/out/Debug/obj/net/third_party/nss/libcrssl.a $
+    build/trunk/out/Debug/obj/third_party/jsoncpp/libjsoncpp.a | build/trunk/out/Debug/obj/net/third_party/nss/libcrssl.a
   ld = $ldxx

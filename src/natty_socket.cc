@@ -25,7 +25,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "talk/examples/natty/natty_socket.h"
+#include "natty_socket.h"
 
 #include <ctype.h>
 #include <stdio.h>
