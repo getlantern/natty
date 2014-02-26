@@ -355,34 +355,9 @@ int main(int argc, char **argv) {
 
   socket_factory.set_next_udp_socket(s1);
   talk_base::Network *network = new talk_base::Network("unittest", "unittest", talk_base::IPAddress(INADDR_ANY), 32);
-  printf("HEY.\n");
-  //network->AddIP(talk_base::IPAddress(INADDR_ANY));
-  //Port* p1 = CreateUdpPort(kLocalAddr1, &socket_factory, network);
-
-  /*
-  //socket_factory.set_next_udp_socket(s2);
-    Port* p2 = CreateUdpPort(kLocalAddr2, &socket_factory, network);
-  //TestChannel ch1(p1, p2);
-//  TestConnectivity("udp", port1, "udp", port2, true, true, true, true);
 
   delete network;
-  delete s1;
-  //delete p1;
-    */
-  //delete network;
-  delete s1;
-  //delete network;
-  /*ListeningSocket listener;
-  if (!listener.Create()) {
-    printf("Failed to create server socket\n");
-    return -1;
-  } else if (!listener.Listen(8888)) {
-    printf("Failed to listen on server socket\n");
-    return -1;
-  }
-  printf("listening for connections\n");
-  acceptConnections(&listener);
-    */
+
 
   return 0;
 }
