@@ -75,7 +75,7 @@
     return peer_connection_.get() != NULL;
   }
 
-  PeerConnectionClient* Natty::getClient() {
+  PeerConnectionClient* Natty::GetClient() {
     return client_;
   }
 
