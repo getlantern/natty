@@ -26,7 +26,7 @@
  */
 
 #include "natty.h"
-#include "talk/examples/peerconnection/client/peer_connection_client.h"
+#include "peer_connection_client.h"
 
 #include "talk/base/thread.h"
 

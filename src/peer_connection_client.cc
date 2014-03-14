@@ -25,9 +25,9 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "talk/examples/peerconnection/client/peer_connection_client.h"
+#include "peer_connection_client.h"
 
-#include "talk/examples/peerconnection/client/defaults.h"
+#include "defaults.h"
 #include "talk/base/common.h"
 #include "talk/base/nethelpers.h"
 #include "talk/base/logging.h"
