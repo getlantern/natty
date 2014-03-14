@@ -41,9 +41,8 @@ Standalone WebRTC-based NAT traversal
                   HCV6ayfcZsugQjaX:bJgo20cB0leKTV1Th1ibJx6
     -> 107.201.128.213:51478
 
-    Creating session description
-    Creating internal offer
-    session id 658569486909023361
+    Initializing session description
+    Session id 658569486909023361
     Creating port allocator session
     Ice sid ailLdeH/UkVxqSG2:+eUJYFBUeZSZ2yuIHZa2S7lV
     Creating port allocator session muxer
