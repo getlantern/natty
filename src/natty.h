@@ -41,7 +41,7 @@ class Natty
 
   virtual void Shutdown();
   virtual void Init(const std::string& server, int port);
-  PeerConnectionClient* getClient();
+  PeerConnectionClient* GetClient();
   bool InitializePeerConnection();
   void DeletePeerConnection();
   void SetupSocketServer();
