@@ -20,11 +20,11 @@
 
 #include "talk/base/thread.h"
 
-class CustomSocketServer : public talk_base::PhysicalSocketServer {
+class NattySocket : public talk_base::PhysicalSocketServer {
  public:
-  CustomSocketServer(talk_base::Thread* thread)
+  NattySocket(talk_base::Thread* thread)
       : thread_(thread), natty_(NULL), client_(NULL) {}
-  virtual ~CustomSocketServer() {}
+  virtual ~NattySocket() {}
 
   void set_client(PeerConnectionClient* client) { client_ = client; }
   void set_natty(Natty* natty) { natty_ = natty; }
@@ -53,10 +53,10 @@ int main(int argc, char* argv[]) {
       new talk_base::RefCountedObject<Natty>(&client, thread));
 
 
-  CustomSocketServer socket_server(thread);
+  NattySocket socket_server(thread);
   thread->set_socketserver(&socket_server);
 
-  socket_server.set_client(natty->getClient());
+  socket_server.set_client(natty->GetClient());
   socket_server.set_natty(natty);
 
   thread->Run();
