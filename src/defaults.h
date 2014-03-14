@@ -25,8 +25,8 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PEERCONNECTION_SAMPLES_CLIENT_DEFAULTS_H_
-#define PEERCONNECTION_SAMPLES_CLIENT_DEFAULTS_H_
+#ifndef DEFAULTS_H_
+#define DEFAULTS_H_
 #pragma once
 
 #include <string>
@@ -44,4 +44,4 @@ std::string GetPeerConnectionString();
 std::string GetDefaultServerName();
 std::string GetPeerName();
 
-#endif  // PEERCONNECTION_SAMPLES_CLIENT_DEFAULTS_H_
+#endif  // DEFAULTS_H_
