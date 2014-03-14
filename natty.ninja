@@ -56,9 +56,9 @@ rule copy
   command = ln -f $in $out 2>/dev/null || (rm -rf $out && cp -af $in $out)
   description = COPY $in $out
  
-build build/trunk/out/Debug/obj/natty.actions_depends.stamp: stamp $
-    build/trunk/out/Debug/obj/net/third_party/nss/libcrssl.a build/trunk/out/Debug/obj/talk/libjingle.a $
-    build/trunk/out/Debug/obj/net/third_party/nss/libcrssl.a build/trunk/out/Debug/obj/third_party/jsoncpp/libjsoncpp.a
+build build/trunk/out/Release/obj/natty.actions_depends.stamp: stamp $
+    build/trunk/out/Release/libcrssl.a build/trunk/out/Release/libjingle.a $
+    build/trunk/out/Release/libcrssl.a build/trunk/out/Release/libjsoncpp.a
 
 defines = -DV8_DEPRECATION_WARNINGS -DEXPAT_RELATIVE_PATH $
     -DFEATURE_ENABLE_VOICEMAIL -DGTEST_RELATIVE_PATH $
@@ -96,49 +96,41 @@ cflags = -fstack-protector --param=ssp-buffer-size=4 -pthread $
 cflags_c = 
 cflags_cc = -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden $
     -Wno-deprecated
+cflags = -isysroot $
+    /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk $
+    -O3 -gdwarf-2 -fvisibility=hidden -Werror -Wnewline-eof $
+    -mmacosx-version-min=10.6 -arch i386 -Wendif-labels $
+    -Wno-unused-parameter -Wno-missing-field-initializers -Wheader-hygiene $
+    -Wno-c++11-narrowing -Wno-char-subscripts $
+    -Wno-unneeded-internal-declaration -Wno-covered-switch-default $
+    -Wstring-conversion
+cflags_c = -std=c99 -fcolor-diagnostics -fno-strict-aliasing
+cflags_cc = -std=gnu++11 -fno-rtti -fno-exceptions $
+    -fvisibility-inlines-hidden -fno-threadsafe-statics -fcolor-diagnostics $
+    -fno-strict-aliasing
+cflags_objc = $cflags_c -Wobjc-missing-property-synthesis
+cflags_objcc = $cflags_cc -Wobjc-missing-property-synthesis $
+    -fobjc-call-cxx-cdtors
+ 
+build out/natty/client/client.natty.o: $
+    cxx src/natty.cc $
+    build/trunk/out/Release/obj/natty.actions_depends.stamp
+build out/natty/client/client.peer_connection_client.o: $
+    cxx src/peer_connection_client.cc $
+    build/trunk/out/Release/obj/natty.actions_depends.stamp
+build out/natty/client/client.main.o
+    cxx src/main.cc $
+    build/trunk/out/Release/obj/natty.actions_depends.stamp
 
-build out/natty/libjingle_p2p.portproxy.o: cxx $
-    build/trunk/talk/p2p/base/portproxy.cc
-build out/natty/libjingle_p2p.stun.o: cxx $
-    build/trunk/talk/p2p/base/stun.cc
-build out/natty/libjingle_p2p.stunport.o: cxx $
-    build/trunk/talk/p2p/base/stunport.cc
-build out/natty/libjingle_p2p.asyncstuntcpsocket.o: $
-    cxx build/trunk/talk/p2p/base/asyncstuntcpsocket.cc
-build $
-    out/natty/libjingle_p2p.basicpacketsocketfactory.o: $
-    cxx build/trunk/talk/p2p/base/basicpacketsocketfactory.cc
-build out/natty/libjingle_p2p.stunrequest.o: cxx $
-    build/trunk/talk/p2p/base/stunrequest.cc
-build out/natty/libjingle_p2p.stunserver.o: cxx $
-    build/trunk/talk/p2p/base/stunserver.cc
-build $
-    out/natty/natty_socket.o: $
-    cxx src/natty_socket.cc
-build out/natty/libjingle_p2p.port.o: cxx build/trunk/talk/p2p/base/port.cc
-build $
-    out/natty/natty_portallocator.o: $
-    cxx src/natty_portallocator.cc
-build out/natty/natty_main.o: $
-    cxx src/natty_main.cc
-
-ldflags = -Wl,-z,now -Wl,-z,relro -pthread -Wl,-z,noexecstack -fPIC $
+ldflags = -Wl,-z,now -Wl,-z,relro -pthread -Wl,-v,-z,noexecstack -fPIC $
     -B/home/todd/Dev/lantern/natty/build/trunk/third_party/gold $
     -Wl,--icf=none -Wl,-O1 -Wl,--as-needed -Wl,--gc-sections
 libs =  -lnss3 -lnssutil3 -lsmime3 -lplds4 -lplc4 -lnspr4 -ldl -lcrypto $
     -lrt -lXext -lX11 -lXcomposite -lXrender -lexpat
 build natty: link $
-    out/natty/natty_socket.o $
-    out/natty/libjingle_p2p.stun.o $
-    out/natty/libjingle_p2p.stunrequest.o $
-    out/natty/libjingle_p2p.stunserver.o $
-    out/natty/libjingle_p2p.portproxy.o $
-    out/natty/libjingle_p2p.stunport.o $
-    out/natty/libjingle_p2p.port.o $
-    out/natty/libjingle_p2p.asyncstuntcpsocket.o $
-    out/natty/libjingle_p2p.basicpacketsocketfactory.o $
-    out/natty/natty_portallocator.o $
-    out/natty/natty_main.o $
-    build/trunk/out/Debug/obj/talk/libjingle.a build/trunk/out/Debug/obj/net/third_party/nss/libcrssl.a $
-    build/trunk/out/Debug/obj/third_party/jsoncpp/libjsoncpp.a | build/trunk/out/Debug/obj/net/third_party/nss/libcrssl.a
+    out/natty/client/client.natty.o $
+    out/natty/natty/client.peer_connection_client.o $
+    out/natty/client/client.main.o
+    build/trunk/out/Release/libjingle.a build/trunk/out/Release/libcrssl.a $
+    build/trunk/out/Release/libjsoncpp.a
   ld = $ldxx
