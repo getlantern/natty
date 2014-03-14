@@ -1,0 +1,204 @@
+This appears to be Chrome adapter.js:121
+Initializing; room=18315822. main.js:34
+Opening channel. main.js:62
+Requested access to local media with mediaConstraints:
+  '{"audio":true,"video":true}' main.js:139
+  Channel opened. main.js:293
+  User has granted access to local media. main.js:335
+  S->C: {"sdp":"v=0\r\no=- 603804254075735846 2 IN IP4 127.0.0.1\r\ns=-\r\nt=0
+  0\r\na=group:BUNDLE audio video\r\na=msid-semantic: WMS
+  8R33MA8HSKhObVgAzYQi1Wevbg1dNGcjS3ld\r\nm=audio 1 RTP/SAVPF 111 103 104 0 8
+  126\r\nc=IN IP4 0.0.0.0\r\na=rtcp:1 IN IP4
+  0.0.0.0\r\na=ice-ufrag:VvPhvrVL0R5G6xFA\r\na=ice-pwd:ac0wTk0uN9fM4yNvJz9KJbPh\r\na=ice-options:google-ice\r\na=fingerprint:sha-256
+  1B:28:88:BA:BC:D3:DD:35:D5:FB:E3:CE:D3:3B:70:63:B8:44:D4:1F:8E:34:6A:68:37:98:1F:D0:1C:AE:1E:E1\r\na=setup:actpass\r\na=mid:audio\r\na=extmap:1
+  urn:ietf:params:rtp-hdrext:ssrc-audio-level\r\na=sendrecv\r\na=rtcp-mux\r\na=crypto:1
+  AES_CM_128_HMAC_SHA1_80
+  inline:nFYFfijNC69N3/F+KchmxPpWJeK+S8hVQlWCSof4\r\na=rtpmap:111
+  opus/48000/2\r\na=fmtp:111 minptime=10\r\na=rtpmap:103
+  ISAC/16000\r\na=rtpmap:104 ISAC/32000\r\na=rtpmap:0 PCMU/8000\r\na=rtpmap:8
+  PCMA/8000\r\na=rtpmap:126
+  telephone-event/8000\r\na=maxptime:60\r\na=ssrc:813810137
+  cname:crkjeZ4nmNOTlr7t\r\na=ssrc:813810137
+  msid:8R33MA8HSKhObVgAzYQi1Wevbg1dNGcjS3ld
+  f603cb1b-0da3-4033-9602-cbd2a93ee137\r\na=ssrc:813810137
+  mslabel:8R33MA8HSKhObVgAzYQi1Wevbg1dNGcjS3ld\r\na=ssrc:813810137
+  label:f603cb1b-0da3-4033-9602-cbd2a93ee137\r\nm=video 1 RTP/SAVPF 100 116
+  117\r\nc=IN IP4 0.0.0.0\r\na=rtcp:1 IN IP4
+  0.0.0.0\r\na=ice-ufrag:VvPhvrVL0R5G6xFA\r\na=ice-pwd:ac0wTk0uN9fM4yNvJz9KJbPh\r\na=ice-options:google-ice\r\na=fingerprint:sha-256
+  1B:28:88:BA:BC:D3:DD:35:D5:FB:E3:CE:D3:3B:70:63:B8:44:D4:1F:8E:34:6A:68:37:98:1F:D0:1C:AE:1E:E1\r\na=setup:actpass\r\na=mid:video\r\na=extmap:2
+  urn:ietf:params:rtp-hdrext:toffset\r\na=extmap:3
+  http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time\r\na=sendrecv\r\na=rtcp-mux\r\na=crypto:1
+  AES_CM_128_HMAC_SHA1_80
+  inline:nFYFfijNC69N3/F+KchmxPpWJeK+S8hVQlWCSof4\r\na=rtpmap:100
+  VP8/90000\r\na=rtcp-fb:100 ccm fir\r\na=rtcp-fb:100 nack\r\na=rtcp-fb:100
+  goog-remb\r\na=rtpmap:116 red/90000\r\na=rtpmap:117
+  ulpfec/90000\r\na=ssrc:2604512947
+  cname:crkjeZ4nmNOTlr7t\r\na=ssrc:2604512947
+  msid:8R33MA8HSKhObVgAzYQi1Wevbg1dNGcjS3ld
+  d4501e01-1cc3-4a18-a41c-0200b10b9869\r\na=ssrc:2604512947
+  mslabel:8R33MA8HSKhObVgAzYQi1Wevbg1dNGcjS3ld\r\na=ssrc:2604512947
+  label:d4501e01-1cc3-4a18-a41c-0200b10b9869\r\n","type":"offer"} main.js:299
+  Creating PeerConnection. main.js:171
+  Created RTCPeerConnnection with:
+    config:
+    '{"iceServers":[{"url":"stun:stun.l.google.com:19302"},{"url":"turn:23.236.53.1:3478?transport=udp","credential":"qcTbvRINRLWpjFVc4k6ZsmI0Dj4=","username":"1394732712:68637926"},{"url":"turn:23.236.53.1:3478?transport=tcp","credential":"qcTbvRINRLWpjFVc4k6ZsmI0Dj4=","username":"1394732712:68637926"},{"url":"turn:23.236.53.1:3479?transport=udp","credential":"qcTbvRINRLWpjFVc4k6ZsmI0Dj4=","username":"1394732712:68637926"},{"url":"turn:23.236.53.1:3479?transport=tcp","credential":"qcTbvRINRLWpjFVc4k6ZsmI0Dj4=","username":"1394732712:68637926"}]}';
+      constraints: '{"optional":[]}'. main.js:152
+      Adding local stream. main.js:175
+      No preference on audio send codec. main.js:605
+      Sending answer to peer. main.js:209
+      S->C:
+      {"type":"candidate","label":0,"id":"audio","candidate":"a=candidate:833690215
+      2 udp 2113937151 192.168.1.138 50116 typ host generation 0\r\n"}
+      main.js:299
+      S->C:
+      {"type":"candidate","label":0,"id":"audio","candidate":"a=candidate:833690215
+      1 udp 2113937151 192.168.1.138 50116 typ host generation 0\r\n"}
+      main.js:299
+      S->C:
+      {"type":"candidate","label":1,"id":"video","candidate":"a=candidate:833690215
+      1 udp 2113937151 192.168.1.138 50116 typ host generation 0\r\n"}
+      main.js:299
+      S->C:
+      {"type":"candidate","label":1,"id":"video","candidate":"a=candidate:833690215
+      2 udp 2113937151 192.168.1.138 50116 typ host generation 0\r\n"}
+      main.js:299
+      S->C:
+      {"type":"candidate","label":1,"id":"video","candidate":"a=candidate:2969115859
+      1 udp 1845501695 12.167.51.34 27497 typ srflx raddr 192.168.1.138 rport
+      50116 generation 0\r\n"} main.js:299
+      S->C:
+      {"type":"candidate","label":0,"id":"audio","candidate":"a=candidate:2969115859
+      1 udp 1845501695 12.167.51.34 27497 typ srflx raddr 192.168.1.138 rport
+      50116 generation 0\r\n"} main.js:299
+      S->C:
+      {"type":"candidate","label":0,"id":"audio","candidate":"a=candidate:2969115859
+      2 udp 1845501695 12.167.51.34 27497 typ srflx raddr 192.168.1.138 rport
+      50116 generation 0\r\n"} main.js:299
+      S->C:
+      {"type":"candidate","label":1,"id":"video","candidate":"a=candidate:2969115859
+      2 udp 1845501695 12.167.51.34 27497 typ srflx raddr 192.168.1.138 rport
+      50116 generation 0\r\n"} main.js:299
+      S->C:
+      {"type":"candidate","label":0,"id":"audio","candidate":"a=candidate:2134042263
+      2 tcp 1509957375 192.168.1.138 0 typ host generation 0\r\n"} main.js:299
+      S->C:
+      {"type":"candidate","label":0,"id":"audio","candidate":"a=candidate:2134042263
+      1 tcp 1509957375 192.168.1.138 0 typ host generation 0\r\n"} main.js:299
+      S->C:
+      {"type":"candidate","label":1,"id":"video","candidate":"a=candidate:2134042263
+      1 tcp 1509957375 192.168.1.138 0 typ host generation 0\r\n"} main.js:299
+      S->C:
+      {"type":"candidate","label":1,"id":"video","candidate":"a=candidate:1592739642
+      1 udp 33562367 23.236.53.1 49506 typ relay raddr 12.167.51.34 rport
+      36300 generation 0\r\n"} main.js:299
+      S->C:
+      {"type":"candidate","label":1,"id":"video","candidate":"a=candidate:2134042263
+      2 tcp 1509957375 192.168.1.138 0 typ host generation 0\r\n"} main.js:299
+      S->C:
+      {"type":"candidate","label":1,"id":"video","candidate":"a=candidate:1592739642
+      2 udp 33562367 23.236.53.1 49506 typ relay raddr 12.167.51.34 rport
+      36300 generation 0\r\n"} main.js:299
+      S->C:
+      {"type":"candidate","label":0,"id":"audio","candidate":"a=candidate:1592739642
+      1 udp 16785151 23.236.53.1 57439 typ relay raddr 12.167.51.34 rport
+      47751 generation 0\r\n"} main.js:299
+      S->C:
+      {"type":"candidate","label":0,"id":"audio","candidate":"a=candidate:1592739642
+      2 udp 33562367 23.236.53.1 49506 typ relay raddr 12.167.51.34 rport
+      36300 generation 0\r\n"} main.js:299
+      S->C:
+      {"type":"candidate","label":1,"id":"video","candidate":"a=candidate:1592739642
+      1 udp 16785151 23.236.53.1 57439 typ relay raddr 12.167.51.34 rport
+      47751 generation 0\r\n"} main.js:299
+      S->C:
+      {"type":"candidate","label":0,"id":"audio","candidate":"a=candidate:1592739642
+      1 udp 33562367 23.236.53.1 49506 typ relay raddr 12.167.51.34 rport
+      36300 generation 0\r\n"} main.js:299
+      S->C:
+      {"type":"candidate","label":0,"id":"audio","candidate":"a=candidate:1592739642
+      2 udp 16785151 23.236.53.1 57439 typ relay raddr 12.167.51.34 rport
+      47751 generation 0\r\n"} main.js:299
+      S->C:
+      {"type":"candidate","label":1,"id":"video","candidate":"a=candidate:1592739642
+      2 udp 16785151 23.236.53.1 57439 typ relay raddr 12.167.51.34 rport
+      47751 generation 0\r\n"} main.js:299
+      Set remote session description success. main.js:239
+      Not receiving any stream. main.js:245
+      20
+      AddIceCandidate success. main.js:285
+      Remote stream added. main.js:389
+      Prefer audio receive codec: opus/48000 main.js:617
+      C->S: {"sdp":"v=0\r\no=- 5997103678514725093 2 IN IP4
+      127.0.0.1\r\ns=-\r\nt=0 0\r\na=group:BUNDLE audio
+      video\r\na=msid-semantic: WMS
+      SliaFLMO8tHMYbfoWdKaPORuKdZYQCFwtQUO\r\nm=audio 1 RTP/SAVPF 111 103 104
+      0 8 126\r\nc=IN IP4 0.0.0.0\r\na=rtcp:1 IN IP4
+      0.0.0.0\r\na=ice-ufrag:cXFLZVGHB4QW6AmF\r\na=ice-pwd:xXYSI8Fhpxq9zUJC6HxDOGpm\r\na=fingerprint:sha-256
+      1B:28:88:BA:BC:D3:DD:35:D5:FB:E3:CE:D3:3B:70:63:B8:44:D4:1F:8E:34:6A:68:37:98:1F:D0:1C:AE:1E:E1\r\na=setup:active\r\na=mid:audio\r\na=extmap:1
+      urn:ietf:params:rtp-hdrext:ssrc-audio-level\r\na=sendrecv\r\na=rtcp-mux\r\na=rtpmap:111
+      opus/48000/2\r\na=fmtp:111 minptime=10\r\na=rtpmap:103
+      ISAC/16000\r\na=rtpmap:104 ISAC/32000\r\na=rtpmap:0
+      PCMU/8000\r\na=rtpmap:8 PCMA/8000\r\na=rtpmap:126
+      telephone-event/8000\r\na=maxptime:60\r\na=ssrc:1233750291
+      cname:62LXzg5MKehBWIsC\r\na=ssrc:1233750291
+      msid:SliaFLMO8tHMYbfoWdKaPORuKdZYQCFwtQUO
+      ae75b7e8-8048-425a-a240-0c458a01a659\r\na=ssrc:1233750291
+      mslabel:SliaFLMO8tHMYbfoWdKaPORuKdZYQCFwtQUO\r\na=ssrc:1233750291
+      label:ae75b7e8-8048-425a-a240-0c458a01a659\r\nm=video 1 RTP/SAVPF 100
+      116 117\r\nc=IN IP4 0.0.0.0\r\na=rtcp:1 IN IP4
+      0.0.0.0\r\na=ice-ufrag:cXFLZVGHB4QW6AmF\r\na=ice-pwd:xXYSI8Fhpxq9zUJC6HxDOGpm\r\na=fingerprint:sha-256
+      1B:28:88:BA:BC:D3:DD:35:D5:FB:E3:CE:D3:3B:70:63:B8:44:D4:1F:8E:34:6A:68:37:98:1F:D0:1C:AE:1E:E1\r\na=setup:active\r\na=mid:video\r\na=extmap:2
+      urn:ietf:params:rtp-hdrext:toffset\r\na=extmap:3
+      http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time\r\na=sendrecv\r\na=rtcp-mux\r\na=rtpmap:100
+      VP8/90000\r\na=rtcp-fb:100 ccm fir\r\na=rtcp-fb:100
+      nack\r\na=rtcp-fb:100 goog-remb\r\na=rtpmap:116
+      red/90000\r\na=rtpmap:117 ulpfec/90000\r\na=ssrc:4255913336
+      cname:62LXzg5MKehBWIsC\r\na=ssrc:4255913336
+      msid:SliaFLMO8tHMYbfoWdKaPORuKdZYQCFwtQUO
+      e780a605-dff1-4fbd-af0f-d3461faffab9\r\na=ssrc:4255913336
+      mslabel:SliaFLMO8tHMYbfoWdKaPORuKdZYQCFwtQUO\r\na=ssrc:4255913336
+      label:e780a605-dff1-4fbd-af0f-d3461faffab9\r\n","type":"answer"}
+      main.js:253
+      Set session description success. main.js:359
+      C->S:
+      {"type":"candidate","label":0,"id":"audio","candidate":"a=candidate:833690215
+      1 udp 2113937151 192.168.1.138 58756 typ host generation 0\r\n"}
+      main.js:253
+      C->S:
+      {"type":"candidate","label":1,"id":"video","candidate":"a=candidate:833690215
+      1 udp 2113937151 192.168.1.138 58756 typ host generation 0\r\n"}
+      main.js:253
+      C->S:
+      {"type":"candidate","label":0,"id":"audio","candidate":"a=candidate:2969115859
+      1 udp 1845501695 12.167.51.34 36137 typ srflx raddr 192.168.1.138 rport
+      58756 generation 0\r\n"} main.js:253
+      C->S:
+      {"type":"candidate","label":1,"id":"video","candidate":"a=candidate:2969115859
+      1 udp 1845501695 12.167.51.34 36137 typ srflx raddr 192.168.1.138 rport
+      58756 generation 0\r\n"} main.js:253
+      C->S:
+      {"type":"candidate","label":0,"id":"audio","candidate":"a=candidate:2134042263
+      1 tcp 1509957375 192.168.1.138 0 typ host generation 0\r\n"} main.js:253
+      C->S:
+      {"type":"candidate","label":1,"id":"video","candidate":"a=candidate:2134042263
+      1 tcp 1509957375 192.168.1.138 0 typ host generation 0\r\n"} main.js:253
+      C->S:
+      {"type":"candidate","label":0,"id":"audio","candidate":"a=candidate:1592739642
+      1 udp 16785151 23.236.53.1 50051 typ relay raddr 12.167.51.34 rport 5593
+      generation 0\r\n"} main.js:253
+      C->S:
+      {"type":"candidate","label":1,"id":"video","candidate":"a=candidate:1592739642
+      1 udp 16785151 23.236.53.1 50051 typ relay raddr 12.167.51.34 rport 5593
+      generation 0\r\n"} main.js:253
+      C->S:
+      {"type":"candidate","label":0,"id":"audio","candidate":"a=candidate:1592739642
+      1 udp 33562367 23.236.53.1 52748 typ relay raddr 12.167.51.34 rport
+      33069 generation 0\r\n"} main.js:253
+      C->S:
+      {"type":"candidate","label":1,"id":"video","candidate":"a=candidate:1592739642
+      1 udp 33562367 23.236.53.1 52748 typ relay raddr 12.167.51.34 rport
+      33069 generation 0\r\n"} main.js:253
+      End of candidates. main.js:384
+      Hanging up. main.js:407
+      Channel closed. main.js:325
+
