@@ -165,11 +165,23 @@ void Natty::OnRemoveStream(webrtc::MediaStreamInterface* stream) {
   stream->AddRef();
 }
 
+void Natty::ShowCandidate(const webrtc::IceCandidateInterface* candidate) {
+  std::string out;
+  const cricket::Candidate& cand = candidate->candidate();
+  const talk_base::SocketAddress & address = cand.address(); 
+  candidate->ToString(&out);
+  
+  printf("Ice Candidate %s", out.c_str());
+  printf("%s\n", cand.ToString().c_str());
+  printf("%s\n", address.ToString().c_str());
+
+}
+
 void Natty::OnIceCandidate(const webrtc::IceCandidateInterface* candidate) {
   LOG(INFO) << __FUNCTION__ << " " << candidate->sdp_mline_index();
   Json::StyledWriter writer;
   Json::Value jmessage;
-
+  
   jmessage[kCandidateSdpMidName] = candidate->sdp_mid();
   jmessage[kCandidateSdpMlineIndexName] = candidate->sdp_mline_index();
   std::string sdp;
@@ -179,6 +191,9 @@ void Natty::OnIceCandidate(const webrtc::IceCandidateInterface* candidate) {
   }
   jmessage[kCandidateSdpName] = sdp;
   SendMessage(writer.write(jmessage));
+
+  ShowCandidate(candidate);
+
 }
 
 //
@@ -206,6 +221,9 @@ void Natty::OnPeerDisconnected(int id) {
 }
 
 void Natty::OnMessageFromPeer(int peer_id, const std::string& message) {
+  Json::Reader reader;
+  Json::Value jmessage;
+
   ASSERT(peer_id_ == peer_id || peer_id_ == -1);
   ASSERT(!message.empty());
 
@@ -225,8 +243,6 @@ void Natty::OnMessageFromPeer(int peer_id, const std::string& message) {
     return;
   }
 
-  Json::Reader reader;
-  Json::Value jmessage;
   if (!reader.parse(message, jmessage)) {
     LOG(WARNING) << "Received unknown message. " << message;
     return;

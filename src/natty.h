@@ -39,6 +39,7 @@ class Natty
 
   bool connection_active() const;
 
+  virtual void ShowCandidate(const webrtc::IceCandidateInterface* candidate);
   virtual void Shutdown();
   virtual void Init(const std::string& server, int port);
   PeerConnectionClient* GetClient();
