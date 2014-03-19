@@ -133,6 +133,7 @@ void PeerConnectionClient::Connect(const std::string& server, int port,
 
 void PeerConnectionClient::OnResolveResult(
     talk_base::AsyncResolverInterface* resolver) {
+  printf("Trying to fucking resolve something\n");
   if (resolver_->GetError() != 0) {
     callback_->OnServerConnectionFailure();
     resolver_->Destroy(false);
@@ -154,8 +155,9 @@ void PeerConnectionClient::DoConnect() {
   onconnect_data_ = buffer;
 
   bool ret = ConnectControlSocket();
-  if (ret)
+  if (ret) {
     state_ = SIGNING_IN;
+  }
   if (!ret) {
     callback_->OnServerConnectionFailure();
   }
@@ -238,10 +240,12 @@ bool PeerConnectionClient::ConnectControlSocket() {
     Close();
     return false;
   }
+  printf("Connected to control socket\n");
   return true;
 }
 
 void PeerConnectionClient::OnConnect(talk_base::AsyncSocket* socket) {
+  printf("receiving on connection signal\n");
   ASSERT(!onconnect_data_.empty());
   size_t sent = socket->Send(onconnect_data_.c_str(), onconnect_data_.length());
   ASSERT(sent == onconnect_data_.length());
@@ -261,6 +265,7 @@ void PeerConnectionClient::OnHangingGetConnect(talk_base::AsyncSocket* socket) {
 
 void PeerConnectionClient::OnMessageFromPeer(int peer_id,
                                              const std::string& message) {
+  printf("Received message from a peer! id %d message: %s\n", peer_id, message.c_str());
   if (message.length() == (sizeof(kByeMessage) - 1) &&
       message.compare(kByeMessage) == 0) {
     callback_->OnPeerDisconnected(peer_id);
@@ -312,7 +317,6 @@ bool PeerConnectionClient::ReadIntoBuffer(talk_base::AsyncSocket* socket,
   bool ret = false;
   size_t i = data->find("\r\n\r\n");
   if (i != std::string::npos) {
-    LOG(INFO) << "Headers received";
     if (GetHeaderValue(*data, i, "\r\nContent-Length: ", content_length)) {
       size_t total_response_size = (i + 4) + *content_length;
       if (data->length() >= total_response_size) {

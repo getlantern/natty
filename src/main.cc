@@ -31,11 +31,13 @@ class NattySocket : public talk_base::PhysicalSocketServer {
   Natty* get_natty() { return natty_; }
 
   virtual bool Wait(int cms, bool process_io) {
-    if (!natty_->connection_active() &&
-        client_ != NULL && !client_->is_connected()) {
+    //if (!natty_->connection_active() ||
+    if (client_ == NULL) {
+        //client_ == NULL || !client_->is_connected()) {
+      printf("quitting..\n");
       thread_->Quit();
     }
-    return talk_base::PhysicalSocketServer::Wait(0/*cms == -1 ? 1 : cms*/,
+    return talk_base::PhysicalSocketServer::Wait(-1,
                                                  process_io);
   }
 
@@ -54,18 +56,15 @@ int main(int argc, char* argv[]) {
 
 
   NattySocket socket_server(thread);
+  //talk_base::PhysicalSocketServer* pss = new talk_base::PhysicalSocketServer();
   thread->set_socketserver(&socket_server);
+  //thread->set_socketserver(pss);
 
   socket_server.set_client(natty->GetClient());
   socket_server.set_natty(natty);
 
-  thread->Run();
   natty->SetupSocketServer();
-
-  sleep(3);
-  
-  natty->Shutdown();
-  thread->set_socketserver(NULL);
+  thread->Run();
 
   return 0;
 }
