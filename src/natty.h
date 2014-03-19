@@ -46,6 +46,8 @@ class Natty
   bool InitializePeerConnection();
   void DeletePeerConnection();
   void SetupSocketServer();
+  virtual void ConnectToPeer(int peer_id);
+
   
 
  protected:
@@ -56,16 +58,17 @@ class Natty
   //
   virtual void OnError();
   virtual void OnStateChange(
-      webrtc::PeerConnectionObserver::StateType state_changed) {}
+      webrtc::PeerConnectionObserver::StateType state_changed) {};
   virtual void OnAddStream(webrtc::MediaStreamInterface* stream);
   virtual void OnRemoveStream(webrtc::MediaStreamInterface* stream);
-  virtual void OnRenegotiationNeeded() {}
-  virtual void OnIceChange() {}
+  virtual void OnRenegotiationNeeded();
+  virtual void OnIceChange() {};
   virtual void OnIceCandidate(const webrtc::IceCandidateInterface* candidate);
 
   virtual void OnSignedIn();
 
   virtual void OnDisconnected();
+  virtual void DisconnectFromServer();
 
   virtual void OnPeerConnected(int id, const std::string& name);
 
