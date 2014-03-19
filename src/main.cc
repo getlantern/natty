@@ -65,6 +65,7 @@ int main(int argc, char* argv[]) {
     printf("Error: %i is not a valid port.\n", FLAG_port);
     return -1;
   }
+  printf("Signaling server %s port %d\n", FLAG_server, FLAG_port);
 
   PeerConnectionClient client;
   talk_base::Thread* thread = talk_base::Thread::Current();
