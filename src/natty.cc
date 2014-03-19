@@ -66,6 +66,8 @@
       )
     : peer_id_(-1),
       thread(talk_base::Thread::Current()),
+      server_(server),
+      port_(port),
       client_(client) {
     client_->RegisterObserver(this);
   }
@@ -352,7 +354,7 @@ std::string GetPeerName() {
 void Natty::Init() {
   if (client_->is_connected())
     return;
-  printf("Connecting to signaling server\n");
+  printf("Connecting to signaling server %s %d\n", server_.c_str(), port_);
   client_->Connect(server_, port_, GetPeerName());
 }
 
