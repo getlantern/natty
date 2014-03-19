@@ -19,6 +19,9 @@
 #include "peer_connection_client.h"
 
 #include "talk/base/thread.h"
+#include "flagdefs.h"
+
+const uint16 kDefaultServerPort = 8888;
 
 class NattySocket : public talk_base::PhysicalSocketServer {
  public:
@@ -49,10 +52,24 @@ class NattySocket : public talk_base::PhysicalSocketServer {
  
 
 int main(int argc, char* argv[]) {
+
+  FlagList::SetFlagsFromCommandLine(&argc, argv, true);
+  if (FLAG_help) {
+    FlagList::Print(NULL, false);
+    return 0;
+  }
+
+  // Abort if the user specifies a port that is outside the allowed
+  // range [1, 65535].
+  if ((FLAG_port < 1) || (FLAG_port > 65535)) {
+    printf("Error: %i is not a valid port.\n", FLAG_port);
+    return -1;
+  }
+
   PeerConnectionClient client;
   talk_base::Thread* thread = talk_base::Thread::Current();
   talk_base::scoped_refptr<Natty> natty(
-      new talk_base::RefCountedObject<Natty>(&client, thread));
+      new talk_base::RefCountedObject<Natty>(&client, thread, FLAG_server, FLAG_port));
 
 
   NattySocket socket_server(thread);
