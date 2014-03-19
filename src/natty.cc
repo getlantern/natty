@@ -291,6 +291,7 @@ void Natty::OnMessageFromPeer(int peer_id, const std::string& message) {
       return;
     }
     printf("Received session description; sending answer back\n");
+    printf("sdp %s\n", sdp.c_str());
     peer_connection_->SetRemoteDescription(
         DummySetSessionDescriptionObserver::Create(), session_description);
     if (session_description->type() ==
