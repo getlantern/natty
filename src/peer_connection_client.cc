@@ -164,6 +164,7 @@ void PeerConnectionClient::DoConnect() {
 }
 
 bool PeerConnectionClient::SendToPeer(int peer_id, const std::string& message) {
+  //printf("Sending message to peer %d\n", peer_id);
   if (state_ != CONNECTED)
     return false;
 
@@ -245,7 +246,6 @@ bool PeerConnectionClient::ConnectControlSocket() {
 }
 
 void PeerConnectionClient::OnConnect(talk_base::AsyncSocket* socket) {
-  printf("receiving on connection signal\n");
   ASSERT(!onconnect_data_.empty());
   size_t sent = socket->Send(onconnect_data_.c_str(), onconnect_data_.length());
   ASSERT(sent == onconnect_data_.length());
@@ -265,7 +265,7 @@ void PeerConnectionClient::OnHangingGetConnect(talk_base::AsyncSocket* socket) {
 
 void PeerConnectionClient::OnMessageFromPeer(int peer_id,
                                              const std::string& message) {
-  printf("Received message from a peer! id %d message: %s\n", peer_id, message.c_str());
+  printf("Got message from peer %d\n", peer_id);
   if (message.length() == (sizeof(kByeMessage) - 1) &&
       message.compare(kByeMessage) == 0) {
     callback_->OnPeerDisconnected(peer_id);
