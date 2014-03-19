@@ -290,12 +290,13 @@ void Natty::OnMessageFromPeer(int peer_id, const std::string& message) {
       LOG(WARNING) << "Can't parse received session description message.";
       return;
     }
-    printf("Received session description; sending answer back\n");
+    printf("Received session description\n");
     printf("sdp %s\n", sdp.c_str());
     peer_connection_->SetRemoteDescription(
         DummySetSessionDescriptionObserver::Create(), session_description);
     if (session_description->type() ==
         webrtc::SessionDescriptionInterface::kOffer) {
+      printf("Sending create answer back\n");
       peer_connection_->CreateAnswer(this, NULL);
     }
     return;
