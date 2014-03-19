@@ -81,7 +81,8 @@
 
   void Natty::SetupSocketServer() {
     talk_base::InitializeSSL();
-    Init("127.0.0.1", 8888);
+    Init("107.170.244.214", 8888);
+    //Init("127.0.0.1", 8888);
     //InitializePeerConnection();
   }
 
@@ -91,6 +92,17 @@
     thread->Quit();
     thread->set_socketserver(NULL);
   }
+
+void Natty::ConnectToPeer(int peer_id) {
+  printf("Trying to connect to peer %d\n", peer_id);
+  ASSERT(peer_id_ == -1);
+  ASSERT(peer_id != -1);
+
+  if (InitializePeerConnection()) {
+    peer_id_ = peer_id;
+    peer_connection_->CreateOffer(this, NULL);
+  }
+}
 
 std::string GetEnvVarOrDefault(const char* env_var_name,
     const char* default_value) {
@@ -106,7 +118,8 @@ std::string GetEnvVarOrDefault(const char* env_var_name,
 }
 
 std::string GetPeerConnectionString() {
-  return GetEnvVarOrDefault("WEBRTC_CONNECT", "stun:stun.l.google.com:19302");
+  //return GetEnvVarOrDefault("WEBRTC_CONNECT", "stun:stun.l.google.com:19302");
+  return GetEnvVarOrDefault("WEBRTC_CONNECT", "stun:stun3.l.google.com:19302");
 }
 
 
@@ -196,8 +209,14 @@ void Natty::OnIceCandidate(const webrtc::IceCandidateInterface* candidate) {
   SendMessage(writer.write(jmessage));
 
   ShowCandidate(candidate);
+}
+
+void Natty::OnRenegotiationNeeded() {
+  printf("Renegotiation neeced\n");
+  peer_connection_->CreateOffer(this, NULL);
 
 }
+
 
 //
 // PeerConnectionClientObserver implementation.
@@ -216,7 +235,9 @@ void Natty::OnDisconnected() {
 
 void Natty::OnPeerConnected(int id, const std::string& name) {
   printf("Another peer connected! %d %s\n", id, name.c_str());
-  //InitializePeerConnection();
+  //peer_connection_->CreateOffer(this, NULL);
+  ConnectToPeer(id);
+  //client_->SendToPeer(id, "hello there");
 
 }
 
@@ -246,7 +267,7 @@ void Natty::OnMessageFromPeer(int peer_id, const std::string& message) {
   } else if (peer_id != peer_id_) {
     ASSERT(peer_id_ != -1);
     printf("Received message from an unknown peer\n");
-    return;
+    //return;
   }
 
   if (!reader.parse(message, jmessage)) {
@@ -342,6 +363,7 @@ void Natty::OnSuccess(webrtc::SessionDescriptionInterface* desc) {
   std::string sdp;
   desc->ToString(&sdp);
   jmessage[kSessionDescriptionSdpName] = sdp;
+  printf("Sending my sdp info %s\n", sdp.c_str());
   SendMessage(writer.write(jmessage));
 }
 
@@ -351,4 +373,27 @@ void Natty::OnFailure(const std::string& error) {
 
 void Natty::SendMessage(const std::string& json_object) {
   std::string* msg = new std::string(json_object);
+  if (msg) {
+    printf("Message is %s\n", msg->c_str());
+    pending_messages_.push_back(msg);
+    if (!pending_messages_.empty() && !client_->IsSendingMessage()) {
+      msg = pending_messages_.front();
+      pending_messages_.pop_front();
+
+      if (!client_->SendToPeer(peer_id_, *msg) && peer_id_ != -1) {
+        printf("Sending message to peer failed\n");
+        DisconnectFromServer();
+      }
+      delete msg;
+    }
+
+    if (!peer_connection_.get())
+      peer_id_ = -1;
+  }
 }
+
+void Natty::DisconnectFromServer() {
+  if (client_->is_connected())
+    client_->SignOut();
+}
+ 
