@@ -237,7 +237,7 @@ build natty: link $
     build/trunk/out/Release/obj/third_party/libvpx/gen_asm_offsets_vp8.actions_rules_copies.stamp
   ld = $ldxx
   postbuilds = $ && (export $
-      BUILT_PRODUCTS_DIR=/Users/todd/Dev/natty/build/trunk/out/Release; $
+      BUILT_PRODUCTS_DIR=/Users/todd/Dev/natty; $
       export CONFIGURATION=Release; export $
       EXECUTABLE_NAME=natty; export $
       EXECUTABLE_PATH=natty; export $

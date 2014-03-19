@@ -57,8 +57,8 @@ rule copy
   description = COPY $in $out
  
 build build/trunk/out/Release/obj/natty.actions_depends.stamp: stamp $
-    build/trunk/out/Release/libcrssl.a build/trunk/out/Release/libjingle.a $
-    build/trunk/out/Release/libcrssl.a build/trunk/out/Release/libjsoncpp.a
+    build/trunk/out/Release/obj/net/third_party/nss/libcrssl.a build/trunk/out/Release/obj/talk/libjingle.a $
+    build/trunk/out/Release/obj/third_party/jsoncpp/libjsoncpp.a
 
 defines = -DV8_DEPRECATION_WARNINGS -DEXPAT_RELATIVE_PATH $
     -DFEATURE_ENABLE_VOICEMAIL -DGTEST_RELATIVE_PATH $
@@ -93,24 +93,15 @@ cflags = -fstack-protector --param=ssp-buffer-size=4 -pthread $
     -Wno-unused-local-typedefs -I/usr/include/nss -I/usr/include/nspr $
     -Wno-format -Wno-unused-result -O2 -fno-ident -fdata-sections $
     -ffunction-sections -funwind-tables
+cflags = -fstack-protector --param=ssp-buffer-size=4 -pthread $
+    -fno-exceptions -fno-strict-aliasing -Wno-unused-parameter $
+    -Wno-missing-field-initializers -fvisibility=hidden -pipe -fPIC $
+    -Wno-unused-local-typedefs -I/usr/include/nss3 -I/usr/include/nspr4 $
+    -Wno-format -Wno-unused-result -O2 -fno-ident -fdata-sections $
+    -ffunction-sections -funwind-tables
 cflags_c = 
 cflags_cc = -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden $
     -Wno-deprecated
-cflags = -isysroot $
-    /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk $
-    -O3 -gdwarf-2 -fvisibility=hidden -Werror -Wnewline-eof $
-    -mmacosx-version-min=10.6 -arch i386 -Wendif-labels $
-    -Wno-unused-parameter -Wno-missing-field-initializers -Wheader-hygiene $
-    -Wno-c++11-narrowing -Wno-char-subscripts $
-    -Wno-unneeded-internal-declaration -Wno-covered-switch-default $
-    -Wstring-conversion
-cflags_c = -std=c99 -fcolor-diagnostics -fno-strict-aliasing
-cflags_cc = -std=gnu++11 -fno-rtti -fno-exceptions $
-    -fvisibility-inlines-hidden -fno-threadsafe-statics -fcolor-diagnostics $
-    -fno-strict-aliasing
-cflags_objc = $cflags_c -Wobjc-missing-property-synthesis
-cflags_objcc = $cflags_cc -Wobjc-missing-property-synthesis $
-    -fobjc-call-cxx-cdtors
  
 build out/natty/client/client.natty.o: $
     cxx src/natty.cc $
@@ -118,19 +109,19 @@ build out/natty/client/client.natty.o: $
 build out/natty/client/client.peer_connection_client.o: $
     cxx src/peer_connection_client.cc $
     build/trunk/out/Release/obj/natty.actions_depends.stamp
-build out/natty/client/client.main.o
+build out/natty/client/client.main.o: $
     cxx src/main.cc $
     build/trunk/out/Release/obj/natty.actions_depends.stamp
 
-ldflags = -Wl,-z,now -Wl,-z,relro -pthread -Wl,-v,-z,noexecstack -fPIC $
-    -B/home/todd/Dev/lantern/natty/build/trunk/third_party/gold $
-    -Wl,--icf=none -Wl,-O1 -Wl,--as-needed -Wl,--gc-sections
+ldflags = -Wl,-z,now -Wl,-z,relro -pthread -Wl,-z,noexecstack -fPIC $
+    -B/home/todd/natty/build/trunk/third_party/gold -Wl,--icf=none -Wl,-O1 $
+    -Wl,--as-needed -Wl,--gc-sections
 libs =  -lnss3 -lnssutil3 -lsmime3 -lplds4 -lplc4 -lnspr4 -ldl -lcrypto $
     -lrt -lXext -lX11 -lXcomposite -lXrender -lexpat
 build natty: link $
     out/natty/client/client.natty.o $
-    out/natty/natty/client.peer_connection_client.o $
-    out/natty/client/client.main.o
-    build/trunk/out/Release/libjingle.a build/trunk/out/Release/libcrssl.a $
-    build/trunk/out/Release/libjsoncpp.a
+    out/natty/client/client.peer_connection_client.o $
+    out/natty/client/client.main.o $
+    build/trunk/out/Release/obj/talk/libjingle.a build/trunk/out/Release/obj/net/third_party/nss/libcrssl.a $
+    build/trunk/out/Release/obj/third_party/jsoncpp/libjsoncpp.a
   ld = $ldxx
