@@ -87,7 +87,6 @@
   }
 
   void Natty::Shutdown() {
-    client_->SignOut();
     talk_base::CleanupSSL();
     thread->Quit();
     thread->set_socketserver(NULL);
@@ -158,6 +157,7 @@ bool Natty::InitializePeerConnection() {
 
 void Natty::DeletePeerConnection() {
   printf("Deleting peer connection\n");
+  DisconnectFromServer();
   peer_connection_ = NULL;
   peer_connection_factory_ = NULL;
   peer_id_ = -1;
@@ -290,7 +290,7 @@ void Natty::OnMessageFromPeer(int peer_id, const std::string& message) {
       LOG(WARNING) << "Can't parse received session description message.";
       return;
     }
-    LOG(INFO) << " Received session description :" << message;
+    printf("Received session description; sending answer back\n");
     peer_connection_->SetRemoteDescription(
         DummySetSessionDescriptionObserver::Create(), session_description);
     if (session_description->type() ==
