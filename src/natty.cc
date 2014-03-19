@@ -253,7 +253,7 @@ void Natty::OnMessageFromPeer(int peer_id, const std::string& message) {
 
   ASSERT(peer_id_ == peer_id || peer_id_ == -1);
   ASSERT(!message.empty());
-  printf("On message from peer callback!\n");
+  printf("Got message from peer; id: %d message: %s\n", peer_id, message.c_str());
 
   if (!peer_connection_.get()) {
     ASSERT(peer_id_ == -1);
@@ -267,16 +267,15 @@ void Natty::OnMessageFromPeer(int peer_id, const std::string& message) {
   } else if (peer_id != peer_id_) {
     ASSERT(peer_id_ != -1);
     printf("Received message from an unknown peer\n");
-    //return;
+    return;
   }
 
   if (!reader.parse(message, jmessage)) {
-    LOG(WARNING) << "Received unknown message. " << message;
+    printf("Received an unknown message.\n");
     return;
   }
   std::string type;
   std::string json_object;
-  printf("On message from peer callback\n");
 
   GetStringFromJsonObject(jmessage, kSessionDescriptionTypeName, &type);
   if (!type.empty()) {
@@ -303,13 +302,13 @@ void Natty::OnMessageFromPeer(int peer_id, const std::string& message) {
     std::string sdp_mid;
     int sdp_mlineindex = 0;
     std::string sdp;
-    /*if (!GetStringFromJsonObject(jmessage, kCandidateSdpMidName, &sdp_mid) ||
+    if (!GetStringFromJsonObject(jmessage, kCandidateSdpMidName, &sdp_mid) ||
         !GetIntFromJsonObject(jmessage, kCandidateSdpMlineIndexName,
                               &sdp_mlineindex) ||
         !GetStringFromJsonObject(jmessage, kCandidateSdpName, &sdp)) {
-      printf("Can't paste received message.\n");
+      printf("Can't parse received message.\n");
       return;
-    }*/
+    }
     talk_base::scoped_ptr<webrtc::IceCandidateInterface> candidate(
         webrtc::CreateIceCandidate(sdp_mid, sdp_mlineindex, sdp));
     printf("Remote candidate information\n");
