@@ -60,7 +60,10 @@
     ~DummySetSessionDescriptionObserver() {}
   };
 
-  Natty::Natty(PeerConnectionClient* client, talk_base::Thread* thread)
+  Natty::Natty(PeerConnectionClient* client, talk_base::Thread* thread,
+      const std::string& server, int port
+
+      )
     : peer_id_(-1),
       thread(talk_base::Thread::Current()),
       client_(client) {
@@ -81,9 +84,10 @@
 
   void Natty::SetupSocketServer() {
     talk_base::InitializeSSL();
-    Init("107.170.244.214", 8888);
+    Init();
+    //Init("107.170.244.214", 8888);
     //Init("127.0.0.1", 8888);
-    //InitializePeerConnection();
+    InitializePeerConnection();
   }
 
   void Natty::Shutdown() {
@@ -194,7 +198,6 @@ void Natty::ShowCandidate(const webrtc::IceCandidateInterface* candidate) {
 }
 
 void Natty::OnIceCandidate(const webrtc::IceCandidateInterface* candidate) {
-  LOG(INFO) << __FUNCTION__ << " " << candidate->sdp_mline_index();
   Json::StyledWriter writer;
   Json::Value jmessage;
   
@@ -223,7 +226,6 @@ void Natty::OnRenegotiationNeeded() {
 //
 
 void Natty::OnSignedIn() {
-  printf("Successfully connected to signaling server\n");
   
 }
 
@@ -236,24 +238,27 @@ void Natty::OnDisconnected() {
 void Natty::OnPeerConnected(int id, const std::string& name) {
   printf("Another peer connected! %d %s\n", id, name.c_str());
   //peer_connection_->CreateOffer(this, NULL);
-  ConnectToPeer(id);
+  //ConnectToPeer(id);
   //client_->SendToPeer(id, "hello there");
 
 }
 
 void Natty::OnPeerDisconnected(int id) {
   if (id == peer_id_) {
-    //DEBUG("Our peer is gone.\n");
+    printf("Our peer disconnected\n");
   }
 }
 
 void Natty::OnMessageFromPeer(int peer_id, const std::string& message) {
   Json::Reader reader;
   Json::Value jmessage;
+  std::string type;
+  std::string json_object;
+  printf("Received message %s from peer %d\n", message.c_str(), peer_id);
+
 
   ASSERT(peer_id_ == peer_id || peer_id_ == -1);
   ASSERT(!message.empty());
-  printf("Got message from peer; id: %d message: %s\n", peer_id, message.c_str());
 
   if (!peer_connection_.get()) {
     ASSERT(peer_id_ == -1);
@@ -274,10 +279,9 @@ void Natty::OnMessageFromPeer(int peer_id, const std::string& message) {
     printf("Received an unknown message.\n");
     return;
   }
-  std::string type;
-  std::string json_object;
 
   GetStringFromJsonObject(jmessage, kSessionDescriptionTypeName, &type);
+
   if (!type.empty()) {
     std::string sdp;
     if (!GetStringFromJsonObject(jmessage, kSessionDescriptionSdpName, &sdp)) {
@@ -290,13 +294,11 @@ void Natty::OnMessageFromPeer(int peer_id, const std::string& message) {
       LOG(WARNING) << "Can't parse received session description message.";
       return;
     }
-    printf("Received session description\n");
-    printf("sdp %s\n", sdp.c_str());
+    printf("Received session description; %s sending answer back\n", message.c_str());
     peer_connection_->SetRemoteDescription(
         DummySetSessionDescriptionObserver::Create(), session_description);
     if (session_description->type() ==
         webrtc::SessionDescriptionInterface::kOffer) {
-      printf("Sending create answer back\n");
       peer_connection_->CreateAnswer(this, NULL);
     }
     return;
@@ -347,11 +349,11 @@ std::string GetPeerName() {
   return ret;
 }   
 
-void Natty::Init(const std::string& server, int port) {
+void Natty::Init() {
   if (client_->is_connected())
     return;
-  server_ = server;
-  client_->Connect(server, port, GetPeerName());
+  printf("Connecting to signaling server\n");
+  client_->Connect(server_, port_, GetPeerName());
 }
 
 void Natty::OnSuccess(webrtc::SessionDescriptionInterface* desc) {
@@ -364,7 +366,6 @@ void Natty::OnSuccess(webrtc::SessionDescriptionInterface* desc) {
   std::string sdp;
   desc->ToString(&sdp);
   jmessage[kSessionDescriptionSdpName] = sdp;
-  printf("Sending my sdp info %s\n", sdp.c_str());
   SendMessage(writer.write(jmessage));
 }
 
@@ -375,14 +376,13 @@ void Natty::OnFailure(const std::string& error) {
 void Natty::SendMessage(const std::string& json_object) {
   std::string* msg = new std::string(json_object);
   if (msg) {
-    printf("Message is %s\n", msg->c_str());
     pending_messages_.push_back(msg);
     if (!pending_messages_.empty() && !client_->IsSendingMessage()) {
       msg = pending_messages_.front();
       pending_messages_.pop_front();
+      printf("Sending message to %d %s\n", peer_id_, msg->c_str());
 
       if (!client_->SendToPeer(peer_id_, *msg) && peer_id_ != -1) {
-        printf("Sending message to peer failed\n");
         DisconnectFromServer();
       }
       delete msg;
