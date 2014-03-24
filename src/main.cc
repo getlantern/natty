@@ -21,7 +21,11 @@
 #include "talk/base/thread.h"
 #include "flagdefs.h"
 
+#include <iostream>
+
 const uint16 kDefaultServerPort = 8888;
+
+using namespace std;
 
 class NattySocket : public talk_base::PhysicalSocketServer {
  public:
@@ -49,6 +53,31 @@ class NattySocket : public talk_base::PhysicalSocketServer {
   Natty* natty_;
   PeerConnectionClient* client_;
 };
+
+class InputStream {
+ public:
+  InputStream() {}
+  ~InputStream() {}
+
+  void read() {
+    while (!std::cin.eof()) {
+      if (!getline(std::cin, input)) {
+        /* error processing stdin */
+        //cerr << "Encountered a problem processing stdin!" << endl;
+        break;
+      }
+
+      if (input.empty()) {
+        /* terminate input on empty line */
+        break;
+      }
+      ss << input;
+    }
+  }
+
+  stringstream ss;
+  string input;
+};
  
 
 int main(int argc, char* argv[]) {
@@ -65,12 +94,16 @@ int main(int argc, char* argv[]) {
     printf("Error: %i is not a valid port.\n", FLAG_port);
     return -1;
   }
-  printf("Signaling server %s port %d\n", FLAG_server, FLAG_port);
 
   PeerConnectionClient client;
   talk_base::Thread* thread = talk_base::Thread::Current();
   talk_base::scoped_refptr<Natty> natty(
       new talk_base::RefCountedObject<Natty>(&client, thread, FLAG_server, FLAG_port));
+
+  InputStream is;
+  is.read();
+  natty.get()->ReadMessage(is.ss.str());
+  return 0;
 
 
   NattySocket socket_server(thread);
