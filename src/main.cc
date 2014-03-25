@@ -19,10 +19,13 @@
 #include "peer_connection_client.h"
 
 #include "talk/base/thread.h"
+#include "talk/base/logging.h"
 #include "flagdefs.h"
 
 #include <iostream>
+#include <string>
 
+static const int LOG_DEFAULT = talk_base::LS_INFO;
 const uint16 kDefaultServerPort = 8888;
 
 using namespace std;
@@ -41,7 +44,7 @@ class NattySocket : public talk_base::PhysicalSocketServer {
     //if (!natty_->connection_active() ||
     if (client_ == NULL) {
         //client_ == NULL || !client_->is_connected()) {
-      printf("quitting..\n");
+      LOG(INFO) << "Quitting!";
       thread_->Quit();
     }
     return talk_base::PhysicalSocketServer::Wait(-1,
@@ -59,13 +62,11 @@ class InputStream {
   InputStream() {}
   ~InputStream() {}
 
+  string getStream() const { return ss.str(); }
+
   void read() {
-    while (!std::cin.eof()) {
-      if (!getline(std::cin, input)) {
-        /* error processing stdin */
-        //cerr << "Encountered a problem processing stdin!" << endl;
-        break;
-      }
+    while (getline(std::cin, input)) {
+      /* need to remove new lines or the SDP won't be valid */
 
       if (input.empty()) {
         /* terminate input on empty line */
@@ -75,10 +76,31 @@ class InputStream {
     }
   }
 
+  string build() const { 
+    string str = ss.str();
+    str.erase(
+      std::remove(str.begin(), str.end(), '\n'), str.end()
+    ); 
+    return str;
+  }
+
+ protected:
   stringstream ss;
   string input;
 };
- 
+
+void init(talk_base::Thread* thread, talk_base::scoped_refptr<Natty> natty) {
+
+  NattySocket socket_server(thread);
+
+  thread->set_socketserver(&socket_server);
+
+  socket_server.set_client(natty->GetClient());
+  socket_server.set_natty(natty);
+
+  natty->SetupSocketServer();
+  thread->Run();
+}
 
 int main(int argc, char* argv[]) {
 
@@ -88,35 +110,35 @@ int main(int argc, char* argv[]) {
     return 0;
   }
 
+  if (FLAG_debug) {
+    talk_base::LogMessage::LogTimestamps();
+    talk_base::LogMessage::LogToDebug(talk_base::LS_VERBOSE);
+  }
+
   // Abort if the user specifies a port that is outside the allowed
   // range [1, 65535].
   if ((FLAG_port < 1) || (FLAG_port > 65535)) {
-    printf("Error: %i is not a valid port.\n", FLAG_port);
+    LOG(INFO) << "Error: %i is not a valid port.\n" << FLAG_port;
     return -1;
   }
+
 
   PeerConnectionClient client;
   talk_base::Thread* thread = talk_base::Thread::Current();
   talk_base::scoped_refptr<Natty> natty(
       new talk_base::RefCountedObject<Natty>(&client, thread, FLAG_server, FLAG_port));
 
+  if (FLAG_offer) {
+    init(thread, natty);
+    return 0;
+  }
+
   InputStream is;
   is.read();
-  natty.get()->ReadMessage(is.ss.str());
-  return 0;
-
-
-  NattySocket socket_server(thread);
-  //talk_base::PhysicalSocketServer* pss = new talk_base::PhysicalSocketServer();
-  thread->set_socketserver(&socket_server);
-  //thread->set_socketserver(pss);
-
-  socket_server.set_client(natty->GetClient());
-  socket_server.set_natty(natty);
-
-  natty->SetupSocketServer();
+  natty.get()->InitializePeerConnection();
+  natty.get()->ReadMessage(is.build());
   thread->Run();
-
+  natty.get()->DeletePeerConnection();
   return 0;
 }
 

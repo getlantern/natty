@@ -18,9 +18,11 @@
 #include "natty.h"
 
 #include <utility>
+#include <iostream>
 
 #include "talk/app/webrtc/videosourceinterface.h"
 #include "talk/base/common.h"
+#include "talk/app/webrtc/datachannelinterface.h"
 #include "talk/base/json.h"
 #include "talk/base/logging.h"
 #include "talk/media/devices/devicemanager.h"
@@ -84,12 +86,11 @@
     return client_;
   }
 
+
   void Natty::SetupSocketServer() {
+    std::cout << "Setting up socket server";
     talk_base::InitializeSSL();
     Init();
-    //Init("107.170.244.214", 8888);
-    //Init("127.0.0.1", 8888);
-    InitializePeerConnection();
   }
 
   void Natty::Shutdown() {
@@ -99,7 +100,6 @@
   }
 
 void Natty::ConnectToPeer(int peer_id) {
-  printf("Trying to connect to peer %d\n", peer_id);
   ASSERT(peer_id_ == -1);
   ASSERT(peer_id != -1);
 
@@ -127,6 +127,12 @@ std::string GetPeerConnectionString() {
   return GetEnvVarOrDefault("WEBRTC_CONNECT", "stun:stun3.l.google.com:19302");
 }
 
+void Natty::SetLocalDescription() {
+  std::string sdp;
+  const webrtc::SessionDescriptionInterface* session = peer_connection_->local_description();
+  std::cout << sdp;
+}
+
 
 bool Natty::InitializePeerConnection() {
 
@@ -139,25 +145,22 @@ bool Natty::InitializePeerConnection() {
   peer_connection_factory_  = webrtc::CreatePeerConnectionFactory();
 
   if (!peer_connection_factory_.get()) {
-    printf("Failed to initialize peer connection factory\n");
+    LOG(INFO) << "Failed to initialize peer connection factory";
     DeletePeerConnection();
     return false;
   }
-  printf("Created peer connection factory\n");
+  LOG(INFO) << "Created peer connection factory";
 
   server.uri = GetPeerConnectionString();
   servers.push_back(server);
 
   peer_connection_ = peer_connection_factory_->CreatePeerConnection(servers, NULL, NULL, this);
+
   if (!peer_connection_.get()) {
-    printf("create peer connection failed\n");
+    LOG(INFO) << "Create peer connection failed";
     DeletePeerConnection();
   }
-  const webrtc::SessionDescriptionInterface* session = peer_connection_->local_description();
 
-  printf("successfully created peer connection\n");
-  /* create offer */
-  peer_connection_->CreateOffer(this, NULL);
   return peer_connection_.get() != NULL;
 }
 
@@ -193,10 +196,7 @@ void Natty::ShowCandidate(const webrtc::IceCandidateInterface* candidate) {
   const talk_base::SocketAddress & address = cand.address(); 
   candidate->ToString(&out);
   
-  printf("Ice Candidate %s", out.c_str());
-  printf("%s\n", cand.ToString().c_str());
-  printf("%s\n", address.ToString().c_str());
-
+  LOG(INFO) << "Ice candidate" << out.c_str();
 }
 
 void Natty::OnIceCandidate(const webrtc::IceCandidateInterface* candidate) {
@@ -211,14 +211,15 @@ void Natty::OnIceCandidate(const webrtc::IceCandidateInterface* candidate) {
     return;
   }
   jmessage[kCandidateSdpName] = sdp;
-  SendMessage(writer.write(jmessage));
+  LOG(INFO) << "SDP message " << sdp;
+  //SendMessage(writer.write(jmessage));
 
   ShowCandidate(candidate);
 }
 
 void Natty::OnRenegotiationNeeded() {
-  printf("Renegotiation neeced\n");
-  peer_connection_->CreateOffer(this, NULL);
+  LOG(INFO) << "Renegotiation needed";
+  //peer_connection_->CreateOffer(this, NULL);
 
 }
 
@@ -232,31 +233,60 @@ void Natty::OnSignedIn() {
 }
 
 void Natty::OnDisconnected() {
-
   DeletePeerConnection();
-
 }
 
 void Natty::OnPeerConnected(int id, const std::string& name) {
-  printf("Another peer connected! %d %s\n", id, name.c_str());
-  //peer_connection_->CreateOffer(this, NULL);
-  //ConnectToPeer(id);
-  //client_->SendToPeer(id, "hello there");
-
+  LOG(INFO) << "Another peer connected " << id << " " << name;
 }
 
 void Natty::OnPeerDisconnected(int id) {
   if (id == peer_id_) {
-    printf("Our peer disconnected\n");
+    LOG(INFO) << "Our peer disconnected";
   }
 }
+
+void Natty::ReadMessage(const std::string& message) {
+  Json::Reader reader;
+  Json::Value jmessage;
+  std::string type;
+  std::string json_object;
+
+  if (!reader.parse(message, jmessage)) {
+    LOG(INFO) << "Received an unknown message.";
+    return;
+  }
+ 
+  GetStringFromJsonObject(jmessage, kSessionDescriptionTypeName, &type);
+
+  if (!type.empty()) {
+    std::string sdp;
+    if (!GetStringFromJsonObject(jmessage, kSessionDescriptionSdpName, &sdp)) {
+      LOG(INFO) << "Can't parse received session description message.";
+      return;
+    }
+    webrtc::SessionDescriptionInterface* session_description(
+        webrtc::CreateSessionDescription(type, sdp));
+    if (!session_description) {
+      LOG(INFO) << "Can't parse SDP message";
+      return;
+    }
+    LOG(INFO) << "Received session description " << message << " sending answer back";
+    peer_connection_->SetRemoteDescription(
+        DummySetSessionDescriptionObserver::Create(), session_description);
+    if (session_description->type() ==
+        webrtc::SessionDescriptionInterface::kOffer) {
+      peer_connection_->CreateAnswer(this, NULL);
+    }
+  }; 
+};
 
 void Natty::OnMessageFromPeer(int peer_id, const std::string& message) {
   Json::Reader reader;
   Json::Value jmessage;
   std::string type;
   std::string json_object;
-  printf("Received message %s from peer %d\n", message.c_str(), peer_id);
+  LOG(INFO) << "Received message " << message.c_str() << " from peer " << peer_id;
 
 
   ASSERT(peer_id_ == peer_id || peer_id_ == -1);
@@ -267,18 +297,18 @@ void Natty::OnMessageFromPeer(int peer_id, const std::string& message) {
     peer_id_ = peer_id;
 
     if (!InitializePeerConnection()) {
-      printf("Failed to initialize our PeerConnection instance");
+      LOG(INFO) << "Failed to initialize our PeerConnection instance";
       client_->SignOut();
       return;
     }
   } else if (peer_id != peer_id_) {
     ASSERT(peer_id_ != -1);
-    printf("Received message from an unknown peer\n");
+    LOG(INFO) << "Received message from an unknown peer";
     return;
   }
 
   if (!reader.parse(message, jmessage)) {
-    printf("Received an unknown message.\n");
+    LOG(INFO) << "Received an unknown message";
     return;
   }
 
@@ -296,7 +326,8 @@ void Natty::OnMessageFromPeer(int peer_id, const std::string& message) {
       LOG(WARNING) << "Can't parse received session description message.";
       return;
     }
-    printf("Received session description; %s sending answer back\n", message.c_str());
+
+    LOG(INFO) << "Received session description " << message.c_str() << " sending answer back";
     peer_connection_->SetRemoteDescription(
         DummySetSessionDescriptionObserver::Create(), session_description);
     if (session_description->type() ==
@@ -312,13 +343,13 @@ void Natty::OnMessageFromPeer(int peer_id, const std::string& message) {
         !GetIntFromJsonObject(jmessage, kCandidateSdpMlineIndexName,
                               &sdp_mlineindex) ||
         !GetStringFromJsonObject(jmessage, kCandidateSdpName, &sdp)) {
-      printf("Can't parse received message.\n");
+      LOG(INFO) << "Can't parse received message";
       return;
     }
     talk_base::scoped_ptr<webrtc::IceCandidateInterface> candidate(
         webrtc::CreateIceCandidate(sdp_mid, sdp_mlineindex, sdp));
-    printf("Remote candidate information\n");
-    Natty::ShowCandidate(candidate.get());
+    LOG(INFO) << "Remote candidate information";
+  
     if (!candidate.get()) {
       LOG(WARNING) << "Can't parse received candidate message.";
       return;
@@ -327,13 +358,23 @@ void Natty::OnMessageFromPeer(int peer_id, const std::string& message) {
       LOG(WARNING) << "Failed to apply the received candidate";
       return;
     }
+
     LOG(INFO) << " Received candidate :" << message;
     return;
   }
 }
 
+void Natty::OnDataChannel(webrtc::DataChannelInterface* data_channel) {
+  LOG(INFO) << "New data channel created " << data_channel;
+  //printf("New data channel created %s\n", data_channel->ToString().c_str());
+}
+
 void Natty::OnMessageSent(int err) {
 
+}
+
+void Natty::OnIceComplete() {
+  printf("ICE finished gather candidates!\n");
 }
 
 // PeerConnectionObserver implementation.
@@ -354,8 +395,8 @@ std::string GetPeerName() {
 void Natty::Init() {
   if (client_->is_connected())
     return;
-  printf("Connecting to signaling server %s %d\n", server_.c_str(), port_);
-  client_->Connect(server_, port_, GetPeerName());
+  InitializePeerConnection();
+  peer_connection_->CreateOffer(this, NULL);
 }
 
 void Natty::OnSuccess(webrtc::SessionDescriptionInterface* desc) {

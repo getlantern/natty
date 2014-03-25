@@ -27,6 +27,7 @@
 #include "peer_connection_client.h"
 #include "talk/app/webrtc/mediastreaminterface.h"
 #include "talk/app/webrtc/peerconnectioninterface.h"
+#include "talk/app/webrtc/datachannelinterface.h"
 #include "talk/base/scoped_ptr.h"
 #include "talk/base/ssladapter.h"
 
@@ -49,6 +50,8 @@ class Natty
   void DeletePeerConnection();
   void SetupSocketServer();
   virtual void ConnectToPeer(int peer_id);
+  virtual void ReadMessage(const std::string& message);
+
 
   
 
@@ -65,6 +68,9 @@ class Natty
   virtual void OnRemoveStream(webrtc::MediaStreamInterface* stream);
   virtual void OnRenegotiationNeeded();
   virtual void OnIceChange() {};
+  virtual void OnIceComplete();
+
+  virtual void OnDataChannel(webrtc::DataChannelInterface *data_channel);
   virtual void OnIceCandidate(const webrtc::IceCandidateInterface* candidate);
 
   virtual void OnSignedIn();
@@ -79,6 +85,8 @@ class Natty
   virtual void OnMessageFromPeer(int peer_id, const std::string& message);
 
   virtual void OnMessageSent(int err);
+
+  virtual void SetLocalDescription();
 
   virtual void OnServerConnectionFailure();
 

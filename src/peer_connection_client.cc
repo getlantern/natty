@@ -133,7 +133,6 @@ void PeerConnectionClient::Connect(const std::string& server, int port,
 
 void PeerConnectionClient::OnResolveResult(
     talk_base::AsyncResolverInterface* resolver) {
-  printf("Trying to fucking resolve something\n");
   if (resolver_->GetError() != 0) {
     callback_->OnServerConnectionFailure();
     resolver_->Destroy(false);
@@ -168,6 +167,8 @@ bool PeerConnectionClient::SendToPeer(int peer_id, const std::string& message) {
   if (state_ != CONNECTED)
     return false;
 
+  printf("Sending message to peer %d\n", peer_id);
+ 
   ASSERT(is_connected());
   ASSERT(control_socket_->GetState() == talk_base::Socket::CS_CLOSED);
   if (!is_connected() || peer_id == -1)

@@ -34,6 +34,8 @@
 extern const uint16 kDefaultServerPort;  // From defaults.[h|cc]
 
 DEFINE_bool(help, false, "Prints this message");
+DEFINE_bool(offer, false, "Generates an offer");
+DEFINE_bool(debug, false, "Log debugging info");
 DEFINE_bool(autoconnect, false, "Connect to the server without user "
                                 "intervention.");
 DEFINE_string(server, "localhost", "The server to connect to.");
