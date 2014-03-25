@@ -196,7 +196,7 @@ void Natty::ShowCandidate(const webrtc::IceCandidateInterface* candidate) {
   const talk_base::SocketAddress & address = cand.address(); 
   candidate->ToString(&out);
   
-  LOG(INFO) << "Ice candidate" << out.c_str();
+  LOG(INFO) << "Ice candidate" << out;
 }
 
 void Natty::OnIceCandidate(const webrtc::IceCandidateInterface* candidate) {
@@ -286,7 +286,7 @@ void Natty::OnMessageFromPeer(int peer_id, const std::string& message) {
   Json::Value jmessage;
   std::string type;
   std::string json_object;
-  LOG(INFO) << "Received message " << message.c_str() << " from peer " << peer_id;
+  LOG(INFO) << "Received message " << message << " from peer " << peer_id;
 
 
   ASSERT(peer_id_ == peer_id || peer_id_ == -1);
@@ -327,7 +327,7 @@ void Natty::OnMessageFromPeer(int peer_id, const std::string& message) {
       return;
     }
 
-    LOG(INFO) << "Received session description " << message.c_str() << " sending answer back";
+    LOG(INFO) << "Received session description " << message << " sending answer back";
     peer_connection_->SetRemoteDescription(
         DummySetSessionDescriptionObserver::Create(), session_description);
     if (session_description->type() ==
@@ -366,7 +366,6 @@ void Natty::OnMessageFromPeer(int peer_id, const std::string& message) {
 
 void Natty::OnDataChannel(webrtc::DataChannelInterface* data_channel) {
   LOG(INFO) << "New data channel created " << data_channel;
-  //printf("New data channel created %s\n", data_channel->ToString().c_str());
 }
 
 void Natty::OnMessageSent(int err) {
@@ -374,7 +373,7 @@ void Natty::OnMessageSent(int err) {
 }
 
 void Natty::OnIceComplete() {
-  printf("ICE finished gather candidates!\n");
+  LOG(INFO) << "ICE finished gathering candidates!";
 }
 
 // PeerConnectionObserver implementation.
@@ -400,7 +399,7 @@ void Natty::Init() {
 }
 
 void Natty::OnSuccess(webrtc::SessionDescriptionInterface* desc) {
-  printf("setting local description\n");
+  LOG(INFO) << "Setting local description";
   peer_connection_->SetLocalDescription(
       DummySetSessionDescriptionObserver::Create(), desc);
   Json::StyledWriter writer;
@@ -423,7 +422,7 @@ void Natty::SendMessage(const std::string& json_object) {
     if (!pending_messages_.empty() && !client_->IsSendingMessage()) {
       msg = pending_messages_.front();
       pending_messages_.pop_front();
-      printf("Sending message to %d %s\n", peer_id_, msg->c_str());
+      LOG(INFO) << "Sending message to " << peer_id_ << " " << msg;
 
       if (!client_->SendToPeer(peer_id_, *msg) && peer_id_ != -1) {
         DisconnectFromServer();
