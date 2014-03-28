@@ -91,15 +91,26 @@ class InputStream {
 
 void init(talk_base::Thread* thread, talk_base::scoped_refptr<Natty> natty) {
 
-  NattySocket socket_server(thread);
+  talk_base::InitializeSSL();
+  natty.get()->Init();
 
-  thread->set_socketserver(&socket_server);
-
-  socket_server.set_client(natty->GetClient());
-  socket_server.set_natty(natty);
-
-  natty->SetupSocketServer();
   thread->Run();
+}
+
+int processStdin(talk_base::Thread* thread, talk_base::scoped_refptr<Natty> natty) {
+   
+  InputStream is;
+
+  is.read();
+
+  talk_base::InitializeSSL();
+
+  natty.get()->InitializePeerConnection();
+  natty.get()->ReadMessage(is.build());
+  thread->Run();
+
+  return 0;
+
 }
 
 int main(int argc, char* argv[]) {
@@ -133,12 +144,6 @@ int main(int argc, char* argv[]) {
     return 0;
   }
 
-  InputStream is;
-  is.read();
-  natty.get()->InitializePeerConnection();
-  natty.get()->ReadMessage(is.build());
-  thread->Run();
-  natty.get()->DeletePeerConnection();
-  return 0;
+  return processStdin(thread, natty);
 }
 

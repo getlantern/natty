@@ -43,6 +43,45 @@
   const char kSessionDescriptionTypeName[] = "type";
   const char kSessionDescriptionSdpName[] = "sdp";
 
+
+ class WebRtcSessionCreateSDPObserverForTest
+    : public talk_base::RefCountedObject<webrtc::CreateSessionDescriptionObserver> {
+ public:
+  enum State {
+    kInit,
+    kFailed,
+    kSucceeded,
+  };
+  WebRtcSessionCreateSDPObserverForTest() : state_(kInit) {}
+
+  // CreateSessionDescriptionObserver implementation.
+  virtual void OnSuccess(webrtc::SessionDescriptionInterface* desc) {
+    std::string sdp;
+    desc->ToString(&sdp);
+    std::cout << "answer " << sdp;
+    description_.reset(desc);
+    state_ = kSucceeded;
+  }
+  virtual void OnFailure(const std::string& error) {
+    state_ = kFailed;
+  }
+
+  webrtc::SessionDescriptionInterface* description() { return description_.get(); }
+
+  webrtc::SessionDescriptionInterface* ReleaseDescription() {
+    return description_.release();
+  }
+
+  State state() const { return state_; }
+
+ protected:
+  ~WebRtcSessionCreateSDPObserverForTest() {}
+
+ private:
+  talk_base::scoped_ptr<webrtc::SessionDescriptionInterface> description_;
+  State state_;
+};
+ 
   class DummySetSessionDescriptionObserver
       : public webrtc::SetSessionDescriptionObserver {
    public:
@@ -62,12 +101,13 @@
     ~DummySetSessionDescriptionObserver() {}
   };
 
-  Natty::Natty(PeerConnectionClient* client, talk_base::Thread* thread,
+  Natty::Natty(PeerConnectionClient* client,
+      talk_base::Thread* thread,
       const std::string& server, int port
 
       )
     : peer_id_(-1),
-      thread(talk_base::Thread::Current()),
+      thread_(thread),
       server_(server),
       port_(port),
       client_(client) {
@@ -86,17 +126,8 @@
     return client_;
   }
 
-
-  void Natty::SetupSocketServer() {
-    std::cout << "Setting up socket server";
-    talk_base::InitializeSSL();
-    Init();
-  }
-
   void Natty::Shutdown() {
     talk_base::CleanupSSL();
-    thread->Quit();
-    thread->set_socketserver(NULL);
   }
 
 void Natty::ConnectToPeer(int peer_id) {
@@ -165,11 +196,12 @@ bool Natty::InitializePeerConnection() {
 }
 
 void Natty::DeletePeerConnection() {
-  printf("Deleting peer connection\n");
-  DisconnectFromServer();
+  LOG(INFO) << "Deleting peer connection";
+
   peer_connection_ = NULL;
   peer_connection_factory_ = NULL;
   peer_id_ = -1;
+  thread_->Quit();
   Natty::Shutdown();
 }
 
@@ -195,8 +227,7 @@ void Natty::ShowCandidate(const webrtc::IceCandidateInterface* candidate) {
   const cricket::Candidate& cand = candidate->candidate();
   const talk_base::SocketAddress & address = cand.address(); 
   candidate->ToString(&out);
-  
-  LOG(INFO) << "Ice candidate" << out;
+  LOG(INFO) << "Ice candidate " << out.c_str();
 }
 
 void Natty::OnIceCandidate(const webrtc::IceCandidateInterface* candidate) {
@@ -211,16 +242,11 @@ void Natty::OnIceCandidate(const webrtc::IceCandidateInterface* candidate) {
     return;
   }
   jmessage[kCandidateSdpName] = sdp;
-  LOG(INFO) << "SDP message " << sdp;
-  //SendMessage(writer.write(jmessage));
-
-  ShowCandidate(candidate);
+  std::cout << sdp;
 }
 
 void Natty::OnRenegotiationNeeded() {
   LOG(INFO) << "Renegotiation needed";
-  //peer_connection_->CreateOffer(this, NULL);
-
 }
 
 
@@ -274,74 +300,21 @@ void Natty::ReadMessage(const std::string& message) {
     LOG(INFO) << "Received session description " << message << " sending answer back";
     peer_connection_->SetRemoteDescription(
         DummySetSessionDescriptionObserver::Create(), session_description);
+
     if (session_description->type() ==
         webrtc::SessionDescriptionInterface::kOffer) {
       peer_connection_->CreateAnswer(this, NULL);
+ 
     }
-  }; 
-};
-
-void Natty::OnMessageFromPeer(int peer_id, const std::string& message) {
-  Json::Reader reader;
-  Json::Value jmessage;
-  std::string type;
-  std::string json_object;
-  LOG(INFO) << "Received message " << message << " from peer " << peer_id;
-
-
-  ASSERT(peer_id_ == peer_id || peer_id_ == -1);
-  ASSERT(!message.empty());
-
-  if (!peer_connection_.get()) {
-    ASSERT(peer_id_ == -1);
-    peer_id_ = peer_id;
-
-    if (!InitializePeerConnection()) {
-      LOG(INFO) << "Failed to initialize our PeerConnection instance";
-      client_->SignOut();
-      return;
-    }
-  } else if (peer_id != peer_id_) {
-    ASSERT(peer_id_ != -1);
-    LOG(INFO) << "Received message from an unknown peer";
-    return;
   }
-
-  if (!reader.parse(message, jmessage)) {
-    LOG(INFO) << "Received an unknown message";
-    return;
-  }
-
-  GetStringFromJsonObject(jmessage, kSessionDescriptionTypeName, &type);
-
-  if (!type.empty()) {
-    std::string sdp;
-    if (!GetStringFromJsonObject(jmessage, kSessionDescriptionSdpName, &sdp)) {
-      LOG(WARNING) << "Can't parse received session description message.";
-      return;
-    }
-    webrtc::SessionDescriptionInterface* session_description(
-        webrtc::CreateSessionDescription(type, sdp));
-    if (!session_description) {
-      LOG(WARNING) << "Can't parse received session description message.";
-      return;
-    }
-
-    LOG(INFO) << "Received session description " << message << " sending answer back";
-    peer_connection_->SetRemoteDescription(
-        DummySetSessionDescriptionObserver::Create(), session_description);
-    if (session_description->type() ==
-        webrtc::SessionDescriptionInterface::kOffer) {
-      peer_connection_->CreateAnswer(this, NULL);
-    }
-    return;
-  } else {
+  else {
     std::string sdp_mid;
     int sdp_mlineindex = 0;
     std::string sdp;
+    std::cout << "<------------------------ Got another message!";
     if (!GetStringFromJsonObject(jmessage, kCandidateSdpMidName, &sdp_mid) ||
         !GetIntFromJsonObject(jmessage, kCandidateSdpMlineIndexName,
-                              &sdp_mlineindex) ||
+          &sdp_mlineindex) ||
         !GetStringFromJsonObject(jmessage, kCandidateSdpName, &sdp)) {
       LOG(INFO) << "Can't parse received message";
       return;
@@ -349,7 +322,7 @@ void Natty::OnMessageFromPeer(int peer_id, const std::string& message) {
     talk_base::scoped_ptr<webrtc::IceCandidateInterface> candidate(
         webrtc::CreateIceCandidate(sdp_mid, sdp_mlineindex, sdp));
     LOG(INFO) << "Remote candidate information";
-  
+
     if (!candidate.get()) {
       LOG(WARNING) << "Can't parse received candidate message.";
       return;
@@ -362,6 +335,10 @@ void Natty::OnMessageFromPeer(int peer_id, const std::string& message) {
     LOG(INFO) << " Received candidate :" << message;
     return;
   }
+};
+
+void Natty::OnMessageFromPeer(int peer_id, const std::string& message) {
+
 }
 
 void Natty::OnDataChannel(webrtc::DataChannelInterface* data_channel) {
@@ -374,6 +351,7 @@ void Natty::OnMessageSent(int err) {
 
 void Natty::OnIceComplete() {
   LOG(INFO) << "ICE finished gathering candidates!";
+  Natty::DeletePeerConnection();
 }
 
 // PeerConnectionObserver implementation.
@@ -408,7 +386,8 @@ void Natty::OnSuccess(webrtc::SessionDescriptionInterface* desc) {
   std::string sdp;
   desc->ToString(&sdp);
   jmessage[kSessionDescriptionSdpName] = sdp;
-  SendMessage(writer.write(jmessage));
+  std::cout << jmessage;
+  //LOG(INFO) << "---> SDP message " << jmessage;
 }
 
 void Natty::OnFailure(const std::string& error) {
@@ -416,23 +395,7 @@ void Natty::OnFailure(const std::string& error) {
 }
 
 void Natty::SendMessage(const std::string& json_object) {
-  std::string* msg = new std::string(json_object);
-  if (msg) {
-    pending_messages_.push_back(msg);
-    if (!pending_messages_.empty() && !client_->IsSendingMessage()) {
-      msg = pending_messages_.front();
-      pending_messages_.pop_front();
-      LOG(INFO) << "Sending message to " << peer_id_ << " " << msg;
 
-      if (!client_->SendToPeer(peer_id_, *msg) && peer_id_ != -1) {
-        DisconnectFromServer();
-      }
-      delete msg;
-    }
-
-    if (!peer_connection_.get())
-      peer_id_ = -1;
-  }
 }
 
 void Natty::DisconnectFromServer() {
