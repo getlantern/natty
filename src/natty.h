@@ -38,15 +38,14 @@ class Natty
     public webrtc::CreateSessionDescriptionObserver,
     public PeerConnectionClientObserver {
  public:
-  Natty(PeerConnectionClient* client, talk_base::Thread* thread, 
-      const std::string& server, int port
+  Natty(PeerConnectionClient* client, talk_base::Thread* thread
       );
 
   bool connection_active() const;
 
   virtual void ShowCandidate(const webrtc::IceCandidateInterface* candidate);
   virtual void Init(bool mode);
-  virtual void OpenInputFile();
+  virtual void OpenDumpFile(const std::string& filename);
   PeerConnectionClient* GetClient();
   bool InitializePeerConnection();
   void Shutdown();
@@ -108,11 +107,9 @@ class Natty
   PeerConnectionClient* client_;
   std::deque<std::string*> pending_messages_;
 
-  std::ofstream mycandfile;
+  /* stdout */
+  std::ofstream outfile;
 
-  /* signaling server */
-  std::string server_;
-  int port_;
 };
 
 #endif  // NATTY_H_

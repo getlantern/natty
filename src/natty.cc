@@ -34,34 +34,6 @@ using namespace std;
 
 #define DEBUG(fmt, ...) printf("%s:%d: " fmt, __FILE__, __LINE__, __VA_ARGS__);
 
-class NattySocket : public talk_base::PhysicalSocketServer {
- public:
-  NattySocket(talk_base::Thread* thread)
-      : thread_(thread), natty_(NULL), client_(NULL) {}
-  virtual ~NattySocket() {}
-
-  void set_client(PeerConnectionClient* client) { client_ = client; }
-  void set_natty(Natty* natty) { natty_ = natty; }
-  Natty* get_natty() { return natty_; }
-
-  virtual bool Wait(int cms, bool process_io) {
-    //if (!natty_->connection_active() ||
-    if (client_ == NULL) {
-        //client_ == NULL || !client_->is_connected()) {
-      LOG(INFO) << "Quitting!";
-      thread_->Quit();
-    }
-    return talk_base::PhysicalSocketServer::Wait(-1,
-                                                 process_io);
-  }
-
- protected:
-  talk_base::Thread* thread_;
-  Natty* natty_;
-  PeerConnectionClient* client_;
-};
- 
-
 // Names used for a IceCandidate JSON object.
 const char kCandidateSdpMidName[] = "sdpMid";
 const char kCandidateSdpMlineIndexName[] = "sdpMLineIndex";
@@ -111,12 +83,12 @@ class InputStream {
 };
  
 
-class DummySetSessionDescriptionObserver
+class NattySessionObserver
 : public webrtc::SetSessionDescriptionObserver {
   public:
-    static DummySetSessionDescriptionObserver* Create() {
+    static NattySessionObserver* Create() {
       return
-        new talk_base::RefCountedObject<DummySetSessionDescriptionObserver>();
+        new talk_base::RefCountedObject<NattySessionObserver>();
     }
     virtual void OnSuccess() {
       LOG(INFO) << __FUNCTION__;
@@ -126,26 +98,22 @@ class DummySetSessionDescriptionObserver
     }
 
   protected:
-    DummySetSessionDescriptionObserver() {}
-    ~DummySetSessionDescriptionObserver() {}
+    NattySessionObserver() {}
+    ~NattySessionObserver() {}
 };
 
 Natty::Natty(PeerConnectionClient* client,
-    talk_base::Thread* thread,
-    const std::string& server, int port
-
+    talk_base::Thread* thread
     )
 : peer_id_(-1),
   thread_(thread),
-  server_(server),
-  port_(port),
   client_(client) {
     client_->RegisterObserver(this);
   }
 
 Natty::~Natty() {
-  if (mycandfile != NULL) {
-    mycandfile.close();
+  if (outfile != NULL) {
+    outfile.close();
   }
   ASSERT(peer_connection_.get() == NULL);
 }
@@ -271,8 +239,8 @@ void Natty::OnIceCandidate(const webrtc::IceCandidateInterface* candidate) {
   }
 
   jmessage[kCandidateSdpName] = sdp;
-  mycandfile << writer.write(jmessage);
-  //mycandfile << jmessage;
+  outfile << writer.write(jmessage);
+  //outfile << jmessage;
 }
 
 void Natty::OnRenegotiationNeeded() {
@@ -330,7 +298,7 @@ void Natty::ReadMessage(const std::string& message) {
     }
     LOG(INFO) << "Received session description " << message << " sending answer back";
     peer_connection_->SetRemoteDescription(
-        DummySetSessionDescriptionObserver::Create(), session_description);
+        NattySessionObserver::Create(), session_description);
 
     if (session_description->type() ==
         webrtc::SessionDescriptionInterface::kOffer) {
@@ -413,8 +381,13 @@ void Natty::ProcessInput() {
   is.read(this);
 }
 
-void Natty::OpenInputFile() {
-  mycandfile.open("cand-input.txt");
+/* need to update this to accept stdout when the stdout
+ * option is blank 
+ *
+ */
+void Natty::OpenDumpFile(const std::string& filename) {
+  outfile.open(filename.c_str());
+  //outfile.open(filename.empty() ? std::cout :filename.c_str());
 }
 
 void Natty::OnSuccess(webrtc::SessionDescriptionInterface* desc) {
@@ -422,7 +395,7 @@ void Natty::OnSuccess(webrtc::SessionDescriptionInterface* desc) {
   
 
   peer_connection_->SetLocalDescription(
-      DummySetSessionDescriptionObserver::Create(), desc);
+      NattySessionObserver::Create(), desc);
   Json::FastWriter writer;
   Json::Value jmessage;
   jmessage[kSessionDescriptionTypeName] = desc->type();
@@ -430,7 +403,7 @@ void Natty::OnSuccess(webrtc::SessionDescriptionInterface* desc) {
   std::string sdp;
   desc->ToString(&sdp);
   jmessage[kSessionDescriptionSdpName] = sdp;
-  mycandfile << writer.write(jmessage);
+  outfile << writer.write(jmessage);
 }
 
 void Natty::OnFailure(const std::string& error) {

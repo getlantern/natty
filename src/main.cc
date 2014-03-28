@@ -30,25 +30,6 @@ const uint16 kDefaultServerPort = 8888;
 
 using namespace std;
 
-void init(talk_base::Thread* thread, talk_base::scoped_refptr<Natty> natty) {
-
-  natty.get()->OpenInputFile();
-  natty.get()->Init(true);
-
-  thread->Run();
-}
-
-int processStdin(talk_base::Thread* thread, talk_base::scoped_refptr<Natty> natty) {
-   
-  
-  natty.get()->Init(false);
-  natty.get()->ProcessInput();
-  thread->Run();
-
-  return 0;
-
-}
-
 int main(int argc, char* argv[]) {
 
   FlagList::SetFlagsFromCommandLine(&argc, argv, true);
@@ -73,13 +54,22 @@ int main(int argc, char* argv[]) {
   PeerConnectionClient client;
   talk_base::Thread* thread = talk_base::Thread::Current();
   talk_base::scoped_refptr<Natty> natty(
-      new talk_base::RefCountedObject<Natty>(&client, thread, FLAG_server, FLAG_port));
+      new talk_base::RefCountedObject<Natty>(&client, thread));
 
   if (FLAG_offer) {
-    init(thread, natty);
-    return 0;
+    natty.get()->OpenDumpFile(FLAG_out);
+    natty.get()->Init(true);
+  }
+  else {
+    natty.get()->Init(false);
+    natty.get()->ProcessInput();
+
   }
 
-  return processStdin(thread, natty);
+
+  thread->Run();
+
+
+  return 0;
 }
 
