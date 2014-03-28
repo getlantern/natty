@@ -1,4 +1,4 @@
- /**
+/**
  * Copyright (C) 2014 Lantern
  *
  * This program is free software: you can redistribute it and/or modify
@@ -14,11 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-  
+
 #include "natty.h"
 
 #include <utility>
 #include <iostream>
+#include <fstream>
+#include <streambuf>
+#include <string>
 
 #include "talk/app/webrtc/videosourceinterface.h"
 #include "talk/base/common.h"
@@ -27,67 +30,93 @@
 #include "talk/base/logging.h"
 #include "talk/media/devices/devicemanager.h"
 
+using namespace std;
+
 #define DEBUG(fmt, ...) printf("%s:%d: " fmt, __FILE__, __LINE__, __VA_ARGS__);
 
-  // Names used for a IceCandidate JSON object.
-  const char kCandidateSdpMidName[] = "sdpMid";
-  const char kCandidateSdpMlineIndexName[] = "sdpMLineIndex";
-  const char kCandidateSdpName[] = "candidate";
-
-  typedef webrtc::PeerConnectionInterface::IceServers IceServers;
-  typedef webrtc::PeerConnectionInterface::IceServer IceServer;;
-   
-    
-
-  // Names used for a SessionDescription JSON object.
-  const char kSessionDescriptionTypeName[] = "type";
-  const char kSessionDescriptionSdpName[] = "sdp";
-
-
- class WebRtcSessionCreateSDPObserverForTest
-    : public talk_base::RefCountedObject<webrtc::CreateSessionDescriptionObserver> {
+class NattySocket : public talk_base::PhysicalSocketServer {
  public:
-  enum State {
-    kInit,
-    kFailed,
-    kSucceeded,
-  };
-  WebRtcSessionCreateSDPObserverForTest() : state_(kInit) {}
+  NattySocket(talk_base::Thread* thread)
+      : thread_(thread), natty_(NULL), client_(NULL) {}
+  virtual ~NattySocket() {}
 
-  // CreateSessionDescriptionObserver implementation.
-  virtual void OnSuccess(webrtc::SessionDescriptionInterface* desc) {
-    std::string sdp;
-    desc->ToString(&sdp);
-    std::cout << "answer " << sdp;
-    description_.reset(desc);
-    state_ = kSucceeded;
+  void set_client(PeerConnectionClient* client) { client_ = client; }
+  void set_natty(Natty* natty) { natty_ = natty; }
+  Natty* get_natty() { return natty_; }
+
+  virtual bool Wait(int cms, bool process_io) {
+    //if (!natty_->connection_active() ||
+    if (client_ == NULL) {
+        //client_ == NULL || !client_->is_connected()) {
+      LOG(INFO) << "Quitting!";
+      thread_->Quit();
+    }
+    return talk_base::PhysicalSocketServer::Wait(-1,
+                                                 process_io);
   }
-  virtual void OnFailure(const std::string& error) {
-    state_ = kFailed;
-  }
-
-  webrtc::SessionDescriptionInterface* description() { return description_.get(); }
-
-  webrtc::SessionDescriptionInterface* ReleaseDescription() {
-    return description_.release();
-  }
-
-  State state() const { return state_; }
 
  protected:
-  ~WebRtcSessionCreateSDPObserverForTest() {}
-
- private:
-  talk_base::scoped_ptr<webrtc::SessionDescriptionInterface> description_;
-  State state_;
+  talk_base::Thread* thread_;
+  Natty* natty_;
+  PeerConnectionClient* client_;
 };
  
-  class DummySetSessionDescriptionObserver
-      : public webrtc::SetSessionDescriptionObserver {
-   public:
+
+// Names used for a IceCandidate JSON object.
+const char kCandidateSdpMidName[] = "sdpMid";
+const char kCandidateSdpMlineIndexName[] = "sdpMLineIndex";
+const char kCandidateSdpName[] = "candidate";
+
+typedef webrtc::PeerConnectionInterface::IceServers IceServers;
+typedef webrtc::PeerConnectionInterface::IceServer IceServer;;
+
+
+
+// Names used for a SessionDescription JSON object.
+const char kSessionDescriptionTypeName[] = "type";
+const char kSessionDescriptionSdpName[] = "sdp";
+
+class InputStream {
+ public:
+  InputStream() {}
+  ~InputStream() {}
+
+  string getStream() const { return ss.str(); }
+
+  void read(Natty* natty) {
+    //std::ifstream filein("cand-input.txt");
+    while (getline(std::cin, input)) {
+      /* need to remove new lines or the SDP won't be valid */
+      if (input.empty()) {
+        /* terminate input on empty line */
+        //std::cout << "\n";
+        continue;
+      }
+      std::cout << input;
+      natty->ReadMessage(input);  
+    }
+  }
+
+  string build() const { 
+    string str = ss.str();
+    str.erase(
+      std::remove(str.begin(), str.end(), '\n'), str.end()
+    ); 
+    return str;
+  }
+
+ protected:
+  stringstream ss;
+  string input;
+};
+ 
+
+class DummySetSessionDescriptionObserver
+: public webrtc::SetSessionDescriptionObserver {
+  public:
     static DummySetSessionDescriptionObserver* Create() {
       return
-          new talk_base::RefCountedObject<DummySetSessionDescriptionObserver>();
+        new talk_base::RefCountedObject<DummySetSessionDescriptionObserver>();
     }
     virtual void OnSuccess() {
       LOG(INFO) << __FUNCTION__;
@@ -96,39 +125,38 @@
       LOG(INFO) << __FUNCTION__ << " " << error;
     }
 
-   protected:
+  protected:
     DummySetSessionDescriptionObserver() {}
     ~DummySetSessionDescriptionObserver() {}
-  };
+};
 
-  Natty::Natty(PeerConnectionClient* client,
-      talk_base::Thread* thread,
-      const std::string& server, int port
+Natty::Natty(PeerConnectionClient* client,
+    talk_base::Thread* thread,
+    const std::string& server, int port
 
-      )
-    : peer_id_(-1),
-      thread_(thread),
-      server_(server),
-      port_(port),
-      client_(client) {
+    )
+: peer_id_(-1),
+  thread_(thread),
+  server_(server),
+  port_(port),
+  client_(client) {
     client_->RegisterObserver(this);
   }
 
-  Natty::~Natty() {
-    ASSERT(peer_connection_.get() == NULL);
+Natty::~Natty() {
+  if (mycandfile != NULL) {
+    mycandfile.close();
   }
+  ASSERT(peer_connection_.get() == NULL);
+}
 
-  bool Natty::connection_active() const {
-    return peer_connection_.get() != NULL;
-  }
+bool Natty::connection_active() const {
+  return peer_connection_.get() != NULL;
+}
 
-  PeerConnectionClient* Natty::GetClient() {
-    return client_;
-  }
-
-  void Natty::Shutdown() {
-    talk_base::CleanupSSL();
-  }
+PeerConnectionClient* Natty::GetClient() {
+  return client_;
+}
 
 void Natty::ConnectToPeer(int peer_id) {
   ASSERT(peer_id_ == -1);
@@ -177,7 +205,7 @@ bool Natty::InitializePeerConnection() {
 
   if (!peer_connection_factory_.get()) {
     LOG(INFO) << "Failed to initialize peer connection factory";
-    DeletePeerConnection();
+    Shutdown();
     return false;
   }
   LOG(INFO) << "Created peer connection factory";
@@ -189,20 +217,20 @@ bool Natty::InitializePeerConnection() {
 
   if (!peer_connection_.get()) {
     LOG(INFO) << "Create peer connection failed";
-    DeletePeerConnection();
+    Shutdown();
   }
 
   return peer_connection_.get() != NULL;
 }
 
-void Natty::DeletePeerConnection() {
+void Natty::Shutdown() {
   LOG(INFO) << "Deleting peer connection";
 
   peer_connection_ = NULL;
   peer_connection_factory_ = NULL;
   peer_id_ = -1;
-  thread_->Quit();
-  Natty::Shutdown();
+  talk_base::CleanupSSL();
+  thread_->Stop();
 }
 
 //
@@ -231,9 +259,9 @@ void Natty::ShowCandidate(const webrtc::IceCandidateInterface* candidate) {
 }
 
 void Natty::OnIceCandidate(const webrtc::IceCandidateInterface* candidate) {
-  Json::StyledWriter writer;
+  Json::FastWriter writer;
   Json::Value jmessage;
-  
+
   jmessage[kCandidateSdpMidName] = candidate->sdp_mid();
   jmessage[kCandidateSdpMlineIndexName] = candidate->sdp_mline_index();
   std::string sdp;
@@ -241,8 +269,10 @@ void Natty::OnIceCandidate(const webrtc::IceCandidateInterface* candidate) {
     LOG(LS_ERROR) << "Failed to serialize candidate";
     return;
   }
+
   jmessage[kCandidateSdpName] = sdp;
-  std::cout << sdp;
+  mycandfile << writer.write(jmessage);
+  //mycandfile << jmessage;
 }
 
 void Natty::OnRenegotiationNeeded() {
@@ -255,11 +285,12 @@ void Natty::OnRenegotiationNeeded() {
 //
 
 void Natty::OnSignedIn() {
-  
+
 }
 
 void Natty::OnDisconnected() {
-  DeletePeerConnection();
+  printf("Disconnecting..\n");
+  Shutdown();
 }
 
 void Natty::OnPeerConnected(int id, const std::string& name) {
@@ -282,7 +313,7 @@ void Natty::ReadMessage(const std::string& message) {
     LOG(INFO) << "Received an unknown message.";
     return;
   }
- 
+
   GetStringFromJsonObject(jmessage, kSessionDescriptionTypeName, &type);
 
   if (!type.empty()) {
@@ -304,14 +335,13 @@ void Natty::ReadMessage(const std::string& message) {
     if (session_description->type() ==
         webrtc::SessionDescriptionInterface::kOffer) {
       peer_connection_->CreateAnswer(this, NULL);
- 
+
     }
   }
   else {
     std::string sdp_mid;
     int sdp_mlineindex = 0;
     std::string sdp;
-    std::cout << "<------------------------ Got another message!";
     if (!GetStringFromJsonObject(jmessage, kCandidateSdpMidName, &sdp_mid) ||
         !GetIntFromJsonObject(jmessage, kCandidateSdpMlineIndexName,
           &sdp_mlineindex) ||
@@ -351,7 +381,7 @@ void Natty::OnMessageSent(int err) {
 
 void Natty::OnIceComplete() {
   LOG(INFO) << "ICE finished gathering candidates!";
-  Natty::DeletePeerConnection();
+  Natty::Shutdown();
 }
 
 // PeerConnectionObserver implementation.
@@ -369,29 +399,42 @@ std::string GetPeerName() {
   return ret;
 }   
 
-void Natty::Init() {
-  if (client_->is_connected())
-    return;
+void Natty::Init(bool offer) {
+
+  talk_base::InitializeSSL();
   InitializePeerConnection();
-  peer_connection_->CreateOffer(this, NULL);
+  if (offer) {
+    peer_connection_->CreateOffer(this, NULL);
+  }
+}
+
+void Natty::ProcessInput() {
+  InputStream is;
+  is.read(this);
+}
+
+void Natty::OpenInputFile() {
+  mycandfile.open("cand-input.txt");
 }
 
 void Natty::OnSuccess(webrtc::SessionDescriptionInterface* desc) {
   LOG(INFO) << "Setting local description";
+  
+
   peer_connection_->SetLocalDescription(
       DummySetSessionDescriptionObserver::Create(), desc);
-  Json::StyledWriter writer;
+  Json::FastWriter writer;
   Json::Value jmessage;
   jmessage[kSessionDescriptionTypeName] = desc->type();
+
   std::string sdp;
   desc->ToString(&sdp);
   jmessage[kSessionDescriptionSdpName] = sdp;
-  std::cout << jmessage;
-  //LOG(INFO) << "---> SDP message " << jmessage;
+  mycandfile << writer.write(jmessage);
 }
 
 void Natty::OnFailure(const std::string& error) {
-    LOG(LERROR) << error;
+  LOG(LERROR) << error;
 }
 
 void Natty::SendMessage(const std::string& json_object) {
@@ -402,4 +445,4 @@ void Natty::DisconnectFromServer() {
   if (client_->is_connected())
     client_->SignOut();
 }
- 
+

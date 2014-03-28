@@ -30,83 +30,19 @@ const uint16 kDefaultServerPort = 8888;
 
 using namespace std;
 
-class NattySocket : public talk_base::PhysicalSocketServer {
- public:
-  NattySocket(talk_base::Thread* thread)
-      : thread_(thread), natty_(NULL), client_(NULL) {}
-  virtual ~NattySocket() {}
-
-  void set_client(PeerConnectionClient* client) { client_ = client; }
-  void set_natty(Natty* natty) { natty_ = natty; }
-  Natty* get_natty() { return natty_; }
-
-  virtual bool Wait(int cms, bool process_io) {
-    //if (!natty_->connection_active() ||
-    if (client_ == NULL) {
-        //client_ == NULL || !client_->is_connected()) {
-      LOG(INFO) << "Quitting!";
-      thread_->Quit();
-    }
-    return talk_base::PhysicalSocketServer::Wait(-1,
-                                                 process_io);
-  }
-
- protected:
-  talk_base::Thread* thread_;
-  Natty* natty_;
-  PeerConnectionClient* client_;
-};
-
-class InputStream {
- public:
-  InputStream() {}
-  ~InputStream() {}
-
-  string getStream() const { return ss.str(); }
-
-  void read() {
-    while (getline(std::cin, input)) {
-      /* need to remove new lines or the SDP won't be valid */
-
-      if (input.empty()) {
-        /* terminate input on empty line */
-        break;
-      }
-      ss << input;
-    }
-  }
-
-  string build() const { 
-    string str = ss.str();
-    str.erase(
-      std::remove(str.begin(), str.end(), '\n'), str.end()
-    ); 
-    return str;
-  }
-
- protected:
-  stringstream ss;
-  string input;
-};
-
 void init(talk_base::Thread* thread, talk_base::scoped_refptr<Natty> natty) {
 
-  talk_base::InitializeSSL();
-  natty.get()->Init();
+  natty.get()->OpenInputFile();
+  natty.get()->Init(true);
 
   thread->Run();
 }
 
 int processStdin(talk_base::Thread* thread, talk_base::scoped_refptr<Natty> natty) {
    
-  InputStream is;
-
-  is.read();
-
-  talk_base::InitializeSSL();
-
-  natty.get()->InitializePeerConnection();
-  natty.get()->ReadMessage(is.build());
+  
+  natty.get()->Init(false);
+  natty.get()->ProcessInput();
   thread->Run();
 
   return 0;

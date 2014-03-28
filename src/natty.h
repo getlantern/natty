@@ -23,6 +23,8 @@
 #include <map>
 #include <set>
 #include <string>
+#include <iostream>
+#include <fstream>
 
 #include "peer_connection_client.h"
 #include "talk/app/webrtc/mediastreaminterface.h"
@@ -36,19 +38,19 @@ class Natty
     public webrtc::CreateSessionDescriptionObserver,
     public PeerConnectionClientObserver {
  public:
-  Natty(PeerConnectionClient* client, talk_base::Thread* thread,
-            const std::string& server, int port
+  Natty(PeerConnectionClient* client, talk_base::Thread* thread, 
+      const std::string& server, int port
       );
 
   bool connection_active() const;
 
   virtual void ShowCandidate(const webrtc::IceCandidateInterface* candidate);
-  virtual void Shutdown();
-  virtual void Init();
+  virtual void Init(bool mode);
+  virtual void OpenInputFile();
   PeerConnectionClient* GetClient();
   bool InitializePeerConnection();
-  void DeletePeerConnection();
-  void SetupSocketServer();
+  void Shutdown();
+  void ProcessInput();
   virtual void ConnectToPeer(int peer_id);
   virtual void ReadMessage(const std::string& message);
 
@@ -99,12 +101,14 @@ class Natty
   void SendMessage(const std::string& json_object);
 
   int peer_id_;
-  talk_base::Thread* thread;
+  talk_base::Thread* thread_;
   talk_base::scoped_refptr<webrtc::PeerConnectionInterface> peer_connection_;
   talk_base::scoped_refptr<webrtc::PeerConnectionFactoryInterface>
       peer_connection_factory_;
   PeerConnectionClient* client_;
   std::deque<std::string*> pending_messages_;
+
+  std::ofstream mycandfile;
 
   /* signaling server */
   std::string server_;
