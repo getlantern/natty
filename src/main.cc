@@ -56,19 +56,14 @@ int main(int argc, char* argv[]) {
   talk_base::scoped_refptr<Natty> natty(
       new talk_base::RefCountedObject<Natty>(&client, thread));
 
-  if (FLAG_offer) {
-    natty.get()->OpenDumpFile(FLAG_out);
-    natty.get()->Init(true);
-  }
-  else {
-    natty.get()->Init(false);
+  natty.get()->OpenDumpFile(FLAG_out);
+  natty.get()->Init(FLAG_offer); 
+
+  if (!FLAG_offer) {
     natty.get()->ProcessInput();
-
   }
-
 
   thread->Run();
-
 
   return 0;
 }

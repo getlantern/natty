@@ -87,7 +87,6 @@ class Natty
 
   virtual void OnMessageSent(int err);
 
-  virtual void SetLocalDescription();
 
   virtual void OnServerConnectionFailure();
 
@@ -109,6 +108,21 @@ class Natty
 
   /* stdout */
   std::ofstream outfile;
+
+  class InputStream {
+    public:
+      InputStream() {}
+      ~InputStream() {}
+
+      void read(Natty* natty);
+
+      std::string build() const;
+
+    protected:
+      std::stringstream ss;
+      std::string input;
+  };    
+
 
 };
 

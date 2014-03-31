@@ -48,40 +48,27 @@ typedef webrtc::PeerConnectionInterface::IceServer IceServer;;
 const char kSessionDescriptionTypeName[] = "type";
 const char kSessionDescriptionSdpName[] = "sdp";
 
-class InputStream {
- public:
-  InputStream() {}
-  ~InputStream() {}
-
-  string getStream() const { return ss.str(); }
-
-  void read(Natty* natty) {
-    //std::ifstream filein("cand-input.txt");
-    while (getline(std::cin, input)) {
-      /* need to remove new lines or the SDP won't be valid */
-      if (input.empty()) {
-        /* terminate input on empty line */
-        //std::cout << "\n";
-        continue;
-      }
-      std::cout << input;
-      natty->ReadMessage(input);  
+void Natty::InputStream::read(Natty* natty) {
+  //std::ifstream filein("cand-input.txt");
+  while (getline(std::cin, input)) {
+    /* need to remove new lines or the SDP won't be valid */
+    if (input.empty()) {
+      /* terminate input on empty line */
+      //std::cout << "\n";
+      continue;
     }
+    natty->ReadMessage(input);  
   }
 
-  string build() const { 
-    string str = ss.str();
-    str.erase(
+}
+
+string Natty::InputStream::build() const {
+  string str = ss.str();
+  str.erase(
       std::remove(str.begin(), str.end(), '\n'), str.end()
-    ); 
-    return str;
-  }
-
- protected:
-  stringstream ss;
-  string input;
-};
- 
+      ); 
+  return str;
+}
 
 class NattySessionObserver
 : public webrtc::SetSessionDescriptionObserver {
@@ -153,13 +140,6 @@ std::string GetPeerConnectionString() {
   //return GetEnvVarOrDefault("WEBRTC_CONNECT", "stun:stun.l.google.com:19302");
   return GetEnvVarOrDefault("WEBRTC_CONNECT", "stun:stun3.l.google.com:19302");
 }
-
-void Natty::SetLocalDescription() {
-  std::string sdp;
-  const webrtc::SessionDescriptionInterface* session = peer_connection_->local_description();
-  std::cout << sdp;
-}
-
 
 bool Natty::InitializePeerConnection() {
 
@@ -303,7 +283,10 @@ void Natty::ReadMessage(const std::string& message) {
     if (session_description->type() ==
         webrtc::SessionDescriptionInterface::kOffer) {
       peer_connection_->CreateAnswer(this, NULL);
-
+      /*const webrtc::SessionDescriptionInterface* ans = peer_connection_->remote_description();
+      std::string sdp;
+      ans->ToString(&sdp);
+      std::cout << ans->type();*/
     }
   }
   else {
@@ -372,12 +355,13 @@ void Natty::Init(bool offer) {
   talk_base::InitializeSSL();
   InitializePeerConnection();
   if (offer) {
+    printf("Here\n");
     peer_connection_->CreateOffer(this, NULL);
   }
 }
 
 void Natty::ProcessInput() {
-  InputStream is;
+  Natty::InputStream is;
   is.read(this);
 }
 
@@ -392,8 +376,6 @@ void Natty::OpenDumpFile(const std::string& filename) {
 
 void Natty::OnSuccess(webrtc::SessionDescriptionInterface* desc) {
   LOG(INFO) << "Setting local description";
-  
-
   peer_connection_->SetLocalDescription(
       NattySessionObserver::Create(), desc);
   Json::FastWriter writer;
