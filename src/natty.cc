@@ -355,7 +355,6 @@ void Natty::Init(bool offer) {
   talk_base::InitializeSSL();
   InitializePeerConnection();
   if (offer) {
-    printf("Here\n");
     peer_connection_->CreateOffer(this, NULL);
   }
 }
