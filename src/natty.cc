@@ -206,6 +206,25 @@ void Natty::ShowCandidate(const webrtc::IceCandidateInterface* candidate) {
   LOG(INFO) << "Ice candidate " << out.c_str();
 }
 
+void Natty::Add5Tuple() {
+  Json::FastWriter writer;
+
+  fivetuple["type"] = "5-tuple";
+  fivetuple["proto"] = "udp";
+  outfile << writer.write(fivetuple);
+}
+
+void Natty::SaveCandidate(bool status, const webrtc::IceCandidateInterface* candidate) {
+  const talk_base::SocketAddress address = candidate->candidate().address();
+  const std::string type = candidate->candidate().type();
+  if (type == "stun") {
+    fivetuple[status ? "local" : "remote"] = address.ToString();
+    if (!status) {
+      Natty::Add5Tuple();
+    }
+  }
+}
+
 void Natty::OnIceCandidate(const webrtc::IceCandidateInterface* candidate) {
   Json::FastWriter writer;
   Json::Value jmessage;
@@ -220,6 +239,7 @@ void Natty::OnIceCandidate(const webrtc::IceCandidateInterface* candidate) {
 
   jmessage[kCandidateSdpName] = sdp;
   outfile << writer.write(jmessage);
+  SaveCandidate(false, candidate);
   //outfile << jmessage;
 }
 
@@ -283,10 +303,6 @@ void Natty::ReadMessage(const std::string& message) {
     if (session_description->type() ==
         webrtc::SessionDescriptionInterface::kOffer) {
       peer_connection_->CreateAnswer(this, NULL);
-      /*const webrtc::SessionDescriptionInterface* ans = peer_connection_->remote_description();
-      std::string sdp;
-      ans->ToString(&sdp);
-      std::cout << ans->type();*/
     }
   }
   else {
@@ -312,6 +328,7 @@ void Natty::ReadMessage(const std::string& message) {
       LOG(WARNING) << "Failed to apply the received candidate";
       return;
     }
+    Natty::SaveCandidate(true, candidate.get());
 
     LOG(INFO) << " Received candidate :" << message;
     return;
@@ -350,11 +367,16 @@ std::string GetPeerName() {
   return ret;
 }   
 
+void Natty::setMode(Natty::Mode m) {
+  mode = m;
+}
+
 void Natty::Init(bool offer) {
 
   talk_base::InitializeSSL();
   InitializePeerConnection();
   if (offer) {
+    Natty::setMode(Natty::OFFER);
     peer_connection_->CreateOffer(this, NULL);
   }
 }

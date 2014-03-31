@@ -32,6 +32,7 @@
 #include "talk/app/webrtc/datachannelinterface.h"
 #include "talk/base/scoped_ptr.h"
 #include "talk/base/ssladapter.h"
+#include "talk/base/json.h"
 
 class Natty
   : public webrtc::PeerConnectionObserver,
@@ -52,7 +53,7 @@ class Natty
   void ProcessInput();
   virtual void ConnectToPeer(int peer_id);
   virtual void ReadMessage(const std::string& message);
-
+  virtual void Add5Tuple();
 
   
 
@@ -73,6 +74,8 @@ class Natty
 
   virtual void OnDataChannel(webrtc::DataChannelInterface *data_channel);
   virtual void OnIceCandidate(const webrtc::IceCandidateInterface* candidate);
+  virtual void SaveCandidate(bool local, const webrtc::IceCandidateInterface* candidate);
+
 
   virtual void OnSignedIn();
 
@@ -108,6 +111,14 @@ class Natty
 
   /* stdout */
   std::ofstream outfile;
+
+  enum Mode { OFFER, TRAVERSE };
+
+  void setMode(Mode m);
+  //Mode getMode() const;
+  Mode mode;
+
+  Json::Value fivetuple;
 
   class InputStream {
     public:
