@@ -217,12 +217,8 @@ void Natty::Add5Tuple() {
 void Natty::SaveCandidate(bool status, const webrtc::IceCandidateInterface* candidate) {
   const talk_base::SocketAddress address = candidate->candidate().address();
   const std::string type = candidate->candidate().type();
-  if (type == "stun") {
-    fivetuple[status ? "local" : "remote"] = address.ToString();
-    if (!status) {
-      Natty::Add5Tuple();
-    }
-  }
+  fivetuple[status ? "local" : "remote"] = address.ToString();
+  Natty::Add5Tuple();
 }
 
 void Natty::OnIceCandidate(const webrtc::IceCandidateInterface* candidate) {
@@ -239,7 +235,7 @@ void Natty::OnIceCandidate(const webrtc::IceCandidateInterface* candidate) {
 
   jmessage[kCandidateSdpName] = sdp;
   outfile << writer.write(jmessage);
-  SaveCandidate(false, candidate);
+  SaveCandidate(true, candidate);
   //outfile << jmessage;
 }
 
@@ -328,7 +324,7 @@ void Natty::ReadMessage(const std::string& message) {
       LOG(WARNING) << "Failed to apply the received candidate";
       return;
     }
-    Natty::SaveCandidate(true, candidate.get());
+    Natty::SaveCandidate(false, candidate.get());
 
     LOG(INFO) << " Received candidate :" << message;
     return;
