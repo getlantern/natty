@@ -26,6 +26,7 @@
 #include <iostream>
 #include <fstream>
 
+#include "talk/base/socketaddress.h"
 #include "peer_connection_client.h"
 #include "talk/app/webrtc/mediastreaminterface.h"
 #include "talk/app/webrtc/peerconnectioninterface.h"
