@@ -26,19 +26,22 @@
 #
 
 {
-  'includes': [
-    'build/trunk/build/common.gypi',
-  ],
+  'variables': {
+    'libjingle_root%': '<(DEPTH)',
+  },
   'targets': [
     {
-      'target_name': 'target',
+      'target_name': 'natty',
       'type': 'executable',
       'dependencies': [
-        'libjingle.gyp:libjingle',
-        'libjingle.gyp:libjingle_p2p',
+        'build/trunk/webrtc/webrtc.gyp:*',
+        'build/trunk/talk/libjingle.gyp:*',
+        'build/trunk/talk/libjingle.gyp:libjingle_peerconnection',
       ],
       'sources': [
-        'src/natty_main.cc',
+        'src/main.cc',
+        'src/natty.cc',
+        'src/peer_connection_client.cc'
       ],
     },  # target relayserver
   ],
