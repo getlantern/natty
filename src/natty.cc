@@ -293,12 +293,16 @@ void Natty::ReadMessage(const std::string& message) {
       return;
     }
     LOG(INFO) << "Received session description " << message << " sending answer back";
-    peer_connection_->SetRemoteDescription(
-        NattySessionObserver::Create(), session_description);
 
     if (session_description->type() ==
         webrtc::SessionDescriptionInterface::kOffer) {
+       peer_connection_->SetRemoteDescription(
+        NattySessionObserver::Create(), session_description);
       peer_connection_->CreateAnswer(this, NULL);
+    }
+    else {
+      peer_connection_->SetRemoteDescription(
+          NattySessionObserver::Create(), session_description);
     }
   }
   else {
@@ -387,8 +391,14 @@ void Natty::ProcessInput() {
  *
  */
 void Natty::OpenDumpFile(const std::string& filename) {
-  outfile.open(filename.c_str());
-  //outfile.open(filename.empty() ? std::cout :filename.c_str());
+  if (!filename.empty()) {
+    outfile.open(filename.c_str());
+  }
+  else {
+    outfile.copyfmt(std::cout);
+    outfile.clear(std::cout.rdstate());
+    outfile.basic_ios<char>::rdbuf(std::cout.rdbuf());
+  }
 }
 
 void Natty::OnSuccess(webrtc::SessionDescriptionInterface* desc) {

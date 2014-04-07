@@ -38,7 +38,7 @@ DEFINE_bool(offer, false, "Generates an offer");
 DEFINE_bool(debug, false, "Log debugging info");
 DEFINE_bool(autoconnect, false, "Connect to the server without user "
                                 "intervention.");
-DEFINE_string(out, "output", "Natty stdout");  
+DEFINE_string(out, "", "Natty stdout");  
 DEFINE_string(server, "localhost", "The server to connect to.");
 DEFINE_int(port, kDefaultServerPort,
            "The port on which the server is listening.");
