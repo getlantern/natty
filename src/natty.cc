@@ -42,8 +42,6 @@ const char kCandidateSdpName[] = "candidate";
 typedef webrtc::PeerConnectionInterface::IceServers IceServers;
 typedef webrtc::PeerConnectionInterface::IceServer IceServer;;
 
-
-
 // Names used for a SessionDescription JSON object.
 const char kSessionDescriptionTypeName[] = "type";
 const char kSessionDescriptionSdpName[] = "sdp";
@@ -52,6 +50,11 @@ void Natty::InputStream::read(Natty* natty) {
   //std::ifstream filein("cand-input.txt");
   while (getline(std::cin, input)) {
     /* need to remove new lines or the SDP won't be valid */
+    if (input == "exit") {
+      natty->Shutdown();
+      break;
+    }
+
     if (input.empty()) {
       /* terminate input on empty line */
       //std::cout << "\n";
@@ -88,6 +91,22 @@ class NattySessionObserver
     NattySessionObserver() {}
     ~NattySessionObserver() {}
 };
+
+bool NattySocket::Wait(int cms, bool process_io) {
+  return talk_base::PhysicalSocketServer::Wait(-1,
+        process_io);
+}
+
+MessageClient::~MessageClient() {
+  delete socket_;
+}
+
+void MessageClient::OnMessage(talk_base::Message *pmsg) {
+  NattyMessage* msg = static_cast<NattyMessage*>(pmsg->pdata);
+  
+  delete msg;
+}
+
 
 Natty::Natty(PeerConnectionClient* client,
     talk_base::Thread* thread
@@ -349,7 +368,7 @@ void Natty::OnMessageSent(int err) {
 
 void Natty::OnIceComplete() {
   LOG(INFO) << "ICE finished gathering candidates!";
-  Natty::Shutdown();
+  //Natty::Shutdown();
 }
 
 // PeerConnectionObserver implementation.
@@ -383,7 +402,22 @@ void Natty::Init(bool offer) {
 
 void Natty::ProcessInput() {
   Natty::InputStream is;
+  const talk_base::SocketAddress addr("127.0.0.1", 0);
+
+  //talk_base::Socket* socket = thread_->socketserver()->CreateAsyncSocket(addr.family(), SOCK_DGRAM); 
+  //MessageClient msg(thread_, socket);
+
+  //thread_->Start();
+
+  //thread_->ProcessMessages(1000);
+  //thread_->PostDelayed(100, &msg, 0,
+  //    new NattyMessage("Hey"));
+
+  //thread->ProcessMessages(2000);
+  //natty.get()->Shutdown();
+
   is.read(this);
+
 }
 
 /* need to update this to accept stdout when the stdout
@@ -412,7 +446,7 @@ void Natty::OnSuccess(webrtc::SessionDescriptionInterface* desc) {
   std::string sdp;
   desc->ToString(&sdp);
   jmessage[kSessionDescriptionSdpName] = sdp;
-  outfile << writer.write(jmessage);
+  outfile << writer.write(jmessage); 
 }
 
 void Natty::OnFailure(const std::string& error) {

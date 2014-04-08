@@ -35,6 +35,43 @@
 #include "talk/base/ssladapter.h"
 #include "talk/base/json.h"
 
+struct NattyMessage : public talk_base::MessageData {
+  explicit NattyMessage(std::string body) : body_(body) {}
+  virtual ~NattyMessage() {}
+
+  std::string body_;
+};             
+
+class MessageClient : public talk_base::MessageHandler {
+ public:
+  MessageClient(talk_base::Thread* pth, talk_base::Socket* socket)
+    : thread_(pth), socket_(socket) {
+    }
+
+  virtual void OnMessage(talk_base::Message *pmsg);
+  virtual ~MessageClient();
+
+ private:
+  talk_base::Thread* thread_;
+  talk_base::Socket* socket_;
+};
+
+
+class NattySocket : public talk_base::PhysicalSocketServer {
+ public:
+  NattySocket(talk_base::Thread* thread) :
+     thread_(thread) {
+
+  }
+
+  virtual ~NattySocket() {};
+
+  virtual bool Wait(int cms, bool process_io);
+
+ protected:
+  talk_base::Thread* thread_;
+};
+
 class Natty
   : public webrtc::PeerConnectionObserver,
     public webrtc::CreateSessionDescriptionObserver,
