@@ -246,9 +246,9 @@ build natty: link $
       PRODUCT_TYPE=com.apple.product-type.tool; export $
       SDKROOT=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk; $
       export $
-      SRCROOT=/Users/todd/Dev/natty/build/trunk/out/Release/build/trunk/talk; $
+      SRCROOT=./build/trunk/out/Release/build/trunk/talk; $
       export SOURCE_ROOT="$${SRCROOT}"; export $
-      TARGET_BUILD_DIR=/Users/todd/Dev/natty/build/trunk/out/Release; $
+      TARGET_BUILD_DIR=./build/trunk/out/Release; $
       export TEMP_DIR="$${TMPDIR}"; (cd build/trunk/talk && $
       ../build/mac/change_mach_o_flags_from_xcode.sh); G=$$?; ((exit $$G) $
       || rm -rf natty) && exit $$G)
