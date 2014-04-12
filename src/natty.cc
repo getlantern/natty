@@ -253,7 +253,8 @@ void Natty::OnIceCandidate(const webrtc::IceCandidateInterface* candidate) {
   }
 
   jmessage[kCandidateSdpName] = sdp;
-  outfile << writer.write(jmessage) << endl;
+  outfile << writer.write(jmessage);
+  outfile.flush();
   //SaveCandidate(true, candidate);
   //outfile << jmessage;
 }
@@ -446,7 +447,8 @@ void Natty::OnSuccess(webrtc::SessionDescriptionInterface* desc) {
   std::string sdp;
   desc->ToString(&sdp);
   jmessage[kSessionDescriptionSdpName] = sdp;
-  outfile << writer.write(jmessage) << endl;  
+  outfile << writer.write(jmessage);  
+  outfile.flush();
 }
 
 void Natty::OnFailure(const std::string& error) {
