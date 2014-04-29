@@ -80,19 +80,17 @@ class Natty
   Natty(PeerConnectionClient* client, talk_base::Thread* thread
       );
 
+  static const int DELAY_INTERVAL = 3;
+
   bool connection_active() const;
 
-  virtual void ShowCandidate(const webrtc::IceCandidateInterface* candidate);
   virtual void Init(bool mode);
   virtual void OpenDumpFile(const std::string& filename);
   PeerConnectionClient* GetClient();
   bool InitializePeerConnection();
   void Shutdown();
   void ProcessInput();
-  virtual void ConnectToPeer(int peer_id);
   virtual void ReadMessage(const std::string& message);
-  virtual void Add5Tuple();
-
   
 
  protected:
@@ -112,8 +110,6 @@ class Natty
 
   virtual void OnDataChannel(webrtc::DataChannelInterface *data_channel);
   virtual void OnIceCandidate(const webrtc::IceCandidateInterface* candidate);
-  virtual void SaveCandidate(bool local, const webrtc::IceCandidateInterface* candidate);
-
 
   virtual void OnSignedIn();
 
@@ -157,6 +153,10 @@ class Natty
   Mode mode;
 
   Json::Value fivetuple;
+
+  std::map<std::string, talk_base::scoped_refptr<webrtc::MediaStreamInterface> >
+    active_streams_;
+
 
   class InputStream {
     public:

@@ -132,16 +132,6 @@ PeerConnectionClient* Natty::GetClient() {
   return client_;
 }
 
-void Natty::ConnectToPeer(int peer_id) {
-  ASSERT(peer_id_ == -1);
-  ASSERT(peer_id != -1);
-
-  if (InitializePeerConnection()) {
-    peer_id_ = peer_id;
-    peer_connection_->CreateOffer(this, NULL);
-  }
-}
-
 std::string GetEnvVarOrDefault(const char* env_var_name,
     const char* default_value) {
   std::string value;
@@ -196,6 +186,7 @@ void Natty::Shutdown() {
   peer_connection_ = NULL;
   peer_connection_factory_ = NULL;
   peer_id_ = -1;
+  active_streams_.clear();
   talk_base::CleanupSSL();
   thread_->Stop();
 }
@@ -209,35 +200,10 @@ void Natty::OnError() {
 }
 
 void Natty::OnAddStream(webrtc::MediaStreamInterface* stream) {
-
 }
 
 void Natty::OnRemoveStream(webrtc::MediaStreamInterface* stream) {
   LOG(INFO) << __FUNCTION__ << " " << stream->label();
-  stream->AddRef();
-}
-
-void Natty::ShowCandidate(const webrtc::IceCandidateInterface* candidate) {
-  std::string out;
-  const cricket::Candidate& cand = candidate->candidate();
-  const talk_base::SocketAddress & address = cand.address(); 
-  candidate->ToString(&out);
-  LOG(INFO) << "Ice candidate " << out.c_str();
-}
-
-void Natty::Add5Tuple() {
-  Json::FastWriter writer;
-
-  fivetuple["type"] = "5-tuple";
-  fivetuple["proto"] = "udp";
-  outfile << writer.write(fivetuple);
-}
-
-void Natty::SaveCandidate(bool status, const webrtc::IceCandidateInterface* candidate) {
-  const talk_base::SocketAddress address = candidate->candidate().address();
-  const std::string type = candidate->candidate().type();
-  fivetuple[status ? "local" : "remote"] = address.ToString();
-  Natty::Add5Tuple();
 }
 
 void Natty::OnIceCandidate(const webrtc::IceCandidateInterface* candidate) {
@@ -255,8 +221,6 @@ void Natty::OnIceCandidate(const webrtc::IceCandidateInterface* candidate) {
   jmessage[kCandidateSdpName] = sdp;
   outfile << writer.write(jmessage);
   outfile.flush();
-  //SaveCandidate(true, candidate);
-  //outfile << jmessage;
 }
 
 void Natty::OnRenegotiationNeeded() {
@@ -314,16 +278,15 @@ void Natty::ReadMessage(const std::string& message) {
     }
     LOG(INFO) << "Received session description " << message << " sending answer back";
 
+    peer_connection_->SetRemoteDescription(
+        NattySessionObserver::Create(), session_description);
+    sleep(1);
     if (session_description->type() ==
         webrtc::SessionDescriptionInterface::kOffer) {
-       peer_connection_->SetRemoteDescription(
-        NattySessionObserver::Create(), session_description);
       peer_connection_->CreateAnswer(this, NULL);
+      sleep(1);
     }
-    else {
-      peer_connection_->SetRemoteDescription(
-          NattySessionObserver::Create(), session_description);
-    }
+    return;
   }
   else {
     std::string sdp_mid;
@@ -348,8 +311,6 @@ void Natty::ReadMessage(const std::string& message) {
       LOG(WARNING) << "Failed to apply the received candidate";
       return;
     }
-    Natty::SaveCandidate(false, candidate.get());
-
     LOG(INFO) << " Received candidate :" << message;
     return;
   }
@@ -398,24 +359,12 @@ void Natty::Init(bool offer) {
   if (offer) {
     Natty::setMode(Natty::OFFER);
     peer_connection_->CreateOffer(this, NULL);
+    sleep(1);
   }
 }
 
 void Natty::ProcessInput() {
   Natty::InputStream is;
-  const talk_base::SocketAddress addr("127.0.0.1", 0);
-
-  //talk_base::Socket* socket = thread_->socketserver()->CreateAsyncSocket(addr.family(), SOCK_DGRAM); 
-  //MessageClient msg(thread_, socket);
-
-  //thread_->Start();
-
-  //thread_->ProcessMessages(1000);
-  //thread_->PostDelayed(100, &msg, 0,
-  //    new NattyMessage("Hey"));
-
-  //thread->ProcessMessages(2000);
-  //natty.get()->Shutdown();
 
   is.read(this);
 
@@ -447,7 +396,7 @@ void Natty::OnSuccess(webrtc::SessionDescriptionInterface* desc) {
   std::string sdp;
   desc->ToString(&sdp);
   jmessage[kSessionDescriptionSdpName] = sdp;
-  outfile << writer.write(jmessage);  
+  outfile << writer.write(jmessage); 
   outfile.flush();
 }
 
