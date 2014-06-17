@@ -9,7 +9,7 @@ In keeping fashion with the standard itself, natty remains agnostic to
 signaling specifics. It forwards messages between a caller and signaler,
 facilitating an offer/answer exchange, and concentrates entirely on the NAT
 traversal process.
-Natty relies almost entirely on the ICE framework to conducts NAT traversals. ICE works, for a given peer, by gathering a prioritized list of possible network interface and port candidates. This list of candidates is accumulated by natty and forwarded to the signaling intermediary. Once a full set of candidate pairs is available at a specific peer, natty uses ICE to perform a series of connectivity checks.
+Natty relies almost entirely on the ICE framework to perform NAT traversals. ICE works, for a given peer, by gathering a prioritized list of possible IP address and port candidates. This list of candidates is accumulated by natty and forwarded to the signaling intermediary. Once a full set of candidate pairs is available on a specific endpoint, natty relies on ICE to perform a series of connectivity checks.
 When/if a connectivity check succeeds, and a connection is successfully established, natty outputs the resultant 5-tuple(s) on both sides. Natty, by default, consumes and returns JSON messages. After multiple rounds of tests, if no pair is found, natty assumes no working candidate pair for connecting the peers exists and returns an error message, assuming some fallback mechanism is subsequently necessary.
 
 ### Usage
