@@ -37,7 +37,7 @@ cat test
 {"candidate":"a=candidate:343630507 1 tcp 1518214911 107.170.244.214 39301 typ host generation 0\r\n","sdpMLineIndex":0,"sdpMid":"audio"}
 ```
 
-A full file transfer test using natty is available [here](https://github.com/getlantern/natty-java-xmpp)```
+A full file transfer test using natty is available [here](https://github.com/getlantern/natty-java-xmpp)
 
 ## Build instructions
  
