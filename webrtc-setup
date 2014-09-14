@@ -3,12 +3,18 @@
 # Change directory to the PRODUCT_DIR (e.g. out/Release).
 export LD_LIBRARY_PATH=`pwd`
 
+mkdir build
 cd build
-gclient config http://webrtc.googlecode.com/svn/trunk
-gclient runhooks --force
-gclient sync --force
-cd ..
-ninja -C build/trunk/out/Debug
+gclient config --name trunk 'git+https://chromium.googlesource.com/external/webrtc'
+gclient sync -j200
+cd trunk
+git svn init --prefix=origin/ https://webrtc.googlecode.com/svn -Ttrunk --rewrite-root=http://webrtc.googlecode.com/svn
+git config svn-remote.svn.fetch trunk:refs/remotes/origin/master
+git svn fetch
+git checkout master
+ninja -C out/Release
+#cd ..
+#ninja -C build/trunk/out/Release
 #cd ../../
 # move jar and shared native lib to libs dir
 #mv build/trunk/out/Release/libjingle_peerconnection.jar libs/
