@@ -265,7 +265,6 @@ void Natty::ReadMessage(const std::string& message) {
     LOG(INFO) << "Received an unknown message.";
     return;
   }
-
   GetStringFromJsonObject(jmessage, kSessionDescriptionTypeName, &type);
 
   if (!type.empty()) {
