@@ -12,12 +12,5 @@ git svn init --prefix=origin/ https://webrtc.googlecode.com/svn -Ttrunk --rewrit
 git config svn-remote.svn.fetch trunk:refs/remotes/origin/master
 git svn fetch
 git checkout master
+gclient sync --force
 ninja -C out/Release
-#cd ..
-#ninja -C build/trunk/out/Release
-#cd ../../
-# move jar and shared native lib to libs dir
-#mv build/trunk/out/Release/libjingle_peerconnection.jar libs/
-#mv build/trunk/out/Release/libjingle_peerconnection_so.so libs/
-# remove old build files
-#rm -rf build/*
