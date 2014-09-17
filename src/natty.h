@@ -26,40 +26,40 @@
 #include <iostream>
 #include <fstream>
 
-#include "talk/base/socketaddress.h"
+#include "webrtc/base/socketaddress.h"
 #include "peer_connection_client.h"
 #include "talk/app/webrtc/mediastreaminterface.h"
 #include "talk/app/webrtc/peerconnectioninterface.h"
 #include "talk/app/webrtc/datachannelinterface.h"
-#include "talk/base/scoped_ptr.h"
-#include "talk/base/ssladapter.h"
-#include "talk/base/json.h"
+#include "webrtc/base/scoped_ptr.h"
+#include "webrtc/base/ssladapter.h"
+#include "webrtc/base/json.h"
 
-struct NattyMessage : public talk_base::MessageData {
+struct NattyMessage : public rtc::MessageData {
   explicit NattyMessage(std::string body) : body_(body) {}
   virtual ~NattyMessage() {}
 
   std::string body_;
 };             
 
-class MessageClient : public talk_base::MessageHandler {
+class MessageClient : public rtc::MessageHandler {
  public:
-  MessageClient(talk_base::Thread* pth, talk_base::Socket* socket)
+  MessageClient(rtc::Thread* pth, rtc::Socket* socket)
     : thread_(pth), socket_(socket) {
     }
 
-  virtual void OnMessage(talk_base::Message *pmsg);
+  virtual void OnMessage(rtc::Message *pmsg);
   virtual ~MessageClient();
 
  private:
-  talk_base::Thread* thread_;
-  talk_base::Socket* socket_;
+  rtc::Thread* thread_;
+  rtc::Socket* socket_;
 };
 
 
-class NattySocket : public talk_base::PhysicalSocketServer {
+class NattySocket : public rtc::PhysicalSocketServer {
  public:
-  NattySocket(talk_base::Thread* thread) :
+  NattySocket(rtc::Thread* thread) :
      thread_(thread) {
 
   }
@@ -69,7 +69,7 @@ class NattySocket : public talk_base::PhysicalSocketServer {
   virtual bool Wait(int cms, bool process_io);
 
  protected:
-  talk_base::Thread* thread_;
+  rtc::Thread* thread_;
 };
 
 class Natty
@@ -77,7 +77,7 @@ class Natty
     public webrtc::CreateSessionDescriptionObserver,
     public PeerConnectionClientObserver {
  public:
-  Natty(PeerConnectionClient* client, talk_base::Thread* thread
+  Natty(PeerConnectionClient* client, rtc::Thread* thread
       );
 
   static const int DELAY_INTERVAL = 3;
@@ -136,9 +136,9 @@ class Natty
   void SendMessage(const std::string& json_object);
 
   int peer_id_;
-  talk_base::Thread* thread_;
-  talk_base::scoped_refptr<webrtc::PeerConnectionInterface> peer_connection_;
-  talk_base::scoped_refptr<webrtc::PeerConnectionFactoryInterface>
+  rtc::Thread* thread_;
+  rtc::scoped_refptr<webrtc::PeerConnectionInterface> peer_connection_;
+  rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface>
       peer_connection_factory_;
   PeerConnectionClient* client_;
   std::deque<std::string*> pending_messages_;
@@ -154,7 +154,7 @@ class Natty
 
   Json::Value fivetuple;
 
-  std::map<std::string, talk_base::scoped_refptr<webrtc::MediaStreamInterface> >
+  std::map<std::string, rtc::scoped_refptr<webrtc::MediaStreamInterface> >
     active_streams_;
 
 

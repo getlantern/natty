@@ -24,10 +24,14 @@
 #include <string>
 
 #include "talk/app/webrtc/videosourceinterface.h"
-#include "talk/base/common.h"
+#include "webrtc/base/common.h"
+#include "talk/p2p/base/sessiondescription.h"
+#include "talk/app/webrtc/peerconnectioninterface.h"
+#include "talk/session/media/mediasession.h"
+#include "talk/p2p/base/constants.h"
 #include "talk/app/webrtc/datachannelinterface.h"
-#include "talk/base/json.h"
-#include "talk/base/logging.h"
+#include "webrtc/base/json.h"
+#include "webrtc/base/logging.h"
 #include "talk/media/devices/devicemanager.h"
 
 using namespace std;
@@ -78,7 +82,7 @@ class NattySessionObserver
   public:
     static NattySessionObserver* Create() {
       return
-        new talk_base::RefCountedObject<NattySessionObserver>();
+        new rtc::RefCountedObject<NattySessionObserver>();
     }
     virtual void OnSuccess() {
       LOG(INFO) << __FUNCTION__;
@@ -93,7 +97,7 @@ class NattySessionObserver
 };
 
 bool NattySocket::Wait(int cms, bool process_io) {
-  return talk_base::PhysicalSocketServer::Wait(-1,
+  return rtc::PhysicalSocketServer::Wait(-1,
         process_io);
 }
 
@@ -101,7 +105,7 @@ MessageClient::~MessageClient() {
   delete socket_;
 }
 
-void MessageClient::OnMessage(talk_base::Message *pmsg) {
+void MessageClient::OnMessage(rtc::Message *pmsg) {
   NattyMessage* msg = static_cast<NattyMessage*>(pmsg->pdata);
   
   delete msg;
@@ -109,7 +113,7 @@ void MessageClient::OnMessage(talk_base::Message *pmsg) {
 
 
 Natty::Natty(PeerConnectionClient* client,
-    talk_base::Thread* thread
+    rtc::Thread* thread
     )
 : peer_id_(-1),
   thread_(thread),
@@ -170,7 +174,7 @@ bool Natty::InitializePeerConnection() {
   server.uri = GetPeerConnectionString();
   servers.push_back(server);
 
-  peer_connection_ = peer_connection_factory_->CreatePeerConnection(servers, NULL, NULL, this);
+  peer_connection_ = peer_connection_factory_->CreatePeerConnection(servers, NULL, NULL, NULL, this);
 
   if (!peer_connection_.get()) {
     LOG(INFO) << "Create peer connection failed";
@@ -187,7 +191,7 @@ void Natty::Shutdown() {
   peer_connection_factory_ = NULL;
   peer_id_ = -1;
   active_streams_.clear();
-  talk_base::CleanupSSL();
+  rtc::CleanupSSL();
   thread_->Stop();
 }
 
@@ -299,7 +303,7 @@ void Natty::ReadMessage(const std::string& message) {
       LOG(INFO) << "Can't parse received message";
       return;
     }
-    talk_base::scoped_ptr<webrtc::IceCandidateInterface> candidate(
+    rtc::scoped_ptr<webrtc::IceCandidateInterface> candidate(
         webrtc::CreateIceCandidate(sdp_mid, sdp_mlineindex, sdp));
     LOG(INFO) << "Remote candidate information";
 
@@ -354,7 +358,7 @@ void Natty::setMode(Natty::Mode m) {
 
 void Natty::Init(bool offer) {
 
-  talk_base::InitializeSSL();
+  rtc::InitializeSSL();
   InitializePeerConnection();
   if (offer) {
     Natty::setMode(Natty::OFFER);

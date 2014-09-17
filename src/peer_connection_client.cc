@@ -1,33 +1,43 @@
- /**
- * Copyright (C) 2014 Lantern
+/*
+ * libjingle
+ * Copyright 2012, Google Inc.
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *  1. Redistributions of source code must retain the above copyright notice,
+ *     this list of conditions and the following disclaimer.
+ *  2. Redistributions in binary form must reproduce the above copyright notice,
+ *     this list of conditions and the following disclaimer in the documentation
+ *     and/or other materials provided with the distribution.
+ *  3. The name of the author may not be used to endorse or promote products
+ *     derived from this software without specific prior written permission.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
+ * EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+ * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
- 
-#include "peer_connection_client.h"
 
-#include "defaults.h"
-#include "talk/base/common.h"
-#include "talk/base/nethelpers.h"
-#include "talk/base/logging.h"
-#include "talk/base/stringutils.h"
+#include "talk/examples/peerconnection/client/peer_connection_client.h"
+
+#include "talk/examples/peerconnection/client/defaults.h"
+#include "webrtc/base/common.h"
+#include "webrtc/base/logging.h"
+#include "webrtc/base/nethelpers.h"
+#include "webrtc/base/stringutils.h"
 
 #ifdef WIN32
-#include "talk/base/win32socketserver.h"
+#include "webrtc/base/win32socketserver.h"
 #endif
 
-using talk_base::sprintfn;
+using rtc::sprintfn;
 
 namespace {
 
@@ -36,13 +46,13 @@ const char kByeMessage[] = "BYE";
 // Delay between server connection retries, in milliseconds
 const int kReconnectDelay = 2000;
 
-talk_base::AsyncSocket* CreateClientSocket(int family) {
+rtc::AsyncSocket* CreateClientSocket(int family) {
 #ifdef WIN32
-  talk_base::Win32Socket* sock = new talk_base::Win32Socket();
+  rtc::Win32Socket* sock = new rtc::Win32Socket();
   sock->CreateT(family, SOCK_STREAM);
   return sock;
 #elif defined(POSIX)
-  talk_base::Thread* thread = talk_base::Thread::Current();
+  rtc::Thread* thread = rtc::Thread::Current();
   ASSERT(thread != NULL);
   return thread->socketserver()->CreateAsyncSocket(family, SOCK_STREAM);
 #else
@@ -115,7 +125,7 @@ void PeerConnectionClient::Connect(const std::string& server, int port,
   }
 
   if (port <= 0)
-    port = 8888;
+    port = kDefaultServerPort;
 
   server_address_.SetIP(server);
   server_address_.SetPort(port);
@@ -123,7 +133,7 @@ void PeerConnectionClient::Connect(const std::string& server, int port,
 
   if (server_address_.IsUnresolved()) {
     state_ = RESOLVING;
-    resolver_ = new talk_base::AsyncResolver();
+    resolver_ = new rtc::AsyncResolver();
     resolver_->SignalDone.connect(this, &PeerConnectionClient::OnResolveResult);
     resolver_->Start(server_address_);
   } else {
@@ -132,7 +142,7 @@ void PeerConnectionClient::Connect(const std::string& server, int port,
 }
 
 void PeerConnectionClient::OnResolveResult(
-    talk_base::AsyncResolverInterface* resolver) {
+    rtc::AsyncResolverInterface* resolver) {
   if (resolver_->GetError() != 0) {
     callback_->OnServerConnectionFailure();
     resolver_->Destroy(false);
@@ -154,23 +164,19 @@ void PeerConnectionClient::DoConnect() {
   onconnect_data_ = buffer;
 
   bool ret = ConnectControlSocket();
-  if (ret) {
+  if (ret)
     state_ = SIGNING_IN;
-  }
   if (!ret) {
     callback_->OnServerConnectionFailure();
   }
 }
 
 bool PeerConnectionClient::SendToPeer(int peer_id, const std::string& message) {
-  //printf("Sending message to peer %d\n", peer_id);
   if (state_ != CONNECTED)
     return false;
 
-  printf("Sending message to peer %d\n", peer_id);
- 
   ASSERT(is_connected());
-  ASSERT(control_socket_->GetState() == talk_base::Socket::CS_CLOSED);
+  ASSERT(control_socket_->GetState() == rtc::Socket::CS_CLOSED);
   if (!is_connected() || peer_id == -1)
     return false;
 
@@ -192,17 +198,17 @@ bool PeerConnectionClient::SendHangUp(int peer_id) {
 
 bool PeerConnectionClient::IsSendingMessage() {
   return state_ == CONNECTED &&
-         control_socket_->GetState() != talk_base::Socket::CS_CLOSED;
+         control_socket_->GetState() != rtc::Socket::CS_CLOSED;
 }
 
 bool PeerConnectionClient::SignOut() {
   if (state_ == NOT_CONNECTED || state_ == SIGNING_OUT)
     return true;
 
-  if (hanging_get_->GetState() != talk_base::Socket::CS_CLOSED)
+  if (hanging_get_->GetState() != rtc::Socket::CS_CLOSED)
     hanging_get_->Close();
 
-  if (control_socket_->GetState() == talk_base::Socket::CS_CLOSED) {
+  if (control_socket_->GetState() == rtc::Socket::CS_CLOSED) {
     state_ = SIGNING_OUT;
 
     if (my_id_ != -1) {
@@ -236,37 +242,35 @@ void PeerConnectionClient::Close() {
 }
 
 bool PeerConnectionClient::ConnectControlSocket() {
-  ASSERT(control_socket_->GetState() == talk_base::Socket::CS_CLOSED);
+  ASSERT(control_socket_->GetState() == rtc::Socket::CS_CLOSED);
   int err = control_socket_->Connect(server_address_);
   if (err == SOCKET_ERROR) {
     Close();
     return false;
   }
-  printf("Connected to control socket\n");
   return true;
 }
 
-void PeerConnectionClient::OnConnect(talk_base::AsyncSocket* socket) {
+void PeerConnectionClient::OnConnect(rtc::AsyncSocket* socket) {
   ASSERT(!onconnect_data_.empty());
   size_t sent = socket->Send(onconnect_data_.c_str(), onconnect_data_.length());
   ASSERT(sent == onconnect_data_.length());
-  UNUSED(sent);
+  RTC_UNUSED(sent);
   onconnect_data_.clear();
 }
 
-void PeerConnectionClient::OnHangingGetConnect(talk_base::AsyncSocket* socket) {
+void PeerConnectionClient::OnHangingGetConnect(rtc::AsyncSocket* socket) {
   char buffer[1024];
   sprintfn(buffer, sizeof(buffer),
            "GET /wait?peer_id=%i HTTP/1.0\r\n\r\n", my_id_);
   int len = static_cast<int>(strlen(buffer));
   int sent = socket->Send(buffer, len);
   ASSERT(sent == len);
-  UNUSED2(sent, len);
+  RTC_UNUSED2(sent, len);
 }
 
 void PeerConnectionClient::OnMessageFromPeer(int peer_id,
                                              const std::string& message) {
-  printf("Got message from peer %d\n", peer_id);
   if (message.length() == (sizeof(kByeMessage) - 1) &&
       message.compare(kByeMessage) == 0) {
     callback_->OnPeerDisconnected(peer_id);
@@ -304,7 +308,7 @@ bool PeerConnectionClient::GetHeaderValue(const std::string& data, size_t eoh,
   return false;
 }
 
-bool PeerConnectionClient::ReadIntoBuffer(talk_base::AsyncSocket* socket,
+bool PeerConnectionClient::ReadIntoBuffer(rtc::AsyncSocket* socket,
                                           std::string* data,
                                           size_t* content_length) {
   char buffer[0xffff];
@@ -318,6 +322,7 @@ bool PeerConnectionClient::ReadIntoBuffer(talk_base::AsyncSocket* socket,
   bool ret = false;
   size_t i = data->find("\r\n\r\n");
   if (i != std::string::npos) {
+    LOG(INFO) << "Headers received";
     if (GetHeaderValue(*data, i, "\r\nContent-Length: ", content_length)) {
       size_t total_response_size = (i + 4) + *content_length;
       if (data->length() >= total_response_size) {
@@ -341,7 +346,7 @@ bool PeerConnectionClient::ReadIntoBuffer(talk_base::AsyncSocket* socket,
   return ret;
 }
 
-void PeerConnectionClient::OnRead(talk_base::AsyncSocket* socket) {
+void PeerConnectionClient::OnRead(rtc::AsyncSocket* socket) {
   size_t content_length = 0;
   if (ReadIntoBuffer(socket, &control_data_, &content_length)) {
     size_t peer_id = 0, eoh = 0;
@@ -385,14 +390,14 @@ void PeerConnectionClient::OnRead(talk_base::AsyncSocket* socket) {
     control_data_.clear();
 
     if (state_ == SIGNING_IN) {
-      ASSERT(hanging_get_->GetState() == talk_base::Socket::CS_CLOSED);
+      ASSERT(hanging_get_->GetState() == rtc::Socket::CS_CLOSED);
       state_ = CONNECTED;
       hanging_get_->Connect(server_address_);
     }
   }
 }
 
-void PeerConnectionClient::OnHangingGetRead(talk_base::AsyncSocket* socket) {
+void PeerConnectionClient::OnHangingGetRead(rtc::AsyncSocket* socket) {
   LOG(INFO) << __FUNCTION__;
   size_t content_length = 0;
   if (ReadIntoBuffer(socket, &notification_data_, &content_length)) {
@@ -429,7 +434,7 @@ void PeerConnectionClient::OnHangingGetRead(talk_base::AsyncSocket* socket) {
     notification_data_.clear();
   }
 
-  if (hanging_get_->GetState() == talk_base::Socket::CS_CLOSED &&
+  if (hanging_get_->GetState() == rtc::Socket::CS_CLOSED &&
       state_ == CONNECTED) {
     hanging_get_->Connect(server_address_);
   }
@@ -491,7 +496,7 @@ bool PeerConnectionClient::ParseServerResponse(const std::string& response,
   return true;
 }
 
-void PeerConnectionClient::OnClose(talk_base::AsyncSocket* socket, int err) {
+void PeerConnectionClient::OnClose(rtc::AsyncSocket* socket, int err) {
   LOG(INFO) << __FUNCTION__;
 
   socket->Close();
@@ -512,7 +517,7 @@ void PeerConnectionClient::OnClose(talk_base::AsyncSocket* socket, int err) {
   } else {
     if (socket == control_socket_.get()) {
       LOG(WARNING) << "Connection refused; retrying in 2 seconds";
-      talk_base::Thread::Current()->PostDelayed(kReconnectDelay, this, 0);
+      rtc::Thread::Current()->PostDelayed(kReconnectDelay, this, 0);
     } else {
       Close();
       callback_->OnDisconnected();
@@ -520,7 +525,7 @@ void PeerConnectionClient::OnClose(talk_base::AsyncSocket* socket, int err) {
   }
 }
 
-void PeerConnectionClient::OnMessage(talk_base::Message* msg) {
+void PeerConnectionClient::OnMessage(rtc::Message* msg) {
   // ignore msg; there is currently only one supported message ("retry")
   DoConnect();
 }
