@@ -26,8 +26,11 @@
 #
 
 {
+  'includes': [
+    'common.gypi'
+  ],
   'variables': {
-    'libjingle_root%': '<(DEPTH)',
+    'libjingle_root%': 'build/trunk/build',
   },
   'targets': [
     {
