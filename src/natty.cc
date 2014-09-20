@@ -150,9 +150,33 @@ std::string GetEnvVarOrDefault(const char* env_var_name,
 }
 
 std::string GetPeerConnectionString() {
-  //return GetEnvVarOrDefault("WEBRTC_CONNECT", "stun:stun.l.google.com:19302");
-  return GetEnvVarOrDefault("WEBRTC_CONNECT", "stun:stun3.l.google.com:19302");
+  return GetEnvVarOrDefault("WEBRTC_CONNECT", "stun:stun.l.google.com:19302");
 }
+
+void Natty::AddStreams() {
+  const char kStreamLabel[] = "stream_label";
+  const uint16 kDefaultServerPort = 8888;
+  const char kAudioLabel[] = "audio_label";
+  if (active_streams_.find(kStreamLabel) != active_streams_.end())
+    return;  // Already added.
+
+  rtc::scoped_refptr<webrtc::AudioTrackInterface> audio_track(
+      peer_connection_factory_->CreateAudioTrack(
+          kAudioLabel, peer_connection_factory_->CreateAudioSource(NULL)));
+
+  rtc::scoped_refptr<webrtc::MediaStreamInterface> stream =
+      peer_connection_factory_->CreateLocalMediaStream(kStreamLabel);
+
+  stream->AddTrack(audio_track);
+  if (!peer_connection_->AddStream(stream, NULL)) {
+    LOG(LS_ERROR) << "Adding stream to PeerConnection failed";
+  }
+  typedef std::pair<std::string,
+                    rtc::scoped_refptr<webrtc::MediaStreamInterface> >
+      MediaStreamPair;
+  active_streams_.insert(MediaStreamPair(stream->label(), stream));
+}
+
 
 bool Natty::InitializePeerConnection() {
 
@@ -180,13 +204,15 @@ bool Natty::InitializePeerConnection() {
     LOG(INFO) << "Create peer connection failed";
     Shutdown();
   }
+  AddStreams();
+
+  LOG(INFO) << "Created peer connection";
 
   return peer_connection_.get() != NULL;
 }
 
 void Natty::Shutdown() {
   LOG(INFO) << "Deleting peer connection";
-
   peer_connection_ = NULL;
   peer_connection_factory_ = NULL;
   peer_id_ = -1;
@@ -357,7 +383,6 @@ void Natty::setMode(Natty::Mode m) {
 
 void Natty::Init(bool offer) {
 
-  rtc::InitializeSSL();
   InitializePeerConnection();
   if (offer) {
     Natty::setMode(Natty::OFFER);
@@ -368,7 +393,6 @@ void Natty::Init(bool offer) {
 
 void Natty::ProcessInput() {
   Natty::InputStream is;
-
   is.read(this);
 
 }

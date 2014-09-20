@@ -95,6 +95,8 @@ class Natty
 
  protected:
   ~Natty();
+ 
+  void AddStreams(); 
 
   //
   // PeerConnectionObserver implementation.

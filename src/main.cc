@@ -42,6 +42,7 @@ int main(int argc, char* argv[]) {
     rtc::LogMessage::LogToDebug(rtc::LS_VERBOSE);
   }
 
+  rtc::InitializeSSL();
   PeerConnectionClient client;
   rtc::Thread* thread = rtc::Thread::Current();
   rtc::scoped_refptr<Natty> natty(
