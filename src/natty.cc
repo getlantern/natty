@@ -26,7 +26,9 @@
 #include "talk/app/webrtc/videosourceinterface.h"
 #include "webrtc/base/common.h"
 #include "talk/p2p/base/sessiondescription.h"
+#include "talk/app/webrtc/test/fakeconstraints.h"
 #include "talk/app/webrtc/peerconnectioninterface.h"
+#include "talk/app/webrtc/portallocatorfactory.h"
 #include "talk/session/media/mediasession.h"
 #include "talk/p2p/base/constants.h"
 #include "talk/app/webrtc/datachannelinterface.h"
@@ -116,9 +118,8 @@ Natty::Natty(PeerConnectionClient* client,
     rtc::Thread* thread
     )
 : peer_id_(-1),
-  thread_(thread),
-  client_(client) {
-    client_->RegisterObserver(this);
+  highestPrioritySeen(0),
+  thread_(thread) {
   }
 
 Natty::~Natty() {
@@ -163,8 +164,7 @@ void Natty::AddStreams() {
   rtc::scoped_refptr<webrtc::AudioTrackInterface> audio_track(
       peer_connection_factory_->CreateAudioTrack(
           kAudioLabel, peer_connection_factory_->CreateAudioSource(NULL)));
-
-  rtc::scoped_refptr<webrtc::MediaStreamInterface> stream =
+  stream =
       peer_connection_factory_->CreateLocalMediaStream(kStreamLabel);
 
   stream->AddTrack(audio_track);
@@ -182,6 +182,8 @@ bool Natty::InitializePeerConnection() {
 
   IceServers servers;
   IceServer server;
+  webrtc::FakeConstraints constraints;
+  constraints.SetAllowRtpDataChannels();
 
   ASSERT(peer_connection_factory_.get() == NULL);
   ASSERT(peer_connection_.get() == NULL);
@@ -198,13 +200,15 @@ bool Natty::InitializePeerConnection() {
   server.uri = GetPeerConnectionString();
   servers.push_back(server);
 
-  peer_connection_ = peer_connection_factory_->CreatePeerConnection(servers, NULL, NULL, NULL, this);
+  peer_connection_ = peer_connection_factory_->CreatePeerConnection(servers, &constraints, allocator_factory_.get(), NULL, this);
 
   if (!peer_connection_.get()) {
     LOG(INFO) << "Create peer connection failed";
     Shutdown();
   }
   AddStreams();
+  allocator = peer_connection_->GetAllocator();
+  ASSERT(allocator != NULL);
 
   LOG(INFO) << "Created peer connection";
 
@@ -216,7 +220,7 @@ void Natty::Shutdown() {
   peer_connection_ = NULL;
   peer_connection_factory_ = NULL;
   peer_id_ = -1;
-  active_streams_.clear();
+  //active_streams_.clear();
   rtc::CleanupSSL();
   thread_->Stop();
 }
@@ -226,14 +230,22 @@ void Natty::Shutdown() {
 //
 
 void Natty::OnError() {
-  LOG(LS_ERROR) << __FUNCTION__;
+  LOG(INFO) << __FUNCTION__;
 }
 
 void Natty::OnAddStream(webrtc::MediaStreamInterface* stream) {
+  LOG(INFO) << "Successfully added stream";
 }
 
 void Natty::OnRemoveStream(webrtc::MediaStreamInterface* stream) {
   LOG(INFO) << __FUNCTION__ << " " << stream->label();
+}
+
+void Natty::OnSignalingChange(webrtc::PeerConnectionInterface::SignalingState new_state) {
+}
+
+void Natty::OnStateChange(
+    webrtc::PeerConnectionObserver::StateType state_changed) {
 }
 
 void Natty::OnIceCandidate(const webrtc::IceCandidateInterface* candidate) {
@@ -258,27 +270,14 @@ void Natty::OnRenegotiationNeeded() {
 }
 
 
-//
-// PeerConnectionClientObserver implementation.
-//
-
 void Natty::OnSignedIn() {
+  LOG(INFO) << "SIGNED IN";
 
 }
 
 void Natty::OnDisconnected() {
   printf("Disconnecting..\n");
   Shutdown();
-}
-
-void Natty::OnPeerConnected(int id, const std::string& name) {
-  LOG(INFO) << "Another peer connected " << id << " " << name;
-}
-
-void Natty::OnPeerDisconnected(int id) {
-  if (id == peer_id_) {
-    LOG(INFO) << "Our peer disconnected";
-  }
 }
 
 void Natty::ReadMessage(const std::string& message) {
@@ -299,8 +298,7 @@ void Natty::ReadMessage(const std::string& message) {
       LOG(INFO) << "Can't parse received session description message.";
       return;
     }
-    webrtc::SessionDescriptionInterface* session_description(
-        webrtc::CreateSessionDescription(type, sdp));
+    session_description = webrtc::CreateSessionDescription(type, sdp);
     if (!session_description) {
       LOG(INFO) << "Can't parse SDP message";
       return;
@@ -319,7 +317,7 @@ void Natty::ReadMessage(const std::string& message) {
   }
   else {
     std::string sdp_mid;
-    int sdp_mlineindex = 0;
+    sdp_mlineindex = 0;
     std::string sdp;
     if (!GetStringFromJsonObject(jmessage, kCandidateSdpMidName, &sdp_mid) ||
         !GetIntFromJsonObject(jmessage, kCandidateSdpMlineIndexName,
@@ -340,26 +338,49 @@ void Natty::ReadMessage(const std::string& message) {
       LOG(WARNING) << "Failed to apply the received candidate";
       return;
     }
+    LOG(INFO) << candidate.get()->candidate().ToString();
     LOG(INFO) << " Received candidate :" << message;
+    IterateIceCandidates();
     return;
   }
 };
 
-void Natty::OnMessageFromPeer(int peer_id, const std::string& message) {
-
+void Natty::Output5Tuple(const cricket::Candidate *cand) {
+   const char kStreamLabel[] = "stream_label";
+   Json::FastWriter writer;
+   Json::Value jmessage;
+   jmessage["remote"] = cand->address().ToString();
+   jmessage["local"] = cand->related_address().ToString();
+   jmessage["type"] = cand->protocol();
+   outfile << writer.write(jmessage);
+   outfile.flush();
+   peer_connection_->RemoveStream(stream);
+   Shutdown();
 }
+
+void Natty::IterateIceCandidates() {
+  const webrtc::IceCandidateCollection* candidates = 
+      session_description->candidates(sdp_mlineindex);
+
+  for (size_t i = 0; i < candidates->count(); ++i) {
+    const cricket::Candidate *cand = &candidates->at(i)->candidate();
+    if (cand->type() == "stun") {
+      Output5Tuple(cand);
+      return;
+    } 
+  }
+}
+
+/*void Natty::OutputFiveTuple(webrtc::IceCandidateInterface* candidate) {
+  
+} */
 
 void Natty::OnDataChannel(webrtc::DataChannelInterface* data_channel) {
   LOG(INFO) << "New data channel created " << data_channel;
 }
 
-void Natty::OnMessageSent(int err) {
-
-}
-
 void Natty::OnIceComplete() {
   LOG(INFO) << "ICE finished gathering candidates!";
-  //Natty::Shutdown();
 }
 
 // PeerConnectionObserver implementation.
@@ -382,11 +403,12 @@ void Natty::setMode(Natty::Mode m) {
 }
 
 void Natty::Init(bool offer) {
-
   InitializePeerConnection();
   if (offer) {
     Natty::setMode(Natty::OFFER);
-    peer_connection_->CreateOffer(this, NULL);
+    webrtc::FakeConstraints constraints;
+    constraints.SetAllowRtpDataChannels();
+    peer_connection_->CreateOffer(this, &constraints);
     sleep(1);
   }
 }
@@ -433,10 +455,5 @@ void Natty::OnFailure(const std::string& error) {
 
 void Natty::SendMessage(const std::string& json_object) {
 
-}
-
-void Natty::DisconnectFromServer() {
-  if (client_->is_connected())
-    client_->SignOut();
 }
 

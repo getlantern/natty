@@ -28,7 +28,9 @@
 
 #include "webrtc/base/socketaddress.h"
 #include "peer_connection_client.h"
+#include "talk/app/webrtc/portallocatorfactory.h"
 #include "talk/app/webrtc/mediastreaminterface.h"
+#include "talk/app/webrtc/peerconnection.h"
 #include "talk/app/webrtc/peerconnectioninterface.h"
 #include "talk/app/webrtc/datachannelinterface.h"
 #include "webrtc/base/scoped_ptr.h"
@@ -74,8 +76,7 @@ class NattySocket : public rtc::PhysicalSocketServer {
 
 class Natty
   : public webrtc::PeerConnectionObserver,
-    public webrtc::CreateSessionDescriptionObserver,
-    public PeerConnectionClientObserver {
+    public webrtc::CreateSessionDescriptionObserver {
  public:
   Natty(PeerConnectionClient* client, rtc::Thread* thread
       );
@@ -103,11 +104,12 @@ class Natty
   //
   virtual void OnError();
   virtual void OnStateChange(
-      webrtc::PeerConnectionObserver::StateType state_changed) {};
-  virtual void OnAddStream(webrtc::MediaStreamInterface* stream);
+      webrtc::PeerConnectionObserver::StateType state_changed);
+  virtual void OnSignalingChange(webrtc::PeerConnectionInterface::SignalingState new_state);
+
+    virtual void OnAddStream(webrtc::MediaStreamInterface* stream);
   virtual void OnRemoveStream(webrtc::MediaStreamInterface* stream);
   virtual void OnRenegotiationNeeded();
-  virtual void OnIceChange() {};
   virtual void OnIceComplete();
 
   virtual void OnDataChannel(webrtc::DataChannelInterface *data_channel);
@@ -116,15 +118,10 @@ class Natty
   virtual void OnSignedIn();
 
   virtual void OnDisconnected();
-  virtual void DisconnectFromServer();
 
-  virtual void OnPeerConnected(int id, const std::string& name);
+  virtual void IterateIceCandidates();
 
-  virtual void OnPeerDisconnected(int id);
-
-  virtual void OnMessageFromPeer(int peer_id, const std::string& message);
-
-  virtual void OnMessageSent(int err);
+  virtual void Output5Tuple(const cricket::Candidate *cand);
 
 
   virtual void OnServerConnectionFailure();
@@ -139,11 +136,23 @@ class Natty
 
   int peer_id_;
   rtc::Thread* thread_;
+  rtc::scoped_refptr<webrtc::MediaStreamInterface> stream;
+
   rtc::scoped_refptr<webrtc::PeerConnectionInterface> peer_connection_;
   rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface>
       peer_connection_factory_;
   PeerConnectionClient* client_;
   std::deque<std::string*> pending_messages_;
+
+
+
+  webrtc::SessionDescriptionInterface* session_description;
+  int sdp_mlineindex;
+  rtc::scoped_refptr<webrtc::PortAllocatorFactoryInterface> allocator_factory_;
+  cricket::PortAllocator* allocator;
+
+  uint32 highestPrioritySeen;
+  const cricket::Candidate *bestCandidate;
 
   /* stdout */
   std::ofstream outfile;
