@@ -237,8 +237,12 @@ void Natty::OnAddStream(webrtc::MediaStreamInterface* stream) {
   LOG(INFO) << "Successfully added stream";
 }
 
+/* the answerer removes his media stream before disconnecting
+ * this is triggered when that happens and means we
+ * were able to communicate 
+ */
 void Natty::OnRemoveStream(webrtc::MediaStreamInterface* stream) {
-  LOG(INFO) << __FUNCTION__ << " " << stream->label();
+  PickFinalCandidate();
 }
 
 void Natty::OnSignalingChange(webrtc::PeerConnectionInterface::SignalingState new_state) {
@@ -267,17 +271,6 @@ void Natty::OnIceCandidate(const webrtc::IceCandidateInterface* candidate) {
 
 void Natty::OnRenegotiationNeeded() {
   LOG(INFO) << "Renegotiation needed";
-}
-
-
-void Natty::OnSignedIn() {
-  LOG(INFO) << "SIGNED IN";
-
-}
-
-void Natty::OnDisconnected() {
-  printf("Disconnecting..\n");
-  Shutdown();
 }
 
 void Natty::ReadMessage(const std::string& message) {
@@ -340,7 +333,7 @@ void Natty::ReadMessage(const std::string& message) {
     }
     LOG(INFO) << candidate.get()->candidate().ToString();
     LOG(INFO) << " Received candidate :" << message;
-    IterateIceCandidates();
+    PickFinalCandidate();
     return;
   }
 };
@@ -358,7 +351,7 @@ void Natty::Output5Tuple(const cricket::Candidate *cand) {
    Shutdown();
 }
 
-void Natty::IterateIceCandidates() {
+void Natty::PickFinalCandidate() {
   const webrtc::IceCandidateCollection* candidates = 
       session_description->candidates(sdp_mlineindex);
 
@@ -370,10 +363,6 @@ void Natty::IterateIceCandidates() {
     } 
   }
 }
-
-/*void Natty::OutputFiveTuple(webrtc::IceCandidateInterface* candidate) {
-  
-} */
 
 void Natty::OnDataChannel(webrtc::DataChannelInterface* data_channel) {
   LOG(INFO) << "New data channel created " << data_channel;

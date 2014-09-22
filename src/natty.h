@@ -115,11 +115,7 @@ class Natty
   virtual void OnDataChannel(webrtc::DataChannelInterface *data_channel);
   virtual void OnIceCandidate(const webrtc::IceCandidateInterface* candidate);
 
-  virtual void OnSignedIn();
-
-  virtual void OnDisconnected();
-
-  virtual void IterateIceCandidates();
+  virtual void PickFinalCandidate();
 
   virtual void Output5Tuple(const cricket::Candidate *cand);
 
