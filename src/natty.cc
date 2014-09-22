@@ -246,6 +246,11 @@ void Natty::OnRemoveStream(webrtc::MediaStreamInterface* stream) {
 }
 
 void Natty::OnSignalingChange(webrtc::PeerConnectionInterface::SignalingState new_state) {
+  if (new_state == webrtc::PeerConnectionInterface::SignalingState::kClosed || 
+      new_state == webrtc::PeerConnectionInterface::SignalingState::kHaveRemotePrAnswer
+      ) {
+    PickFinalCandidate();
+  }
 }
 
 void Natty::OnStateChange(
