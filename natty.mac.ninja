@@ -332,7 +332,7 @@ build natty: link $
       FULL_PRODUCT_NAME=natty; export $
       PRODUCT_NAME=natty; export $
       PRODUCT_TYPE=com.apple.product-type.tool; export $
-      SDKROOT=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk; $
+      SDKROOT=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk; $
       export $
       SRCROOT=./src; $
       export SOURCE_ROOT="$${SRCROOT}"; export $
