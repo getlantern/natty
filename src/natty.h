@@ -36,35 +36,11 @@
 #include "webrtc/base/ssladapter.h"
 #include "webrtc/base/json.h"
 
-struct NattyMessage : public rtc::MessageData {
-  explicit NattyMessage(std::string body) : body_(body) {}
-  virtual ~NattyMessage() {}
-
-  std::string body_;
-};             
-
-class MessageClient : public rtc::MessageHandler {
- public:
-  MessageClient(rtc::Thread* pth, rtc::Socket* socket)
-    : thread_(pth), socket_(socket) {
-    }
-
-  virtual void OnMessage(rtc::Message *pmsg);
-  virtual ~MessageClient();
-
- private:
-  rtc::Thread* thread_;
-  rtc::Socket* socket_;
-};
-
-
 class Natty
   : public webrtc::PeerConnectionObserver,
     public webrtc::CreateSessionDescriptionObserver {
  public:
   Natty(rtc::Thread* thread);
-
-  static const int DELAY_INTERVAL = 3;
 
   bool connection_active() const;
 
@@ -75,7 +51,6 @@ class Natty
   void ProcessInput();
   virtual void ReadMessage(const std::string& message);
   
-
  protected:
   ~Natty();
  
@@ -110,9 +85,6 @@ class Natty
   virtual void OnFailure(const std::string& error);
 
  protected:
-  // Send a message to the remote peer.
-  void SendMessage(const std::string& json_object);
-
   int peer_id_;
   rtc::Thread* thread_;
   rtc::scoped_refptr<webrtc::MediaStreamInterface> stream;

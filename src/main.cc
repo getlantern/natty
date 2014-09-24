@@ -43,6 +43,8 @@ int main(int argc, char* argv[]) {
 
   rtc::InitializeSSL();
   rtc::Thread* thread = rtc::Thread::Current();
+  /* Scopers help maintain ownership of a pointer
+   */
   rtc::scoped_refptr<Natty> natty(
       new rtc::RefCountedObject<Natty>(thread));
 

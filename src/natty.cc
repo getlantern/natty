@@ -54,7 +54,6 @@ const char kSessionDescriptionTypeName[] = "type";
 const char kSessionDescriptionSdpName[] = "sdp";
 
 void Natty::InputStream::read(Natty* natty) {
-  //std::ifstream filein("cand-input.txt");
   while (getline(std::cin, input)) {
     /* need to remove new lines or the SDP won't be valid */
     if (input == "exit") {
@@ -98,16 +97,6 @@ class NattySessionObserver
     NattySessionObserver() {}
     ~NattySessionObserver() {}
 };
-
-MessageClient::~MessageClient() {
-  delete socket_;
-}
-
-void MessageClient::OnMessage(rtc::Message *pmsg) {
-  NattyMessage* msg = static_cast<NattyMessage*>(pmsg->pdata);
-  
-  delete msg;
-}
 
 
 Natty::Natty(rtc::Thread* thread
@@ -452,9 +441,5 @@ void Natty::OnSuccess(SessionDescriptionInterface* desc) {
 
 void Natty::OnFailure(const std::string& error) {
   LOG(LERROR) << error;
-}
-
-void Natty::SendMessage(const std::string& json_object) {
-
 }
 
