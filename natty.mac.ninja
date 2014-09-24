@@ -230,10 +230,6 @@ build $
     cxx src/natty.cc || $
     build/trunk/out/Release/natty.compile_depends.stamp
 build $
-    out/natty/client/client.peer_connection_client.o: $
-    cxx src/peer_connection_client.cc || $
-    build/trunk/out/Release/natty.compile_depends.stamp
-build $
     out/natty/client/client.main.o: $
     cxx src/main.cc || $
     build/trunk/out/Release/natty.compile_depends.stamp
@@ -253,7 +249,6 @@ libs = -framework Security -framework CoreFoundation -framework $
     CoreAudio
 build natty: link $
     out/natty/client/client.natty.o $
-    out/natty/client/client.peer_connection_client.o $
     out/natty/client/client.main.o $
     build/trunk/out/Release/libjingle.a $
     build/trunk/out/Release/libjingle_p2p.a $
