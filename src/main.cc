@@ -16,7 +16,6 @@
  */
 
 #include "natty.h"
-#include "peer_connection_client.h"
 
 #include "webrtc/base/thread.h"
 #include "webrtc/base/logging.h"
@@ -43,10 +42,9 @@ int main(int argc, char* argv[]) {
   }
 
   rtc::InitializeSSL();
-  PeerConnectionClient client;
   rtc::Thread* thread = rtc::Thread::Current();
   rtc::scoped_refptr<Natty> natty(
-      new rtc::RefCountedObject<Natty>(&client, thread));
+      new rtc::RefCountedObject<Natty>(thread));
 
   natty.get()->OpenDumpFile(FLAG_out);
   natty.get()->Init(FLAG_offer); 

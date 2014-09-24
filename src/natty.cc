@@ -99,11 +99,6 @@ class NattySessionObserver
     ~NattySessionObserver() {}
 };
 
-bool NattySocket::Wait(int cms, bool process_io) {
-  return rtc::PhysicalSocketServer::Wait(-1,
-        process_io);
-}
-
 MessageClient::~MessageClient() {
   delete socket_;
 }
@@ -115,8 +110,7 @@ void MessageClient::OnMessage(rtc::Message *pmsg) {
 }
 
 
-Natty::Natty(PeerConnectionClient* client,
-    rtc::Thread* thread
+Natty::Natty(rtc::Thread* thread
     )
 : peer_id_(-1),
   highestPrioritySeen(0),
@@ -132,10 +126,6 @@ Natty::~Natty() {
 
 bool Natty::connection_active() const {
   return peer_connection_.get() != NULL;
-}
-
-PeerConnectionClient* Natty::GetClient() {
-  return client_;
 }
 
 std::string GetEnvVarOrDefault(const char* env_var_name,

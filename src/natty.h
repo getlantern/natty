@@ -27,7 +27,6 @@
 #include <fstream>
 
 #include "webrtc/base/socketaddress.h"
-#include "peer_connection_client.h"
 #include "talk/app/webrtc/portallocatorfactory.h"
 #include "talk/app/webrtc/mediastreaminterface.h"
 #include "talk/app/webrtc/peerconnection.h"
@@ -59,27 +58,11 @@ class MessageClient : public rtc::MessageHandler {
 };
 
 
-class NattySocket : public rtc::PhysicalSocketServer {
- public:
-  NattySocket(rtc::Thread* thread) :
-     thread_(thread) {
-
-  }
-
-  virtual ~NattySocket() {};
-
-  virtual bool Wait(int cms, bool process_io);
-
- protected:
-  rtc::Thread* thread_;
-};
-
 class Natty
   : public webrtc::PeerConnectionObserver,
     public webrtc::CreateSessionDescriptionObserver {
  public:
-  Natty(PeerConnectionClient* client, rtc::Thread* thread
-      );
+  Natty(rtc::Thread* thread);
 
   static const int DELAY_INTERVAL = 3;
 
@@ -87,7 +70,6 @@ class Natty
 
   virtual void Init(bool mode);
   virtual void OpenDumpFile(const std::string& filename);
-  PeerConnectionClient* GetClient();
   bool InitializePeerConnection();
   void Shutdown();
   void ProcessInput();
@@ -138,7 +120,6 @@ class Natty
   rtc::scoped_refptr<webrtc::PeerConnectionInterface> peer_connection_;
   rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface>
       peer_connection_factory_;
-  PeerConnectionClient* client_;
   std::deque<std::string*> pending_messages_;
 
 
