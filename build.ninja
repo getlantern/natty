@@ -306,6 +306,7 @@ build py_proto: phony obj/third_party/protobuf/py_proto.actions_rules_copies.sta
 build ssl: phony obj/net/third_party/nss/libcrssl.a
 build gtest_main: phony obj/testing/libgtest_main.a
 build video_capture_module: phony obj/webrtc/modules/libvideo_capture_module.a
+build video_capture_module_impl: phony obj/webrtc/modules/libvideo_capture_module_impl.a
 build genperf_libs: phony obj/third_party/yasm/libgenperf_libs.a
 build common_video: phony obj/webrtc/common_video/libcommon_video.a
 build libjpeg: phony obj/third_party/libjpeg_turbo/libjpeg_turbo.a
@@ -339,6 +340,7 @@ build libjingle_unittest_run: phony libjingle_unittest.isolated
 build NetEqTestTools: phony obj/webrtc/modules/libNetEqTestTools.a
 build bwe_tools_util: phony obj/webrtc/modules/libbwe_tools_util.a
 build video_render_module: phony obj/webrtc/modules/libvideo_render_module.a
+build video_render_module_impl: phony obj/webrtc/modules/libvideo_render_module_impl.a
 build voice_engine_unittests_run: phony voice_engine_unittests.isolated
 build webrtc_i420: phony obj/webrtc/modules/libwebrtc_i420.a
 build libyuv: phony libyuv.a
@@ -451,14 +453,14 @@ build all: phony libjingle_peerconnection_test.jar obj/third_party/icu/libicuuc.
     obj/webrtc/system_wrappers/source/libsystem_wrappers.a obj/talk/libjingle_p2p.a common_video_unittests.isolated $
     obj/webrtc/modules/libNetEqTestTools.a NetEqRTPplay obj/webrtc/modules/libaudio_coding_module.a frame_editor $
     g711_test common_audio_unittests.isolated obj/webrtc/modules/libvideo_codecs_test_framework.a $
-    obj/webrtc/modules/libvideo_capture_module.a test_support_unittests.isolated common_audio_unittests $
+    obj/webrtc/modules/libvideo_capture_module.a obj/webrtc/modules/libvideo_capture_module_impl.a test_support_unittests.isolated common_audio_unittests $
     iSACSwitchSampRateTest obj/net/third_party/nss/libcrssl.a obj/All.actions_depends.stamp $
     obj/webrtc/modules/libbitrate_controller.a test_support_unittests libyuv.a obj/webrtc/test/libchannel_transport.a $
     obj/third_party/libvpx/gen_asm_offsets_vp8.actions_rules_copies.stamp libjingle_sound_unittest $
     voice_engine_unittests modules_unittests.isolated obj/third_party/gflags/libgflags.a $
     obj/webrtc/common_video/libcommon_video.a RTPchange obj/webrtc/modules/libG722.a obj/webrtc/modules/libiSAC.a $
     modules_tests genversion vie_auto_test.isolated obj/third_party/libsrtp/libsrtp.a modules_unittests $
-    obj/third_party/libvpx/libvpx_intrinsics_ssse3.a obj/webrtc/modules/libvideo_render_module.a $
+    obj/third_party/libvpx/libvpx_intrinsics_ssse3.a obj/webrtc/modules/libvideo_render_module.a obj/webrtc/modules/libvideo_render_module_impl.a $
     obj/webrtc/modules/libacm2.a obj/talk/libjingle_unittest_main.a obj/webrtc/test/libwebrtc_test_common.a $
     obj/talk/libjingle.a obj/webrtc/modules/libdesktop_capture_differ_sse2.a delay_test libjingle_p2p_unittest $
     rtp_to_text obj/third_party/protobuf/libprotobuf_full_do_not_use.a obj/third_party/libjpeg_turbo/libjpeg_turbo.a $

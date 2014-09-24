@@ -188,8 +188,8 @@ bool Natty::InitializePeerConnection() {
     Shutdown();
   }
   AddStreams();
-  allocator = peer_connection_->GetAllocator();
-  ASSERT(allocator != NULL);
+  // allocator = peer_connection_->GetAllocator();
+  // ASSERT(allocator != NULL);
 
   LOG(INFO) << "Created peer connection";
 
@@ -365,9 +365,10 @@ void Natty::Output5Tuple(const cricket::Candidate *cand) {
    const char kStreamLabel[] = "stream_label";
    Json::FastWriter writer;
    Json::Value jmessage;
+   jmessage["type"] = "5-tuple";
    jmessage["remote"] = cand->address().ToString();
    jmessage["local"] = cand->related_address().ToString();
-   jmessage["type"] = cand->protocol();
+   jmessage["proto"] = cand->protocol();
    outfile << writer.write(jmessage);
    outfile.flush();
    peer_connection_->RemoveStream(stream);
