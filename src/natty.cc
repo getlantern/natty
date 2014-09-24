@@ -322,6 +322,15 @@ void Natty::ReadMessage(const std::string& message) {
   }
 };
 
+/* Grabs the transport channel from the session description 
+ *
+ * Note from source: The Session object hosts the P2PTransport object and
+ * requests creation of data channels. Although the Session object can
+ * potentially host multiple instances and subclasses of Transport objects, the
+ * current version of the code only defines and uses one instance of the
+ * P2PTransport subclass.
+ *
+ */
 void Natty::InspectTransportChannel() {
   const SessionDescriptionInterface* remote = 
       peer_connection_->remote_description();
@@ -338,6 +347,19 @@ void Natty::InspectTransportChannel() {
     }
   }
 }
+
+/* This function is used to emit 5-tuples within the
+ * P2PTransportChannel to stdout
+ *
+ * P2PTransportChannel represents a data channel between the local and remote
+ * computers. This channel actually obscures a complex system designed for
+ * robustness and performance. P2PTransportChannel manages a number of different
+ * Connection objects, each of which is specialized for a different connection
+ * type (UDP, TCP, etc). A Connection object actually wraps a pair of objects: a
+ * Port subclass, representing the local connection; and an address representing
+ * the remote connection. If a particular connection fails, P2PTransportChannel
+ * will seamlessly switch to the next best connection.
+ */
 
 void Natty::Output5Tuple(const cricket::Candidate *cand) {
    const char kStreamLabel[] = "stream_label";
