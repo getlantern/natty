@@ -102,6 +102,7 @@ class Natty
   //
   // PeerConnectionObserver implementation.
   //
+  virtual void InspectTransportChannel();
   virtual void OnError();
   virtual void OnStateChange(
       webrtc::PeerConnectionObserver::StateType state_changed);

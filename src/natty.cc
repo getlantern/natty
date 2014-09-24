@@ -37,6 +37,7 @@
 #include "talk/media/devices/devicemanager.h"
 
 using namespace std;
+using namespace webrtc;
 
 #define DEBUG(fmt, ...) printf("%s:%d: " fmt, __FILE__, __LINE__, __VA_ARGS__);
 
@@ -45,8 +46,8 @@ const char kCandidateSdpMidName[] = "sdpMid";
 const char kCandidateSdpMlineIndexName[] = "sdpMLineIndex";
 const char kCandidateSdpName[] = "candidate";
 
-typedef webrtc::PeerConnectionInterface::IceServers IceServers;
-typedef webrtc::PeerConnectionInterface::IceServer IceServer;;
+typedef PeerConnectionInterface::IceServers IceServers;
+typedef PeerConnectionInterface::IceServer IceServer;;
 
 // Names used for a SessionDescription JSON object.
 const char kSessionDescriptionTypeName[] = "type";
@@ -80,7 +81,7 @@ string Natty::InputStream::build() const {
 }
 
 class NattySessionObserver
-: public webrtc::SetSessionDescriptionObserver {
+: public SetSessionDescriptionObserver {
   public:
     static NattySessionObserver* Create() {
       return
@@ -161,7 +162,7 @@ void Natty::AddStreams() {
   if (active_streams_.find(kStreamLabel) != active_streams_.end())
     return;  // Already added.
 
-  rtc::scoped_refptr<webrtc::AudioTrackInterface> audio_track(
+  rtc::scoped_refptr<AudioTrackInterface> audio_track(
       peer_connection_factory_->CreateAudioTrack(
           kAudioLabel, peer_connection_factory_->CreateAudioSource(NULL)));
   stream =
@@ -172,7 +173,7 @@ void Natty::AddStreams() {
     LOG(LS_ERROR) << "Adding stream to PeerConnection failed";
   }
   typedef std::pair<std::string,
-                    rtc::scoped_refptr<webrtc::MediaStreamInterface> >
+                    rtc::scoped_refptr<MediaStreamInterface> >
       MediaStreamPair;
   active_streams_.insert(MediaStreamPair(stream->label(), stream));
 }
@@ -182,13 +183,13 @@ bool Natty::InitializePeerConnection() {
 
   IceServers servers;
   IceServer server;
-  webrtc::FakeConstraints constraints;
-  constraints.SetAllowRtpDataChannels();
+  //FakeConstraints constraints;
+  //constraints.SetAllowRtpDataChannels();
 
   ASSERT(peer_connection_factory_.get() == NULL);
   ASSERT(peer_connection_.get() == NULL);
 
-  peer_connection_factory_  = webrtc::CreatePeerConnectionFactory();
+  peer_connection_factory_  = CreatePeerConnectionFactory();
 
   if (!peer_connection_factory_.get()) {
     LOG(INFO) << "Failed to initialize peer connection factory";
@@ -200,7 +201,8 @@ bool Natty::InitializePeerConnection() {
   server.uri = GetPeerConnectionString();
   servers.push_back(server);
 
-  peer_connection_ = peer_connection_factory_->CreatePeerConnection(servers, &constraints, allocator_factory_.get(), NULL, this);
+  peer_connection_ = peer_connection_factory_->CreatePeerConnection(servers, NULL, NULL, NULL, this);
+//  peer_connection_ = peer_connection_factory_->CreatePeerConnection(servers, &constraints, allocator_factory_.get(), NULL, this);
 
   if (!peer_connection_.get()) {
     LOG(INFO) << "Create peer connection failed";
@@ -233,7 +235,7 @@ void Natty::OnError() {
   LOG(INFO) << __FUNCTION__;
 }
 
-void Natty::OnAddStream(webrtc::MediaStreamInterface* stream) {
+void Natty::OnAddStream(MediaStreamInterface* stream) {
   LOG(INFO) << "Successfully added stream";
 }
 
@@ -241,23 +243,20 @@ void Natty::OnAddStream(webrtc::MediaStreamInterface* stream) {
  * this is triggered when that happens and means we
  * were able to communicate 
  */
-void Natty::OnRemoveStream(webrtc::MediaStreamInterface* stream) {
-  PickFinalCandidate();
+void Natty::OnRemoveStream(MediaStreamInterface* stream) {
+  LOG(INFO) << "Successfully removed stream";
+  //PickFinalCandidate();
 }
 
-void Natty::OnSignalingChange(webrtc::PeerConnectionInterface::SignalingState new_state) {
-  if (new_state == webrtc::PeerConnectionInterface::SignalingState::kClosed || 
-      new_state == webrtc::PeerConnectionInterface::SignalingState::kHaveRemotePrAnswer
-      ) {
-    PickFinalCandidate();
-  }
+void Natty::OnSignalingChange(PeerConnectionInterface::SignalingState new_state) {
+  LOG(INFO) << "Signaling change";
 }
 
 void Natty::OnStateChange(
-    webrtc::PeerConnectionObserver::StateType state_changed) {
+    PeerConnectionObserver::StateType state_changed) {
 }
 
-void Natty::OnIceCandidate(const webrtc::IceCandidateInterface* candidate) {
+void Natty::OnIceCandidate(const IceCandidateInterface* candidate) {
   Json::FastWriter writer;
   Json::Value jmessage;
 
@@ -296,7 +295,7 @@ void Natty::ReadMessage(const std::string& message) {
       LOG(INFO) << "Can't parse received session description message.";
       return;
     }
-    session_description = webrtc::CreateSessionDescription(type, sdp);
+    session_description = CreateSessionDescription(type, sdp);
     if (!session_description) {
       LOG(INFO) << "Can't parse SDP message";
       return;
@@ -305,11 +304,12 @@ void Natty::ReadMessage(const std::string& message) {
 
     peer_connection_->SetRemoteDescription(
         NattySessionObserver::Create(), session_description);
-    sleep(1);
     if (session_description->type() ==
-        webrtc::SessionDescriptionInterface::kOffer) {
+        SessionDescriptionInterface::kOffer) {
       peer_connection_->CreateAnswer(this, NULL);
-      sleep(1);
+      LOG(INFO) << "signaling state " << peer_connection_->signaling_state();
+      sleep(3);
+
     }
     return;
   }
@@ -324,8 +324,8 @@ void Natty::ReadMessage(const std::string& message) {
       LOG(INFO) << "Can't parse received message";
       return;
     }
-    rtc::scoped_ptr<webrtc::IceCandidateInterface> candidate(
-        webrtc::CreateIceCandidate(sdp_mid, sdp_mlineindex, sdp));
+    rtc::scoped_ptr<IceCandidateInterface> candidate(
+        CreateIceCandidate(sdp_mid, sdp_mlineindex, sdp));
     LOG(INFO) << "Remote candidate information";
 
     if (!candidate.get()) {
@@ -338,10 +338,27 @@ void Natty::ReadMessage(const std::string& message) {
     }
     LOG(INFO) << candidate.get()->candidate().ToString();
     LOG(INFO) << " Received candidate :" << message;
-    PickFinalCandidate();
+    InspectTransportChannel();
     return;
   }
 };
+
+void Natty::InspectTransportChannel() {
+  const SessionDescriptionInterface* remote = 
+      peer_connection_->remote_description();
+  const cricket::SessionDescription* desc = remote->description();
+  const cricket::TransportInfos transport_infos = desc->transport_infos();
+  for (size_t i = 0; i < transport_infos.size(); ++i) {
+    const cricket::TransportInfo transport1 = transport_infos.at(i);
+    cricket::TransportDescription transport_desc = transport1.description;
+    LOG(INFO) << "transport desc connection role " << transport_desc.connection_role;
+    typedef std::vector<cricket::Candidate> Candidates;
+    Candidates cands = transport_desc.candidates;
+    for (size_t j = 0; j < cands.size(); ++j) {
+      LOG(INFO) << "candindate -> " << cands.at(j).ToString() << "\n";
+    }
+  }
+}
 
 void Natty::Output5Tuple(const cricket::Candidate *cand) {
    const char kStreamLabel[] = "stream_label";
@@ -357,7 +374,7 @@ void Natty::Output5Tuple(const cricket::Candidate *cand) {
 }
 
 void Natty::PickFinalCandidate() {
-  const webrtc::IceCandidateCollection* candidates = 
+  const IceCandidateCollection* candidates = 
       session_description->candidates(sdp_mlineindex);
 
   for (size_t i = 0; i < candidates->count(); ++i) {
@@ -369,7 +386,7 @@ void Natty::PickFinalCandidate() {
   }
 }
 
-void Natty::OnDataChannel(webrtc::DataChannelInterface* data_channel) {
+void Natty::OnDataChannel(DataChannelInterface* data_channel) {
   LOG(INFO) << "New data channel created " << data_channel;
 }
 
@@ -400,7 +417,7 @@ void Natty::Init(bool offer) {
   InitializePeerConnection();
   if (offer) {
     Natty::setMode(Natty::OFFER);
-    webrtc::FakeConstraints constraints;
+    FakeConstraints constraints;
     constraints.SetAllowRtpDataChannels();
     peer_connection_->CreateOffer(this, &constraints);
     sleep(1);
@@ -428,7 +445,7 @@ void Natty::OpenDumpFile(const std::string& filename) {
   }
 }
 
-void Natty::OnSuccess(webrtc::SessionDescriptionInterface* desc) {
+void Natty::OnSuccess(SessionDescriptionInterface* desc) {
   LOG(INFO) << "Setting local description";
   peer_connection_->SetLocalDescription(
       NattySessionObserver::Create(), desc);
