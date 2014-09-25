@@ -162,8 +162,8 @@ bool Natty::InitializePeerConnection() {
 
   IceServers servers;
   IceServer server;
-  //FakeConstraints constraints;
-  //constraints.SetAllowRtpDataChannels();
+  FakeConstraints constraints;
+  constraints.SetAllowRtpDataChannels();
 
   ASSERT(peer_connection_factory_.get() == NULL);
   ASSERT(peer_connection_.get() == NULL);
@@ -180,14 +180,17 @@ bool Natty::InitializePeerConnection() {
   server.uri = GetPeerConnectionString();
   servers.push_back(server);
 
-  peer_connection_ = peer_connection_factory_->CreatePeerConnection(servers, NULL, NULL, NULL, this);
-//  peer_connection_ = peer_connection_factory_->CreatePeerConnection(servers, &constraints, allocator_factory_.get(), NULL, this);
+  //peer_connection_ = peer_connection_factory_->CreatePeerConnection(servers, NULL, NULL, NULL, this);
+  peer_connection_ = peer_connection_factory_->CreatePeerConnection(servers, &constraints, NULL, NULL, this);
+  webrtc::InternalDataChannelInit dci;
+  dci.reliable = false;
+  peer_connection_->CreateDataChannel("datachannel", &dci);
 
   if (!peer_connection_.get()) {
     LOG(INFO) << "Create peer connection failed";
     Shutdown();
   }
-  AddStreams();
+  //AddStreams();
   // allocator = peer_connection_->GetAllocator();
   // ASSERT(allocator != NULL);
 
@@ -256,6 +259,10 @@ void Natty::OnRenegotiationNeeded() {
   LOG(INFO) << "Renegotiation needed";
 }
 
+/* New message arrived on stdin
+ *
+ * this is used on the answerer side
+ */
 void Natty::ReadMessage(const std::string& message) {
   Json::Reader reader;
   Json::Value jmessage;
@@ -287,8 +294,6 @@ void Natty::ReadMessage(const std::string& message) {
         SessionDescriptionInterface::kOffer) {
       peer_connection_->CreateAnswer(this, NULL);
       LOG(INFO) << "signaling state " << peer_connection_->signaling_state();
-      sleep(3);
-
     }
     return;
   }
@@ -317,7 +322,8 @@ void Natty::ReadMessage(const std::string& message) {
     }
     LOG(INFO) << candidate.get()->candidate().ToString();
     LOG(INFO) << " Received candidate :" << message;
-    InspectTransportChannel();
+    sleep(2);
+    //InspectTransportChannel();
     return;
   }
 };
