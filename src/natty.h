@@ -67,18 +67,14 @@ class Natty
 
     virtual void OnAddStream(webrtc::MediaStreamInterface* stream);
   virtual void OnRemoveStream(webrtc::MediaStreamInterface* stream);
-  virtual void OnRenegotiationNeeded();
   virtual void OnIceConnectionChange(webrtc::PeerConnection::IceConnectionState new_state);
+  virtual void OnRenegotiationNeeded();
   virtual void OnIceComplete();
 
   virtual void OnDataChannel(webrtc::DataChannelInterface *data_channel);
   virtual void OnIceCandidate(const webrtc::IceCandidateInterface* candidate);
 
-  virtual void PickFinalCandidate();
   virtual void OnFailure(const std::string& msg);
-
-  virtual void Output5Tuple(const cricket::Candidate *cand);
-
 
   virtual void OnServerConnectionFailure();
 

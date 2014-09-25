@@ -184,10 +184,11 @@ bool Natty::InitializePeerConnection() {
   servers.push_back(server);
 
   //peer_connection_ = peer_connection_factory_->CreatePeerConnection(servers, NULL, NULL, NULL, this);
-  peer_connection_ = peer_connection_factory_->CreatePeerConnection(servers, &constraints, NULL, NULL, this);
+  peer_connection_ = peer_connection_factory_->CreatePeerConnection(servers, NULL, NULL, NULL, this);
   webrtc::InternalDataChannelInit dci;
   dci.reliable = false;
-  peer_connection_->CreateDataChannel("datachannel", &dci);
+  //peer_connection_->CreateDataChannel("datachannel", &dci);
+  AddStreams();
 
   if (!peer_connection_.get()) {
     LOG(INFO) << "Create peer connection failed";
@@ -208,7 +209,8 @@ void Natty::Shutdown() {
   peer_id_ = -1;
   //active_streams_.clear();
   rtc::CleanupSSL();
-  thread_->Stop();
+  exit(0);
+  //thread_->Stop();
 }
 
 //
@@ -231,7 +233,6 @@ void Natty::OnAddStream(MediaStreamInterface* stream) {
 void Natty::OnRemoveStream(MediaStreamInterface* stream) {
   LOG(INFO) << "Successfully removed stream";
   stream->AddRef(); 
-  //PickFinalCandidate();
 }
 
 void Natty::OnSignalingChange(PeerConnectionInterface::SignalingState new_state) {
@@ -266,13 +267,13 @@ void Natty::OnIceCandidate(const IceCandidateInterface* candidate) {
  */
 void Natty::OnIceConnectionChange(PeerConnection::IceConnectionState new_state) {
   LOG(INFO) << "New connection state " << new_state;
-  if (new_state == PeerConnection::kIceConnectionCompleted ||
+  if (new_state == PeerConnection::kIceConnectionConnected ||
+      new_state == PeerConnection::kIceConnectionCompleted ||
       new_state == PeerConnection::kIceConnectionClosed) {
     /* The ICE agent has finished gathering and checking and found a connection
      * for all components.
      */
     LOG(INFO) << "Found ideal connection";
-    PickFinalCandidate();
     Shutdown();
   } else if (new_state == PeerConnection::kIceConnectionFailed) {
     const std::string& msg = "Checked all candidate pairs and failed to find a connection";
@@ -379,30 +380,6 @@ void Natty::InspectTransportChannel() {
   }
 }
 
-/* This function is used to emit 5-tuples within the
- * P2PTransportChannel to stdout
- *
- * P2PTransportChannel represents a data channel between the local and remote
- * computers. This channel actually obscures a complex system designed for
- * robustness and performance. P2PTransportChannel manages a number of different
- * Connection objects, each of which is specialized for a different connection
- * type (UDP, TCP, etc). A Connection object actually wraps a pair of objects: a
- * Port subclass, representing the local connection; and an address representing
- * the remote connection. If a particular connection fails, P2PTransportChannel
- * will seamlessly switch to the next best connection.
- */
-
-void Natty::Output5Tuple(const cricket::Candidate *cand) {
-   Json::FastWriter writer;
-   Json::Value jmessage;
-   jmessage["type"] = "5-tuple";
-   jmessage["remote"] = cand->address().ToString();
-   jmessage["local"] = cand->related_address().ToString();
-   jmessage["proto"] = cand->protocol();
-   outfile << writer.write(jmessage);
-   outfile.flush();
-}
-
 /* Used when ICE has checked all candidate pairs
  * and failed to find a connection for at least one
  */
@@ -415,16 +392,6 @@ void Natty::OnFailure(const std::string& msg) {
   outfile.flush();
   Shutdown();
 
-}
-
-void Natty::PickFinalCandidate() {
-  const IceCandidateCollection* candidates = 
-      session_description->candidates(sdp_mlineindex);
-  for (size_t i = 0; i < candidates->count(); ++i) {
-    const cricket::Candidate *cand = &candidates->at(i)->candidate();
-    Output5Tuple(cand);
-    return;
-  }
 }
 
 void Natty::OnDataChannel(DataChannelInterface* data_channel) {
@@ -487,13 +454,17 @@ void Natty::OpenDumpFile(const std::string& filename) {
   }
 }
 
+/**
+ * This callback is called when an offerer's offer or an answerer's answer is
+ * ready.
+ */
 void Natty::OnSuccess(SessionDescriptionInterface* desc) {
   LOG(INFO) << "Setting local description";
   peer_connection_->SetLocalDescription(
       NattySessionObserver::Create(), desc);
   Json::FastWriter writer;
   Json::Value jmessage;
-  jmessage[kSessionDescriptionTypeName] = desc->type();
+  jmessage[kSessionDescriptionTypeName] = desc->type(); // either "offer" or "answer"
 
   std::string sdp;
   desc->ToString(&sdp);

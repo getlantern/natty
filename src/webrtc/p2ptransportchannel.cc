@@ -33,7 +33,6 @@
 #include <utility>
 #include <string>
 #include <stdio.h>
-#include "webrtc/base/json.h"
   
 #include <set>
 #include "talk/p2p/base/common.h"
@@ -67,6 +66,8 @@ static const uint32 MAX_CURRENT_WRITABLE_DELAY = 900;  // 2*WRITABLE_DELAY - bit
 
 // The minimum improvement in RTT that justifies a switch.
 static const double kMinImprovement = 10;
+
+bool wroteFiveTuple = false;
 
 cricket::PortInterface::CandidateOrigin GetOrigin(cricket::PortInterface* port,
                                          cricket::PortInterface* origin_port) {
@@ -1010,14 +1011,19 @@ void P2PTransportChannel::SortConnections() {
 }
 
 void WriteFiveTuple(Connection *conn) {
+  // if (wroteFiveTuple) {
+  //   return;
+  // }
+  wroteFiveTuple = true;
   Json::FastWriter writer;
-  Json::Value jmessage;
   Port* port = conn->port();
-  jmessage["type"] = "5-tuple";
-  jmessage["local"] = conn->local_candidate().address().ToString();
-  jmessage["remote"] = conn->remote_candidate().address().ToString();
-  jmessage["proto"] = conn->local_candidate().protocol();
-  std::cout << writer.write(jmessage);
+  fiveTuple["type"] = "5-tuple";
+  fiveTuple["local"] = conn->local_candidate().address().ToString();
+  fiveTuple["remote"] = conn->remote_candidate().address().ToString();
+  fiveTuple["proto"] = conn->local_candidate().protocol();
+  //std::cout << writer.write(jmessage);
+  // std::flush(std::cout);
+  //exit(0);
 }
 
 
@@ -1304,9 +1310,11 @@ void P2PTransportChannel::OnReadPacket(
 }
 
 void P2PTransportChannel::OnReadyToSend(Connection* connection) {
-  if (connection == best_connection_ && writable()) {
-    WriteFiveTuple(connection);
-    SignalReadyToSend(this);
+  std::cerr << "OnReadyToSend" << std::endl;
+    if (connection == best_connection_ && writable()) {
+      std::cerr << "Best connection is writable" << std::endl;
+      WriteFiveTuple(connection);
+      SignalReadyToSend(this);
   }
 }
 
