@@ -50,7 +50,7 @@ int main(int argc, char* argv[]) {
 
   natty.get()->OpenDumpFile(FLAG_out);
   natty.get()->Init(FLAG_offer); 
-
+  
   natty.get()->ProcessInput();
   return 0;
 }

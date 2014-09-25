@@ -68,12 +68,14 @@ class Natty
     virtual void OnAddStream(webrtc::MediaStreamInterface* stream);
   virtual void OnRemoveStream(webrtc::MediaStreamInterface* stream);
   virtual void OnRenegotiationNeeded();
+  virtual void OnIceConnectionChange(webrtc::PeerConnection::IceConnectionState new_state);
   virtual void OnIceComplete();
 
   virtual void OnDataChannel(webrtc::DataChannelInterface *data_channel);
   virtual void OnIceCandidate(const webrtc::IceCandidateInterface* candidate);
 
   virtual void PickFinalCandidate();
+  virtual void OnFailure(const std::string& msg);
 
   virtual void Output5Tuple(const cricket::Candidate *cand);
 
@@ -82,14 +84,14 @@ class Natty
 
   // CreateSessionDescriptionObserver implementation.
   virtual void OnSuccess(webrtc::SessionDescriptionInterface* desc);
-  virtual void OnFailure(const std::string& error);
+ 
+  rtc::scoped_refptr<webrtc::PeerConnectionInterface> peer_connection_;  
 
  protected:
   int peer_id_;
   rtc::Thread* thread_;
   rtc::scoped_refptr<webrtc::MediaStreamInterface> stream;
 
-  rtc::scoped_refptr<webrtc::PeerConnectionInterface> peer_connection_;
   rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface>
       peer_connection_factory_;
   std::deque<std::string*> pending_messages_;

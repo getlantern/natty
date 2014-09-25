@@ -54,7 +54,7 @@ const char kSessionDescriptionTypeName[] = "type";
 const char kSessionDescriptionSdpName[] = "sdp";
 
 void Natty::InputStream::read(Natty* natty) {
-  while (getline(std::cin, input)) {
+  while (getline(std::cin, input) || 1) {
     /* need to remove new lines or the SDP won't be valid */
     if (input == "exit") {
       natty->Shutdown();
@@ -164,6 +164,9 @@ bool Natty::InitializePeerConnection() {
   IceServer server;
   FakeConstraints constraints;
   constraints.SetAllowRtpDataChannels();
+  constraints.AddOptional(
+      webrtc::MediaConstraintsInterface::kEnableDtlsSrtp, false);
+
 
   ASSERT(peer_connection_factory_.get() == NULL);
   ASSERT(peer_connection_.get() == NULL);
@@ -218,6 +221,7 @@ void Natty::OnError() {
 
 void Natty::OnAddStream(MediaStreamInterface* stream) {
   LOG(INFO) << "Successfully added stream";
+  stream->AddRef();
 }
 
 /* the answerer removes his media stream before disconnecting
@@ -226,6 +230,7 @@ void Natty::OnAddStream(MediaStreamInterface* stream) {
  */
 void Natty::OnRemoveStream(MediaStreamInterface* stream) {
   LOG(INFO) << "Successfully removed stream";
+  stream->AddRef(); 
   //PickFinalCandidate();
 }
 
@@ -252,6 +257,28 @@ void Natty::OnIceCandidate(const IceCandidateInterface* candidate) {
   jmessage[kCandidateSdpName] = sdp;
   outfile << writer.write(jmessage);
   outfile.flush();
+}
+
+/* ICE observer that signals when our connection state changes
+ * "Completed" means ICE has finished gathering and checking and found a connection
+ * for all components.
+ *
+ */
+void Natty::OnIceConnectionChange(PeerConnection::IceConnectionState new_state) {
+  LOG(INFO) << "New connection state " << new_state;
+  if (new_state == PeerConnection::kIceConnectionCompleted ||
+      new_state == PeerConnection::kIceConnectionClosed) {
+    /* The ICE agent has finished gathering and checking and found a connection
+     * for all components.
+     */
+    LOG(INFO) << "Found ideal connection";
+    PickFinalCandidate();
+    Shutdown();
+  } else if (new_state == PeerConnection::kIceConnectionFailed) {
+    const std::string& msg = "Checked all candidate pairs and failed to find a connection";
+    LOG(INFO) << msg;
+    OnFailure(msg);
+  }
 }
 
 void Natty::OnRenegotiationNeeded() {
@@ -321,7 +348,6 @@ void Natty::ReadMessage(const std::string& message) {
     }
     LOG(INFO) << candidate.get()->candidate().ToString();
     LOG(INFO) << " Received candidate :" << message;
-    sleep(2);
     //InspectTransportChannel();
     return;
   }
@@ -367,7 +393,6 @@ void Natty::InspectTransportChannel() {
  */
 
 void Natty::Output5Tuple(const cricket::Candidate *cand) {
-   const char kStreamLabel[] = "stream_label";
    Json::FastWriter writer;
    Json::Value jmessage;
    jmessage["type"] = "5-tuple";
@@ -376,20 +401,29 @@ void Natty::Output5Tuple(const cricket::Candidate *cand) {
    jmessage["proto"] = cand->protocol();
    outfile << writer.write(jmessage);
    outfile.flush();
-   peer_connection_->RemoveStream(stream);
-   Shutdown();
+}
+
+/* Used when ICE has checked all candidate pairs
+ * and failed to find a connection for at least one
+ */
+void Natty::OnFailure(const std::string& msg) {
+  Json::FastWriter writer;
+  Json::Value jmessage;
+  jmessage["type"] = "error";
+  jmessage["message"] = msg;
+  outfile << writer.write(jmessage);
+  outfile.flush();
+  Shutdown();
+
 }
 
 void Natty::PickFinalCandidate() {
   const IceCandidateCollection* candidates = 
       session_description->candidates(sdp_mlineindex);
-
   for (size_t i = 0; i < candidates->count(); ++i) {
     const cricket::Candidate *cand = &candidates->at(i)->candidate();
-    if (cand->type() == "stun") {
-      //Output5Tuple(cand);
-      return;
-    } 
+    Output5Tuple(cand);
+    return;
   }
 }
 
@@ -426,8 +460,9 @@ void Natty::Init(bool offer) {
     Natty::setMode(Natty::OFFER);
     FakeConstraints constraints;
     constraints.SetAllowRtpDataChannels();
+    constraints.AddOptional(
+        webrtc::MediaConstraintsInterface::kEnableDtlsSrtp, false);
     peer_connection_->CreateOffer(this, &constraints);
-    sleep(1);
   }
 }
 
@@ -465,9 +500,5 @@ void Natty::OnSuccess(SessionDescriptionInterface* desc) {
   jmessage[kSessionDescriptionSdpName] = sdp;
   outfile << writer.write(jmessage); 
   outfile.flush();
-}
-
-void Natty::OnFailure(const std::string& error) {
-  LOG(LERROR) << error;
 }
 
