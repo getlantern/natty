@@ -188,8 +188,8 @@ bool Natty::InitializePeerConnection() {
     Shutdown();
   }
   AddStreams();
-  allocator = peer_connection_->GetAllocator();
-  ASSERT(allocator != NULL);
+  // allocator = peer_connection_->GetAllocator();
+  // ASSERT(allocator != NULL);
 
   LOG(INFO) << "Created peer connection";
 
@@ -381,7 +381,7 @@ void Natty::PickFinalCandidate() {
   for (size_t i = 0; i < candidates->count(); ++i) {
     const cricket::Candidate *cand = &candidates->at(i)->candidate();
     if (cand->type() == "stun") {
-      Output5Tuple(cand);
+      //Output5Tuple(cand);
       return;
     } 
   }

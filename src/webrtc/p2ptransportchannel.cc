@@ -1013,10 +1013,10 @@ void WriteFiveTuple(Connection *conn) {
   Json::FastWriter writer;
   Json::Value jmessage;
   Port* port = conn->port();
-  jmessage["port"] = port->ToString();
+  jmessage["type"] = "5-tuple";
   jmessage["local"] = conn->local_candidate().address().ToString();
   jmessage["remote"] = conn->remote_candidate().address().ToString();
-  jmessage["type"] = conn->local_candidate().protocol();
+  jmessage["proto"] = conn->local_candidate().protocol();
   std::cout << writer.write(jmessage);
 }
 
