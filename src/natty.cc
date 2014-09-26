@@ -79,26 +79,6 @@ string Natty::InputStream::build() const {
   return str;
 }
 
-class NattySessionObserver
-: public SetSessionDescriptionObserver {
-  public:
-    static NattySessionObserver* Create() {
-      return
-        new rtc::RefCountedObject<NattySessionObserver>();
-    }
-    virtual void OnSuccess() {
-      LOG(INFO) << __FUNCTION__;
-    }
-    virtual void OnFailure(const std::string& error) {
-      LOG(INFO) << __FUNCTION__ << " " << error;
-    }
-
-  protected:
-    NattySessionObserver() {}
-    ~NattySessionObserver() {}
-};
-
-
 Natty::Natty(rtc::Thread* thread
     )
 : peer_id_(-1),
@@ -187,7 +167,8 @@ bool Natty::InitializePeerConnection() {
   peer_connection_ = peer_connection_factory_->CreatePeerConnection(servers, &constraints, NULL, NULL, this);
   webrtc::InternalDataChannelInit dci;
   dci.reliable = false;
-  peer_connection_->CreateDataChannel("datachannel", &dci);
+  data_channel_ = peer_connection_->CreateDataChannel("datachannel", &dci);
+  data_channel_observer_ = new NattyDataChannelObserver(data_channel_);
 
   if (!peer_connection_.get()) {
     LOG(INFO) << "Create peer connection failed";
@@ -458,6 +439,7 @@ void Natty::Init(bool offer) {
   InitializePeerConnection();
   if (offer) {
     Natty::setMode(Natty::OFFER);
+    /* extraneous already set in peer connection factory */
     FakeConstraints constraints;
     constraints.SetAllowRtpDataChannels();
     constraints.AddOptional(
@@ -487,6 +469,9 @@ void Natty::OpenDumpFile(const std::string& filename) {
   }
 }
 
+/* create offer callback 
+ * outputs SDP offer
+ * */
 void Natty::OnSuccess(SessionDescriptionInterface* desc) {
   LOG(INFO) << "Setting local description";
   peer_connection_->SetLocalDescription(

@@ -36,6 +36,59 @@
 #include "webrtc/base/ssladapter.h"
 #include "webrtc/base/json.h"
 
+class NattyDataChannelObserver 
+: public webrtc::DataChannelObserver {
+ public:
+  explicit NattyDataChannelObserver(webrtc::DataChannelInterface* channel)
+      : channel_(channel), received_message_count_(0) {
+        channel_->RegisterObserver(this);
+        state_ = channel_->state();
+      }
+  virtual ~NattyDataChannelObserver() {
+    channel_->UnregisterObserver();
+  }
+  virtual void OnStateChange() { 
+    LOG(INFO) << "Data channel state changed";
+    state_ = channel_->state(); 
+  }
+  virtual void OnMessage(const webrtc::DataBuffer& buffer) {
+    LOG(INFO) << "Received data buffer message";
+    last_message_.assign(buffer.data.data(), buffer.data.length());
+    ++received_message_count_;
+  }
+
+  bool IsOpen() const { return state_ == webrtc::DataChannelInterface::kOpen; }
+  const std::string& last_message() const { return last_message_; }
+  size_t received_message_count() const { return received_message_count_; }
+
+ private:
+  rtc::scoped_refptr<webrtc::DataChannelInterface> channel_;
+  webrtc::DataChannelInterface::DataState state_;
+  std::string last_message_;
+  size_t received_message_count_;
+};
+
+
+class NattySessionObserver
+: public SetSessionDescriptionObserver {
+ public:
+  static NattySessionObserver* Create() {
+    return
+        new rtc::RefCountedObject<NattySessionObserver>();
+  }
+  virtual void OnSuccess() {
+    LOG(INFO) << __FUNCTION__;
+  }
+  virtual void OnFailure(const std::string& error) {
+    LOG(INFO) << __FUNCTION__ << " " << error;
+  }
+
+ protected:
+  NattySessionObserver() {}
+  ~NattySessionObserver() {}
+};
+
+
 class Natty
   : public webrtc::PeerConnectionObserver,
     public webrtc::CreateSessionDescriptionObserver {
@@ -86,6 +139,8 @@ class Natty
   virtual void OnSuccess(webrtc::SessionDescriptionInterface* desc);
  
   rtc::scoped_refptr<webrtc::PeerConnectionInterface> peer_connection_;  
+  rtc::scoped_refptr<webrtc::DataChannelInterface> data_channel_;
+  NattyDataChannelObserver* data_channel_observer_;
 
  protected:
   int peer_id_;
