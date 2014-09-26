@@ -70,7 +70,7 @@ class NattyDataChannelObserver
 
 
 class NattySessionObserver
-: public SetSessionDescriptionObserver {
+: public webrtc::SetSessionDescriptionObserver {
  public:
   static NattySessionObserver* Create() {
     return
