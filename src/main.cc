@@ -38,7 +38,7 @@ int main(int argc, char* argv[]) {
 
   if (FLAG_debug) {
     rtc::LogMessage::LogTimestamps();
-    rtc::LogMessage::LogToDebug(rtc::LS_VERBOSE);
+    rtc::LogMessage::LogToDebug(rtc::LS_INFO);
   }
 
   rtc::InitializeSSL();

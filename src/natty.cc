@@ -48,6 +48,7 @@ const char kCandidateSdpName[] = "candidate";
 
 typedef PeerConnectionInterface::IceServers IceServers;
 typedef PeerConnectionInterface::IceServer IceServer;;
+typedef PeerConnection::IceConnectionState IceConnState;
 
 // Names used for a SessionDescription JSON object.
 const char kSessionDescriptionTypeName[] = "type";
@@ -82,7 +83,6 @@ string Natty::InputStream::build() const {
 Natty::Natty(rtc::Thread* thread
     )
 : peer_id_(-1),
-  highestPrioritySeen(0),
   thread_(thread) {
   }
 
@@ -169,16 +169,14 @@ bool Natty::InitializePeerConnection() {
   dci.reliable = false;
   data_channel_ = peer_connection_->CreateDataChannel("datachannel", &dci);
   data_channel_observer_ = new NattyDataChannelObserver(data_channel_);
+  data_channel_observer_->InitStates();
 
   if (!peer_connection_.get()) {
     LOG(INFO) << "Create peer connection failed";
     Shutdown();
   }
-  // allocator = peer_connection_->GetAllocator();
-  // ASSERT(allocator != NULL);
 
   LOG(INFO) << "Created peer connection";
-
   return peer_connection_.get() != NULL;
 }
 
@@ -245,16 +243,15 @@ void Natty::OnIceCandidate(const IceCandidateInterface* candidate) {
  * for all components.
  *
  */
-void Natty::OnIceConnectionChange(PeerConnection::IceConnectionState new_state) {
-  LOG(INFO) << "New connection state " << new_state;
+void Natty::OnIceConnectionChange(IceConnState new_state) {
+  LOG(INFO) << "New connection state: " << connection_states[new_state];
   if (new_state == PeerConnection::kIceConnectionCompleted ||
       new_state == PeerConnection::kIceConnectionClosed) {
     /* The ICE agent has finished gathering and checking and found a connection
      * for all components.
      */
     LOG(INFO) << "Found ideal connection";
-    PickFinalCandidate();
-    Shutdown();
+    //Shutdown();
   } else if (new_state == PeerConnection::kIceConnectionFailed) {
     const std::string& msg = "Checked all candidate pairs and failed to find a connection";
     LOG(INFO) << msg;
@@ -398,16 +395,6 @@ void Natty::OnFailure(const std::string& msg) {
 
 }
 
-void Natty::PickFinalCandidate() {
-  const IceCandidateCollection* candidates = 
-      session_description->candidates(sdp_mlineindex);
-  for (size_t i = 0; i < candidates->count(); ++i) {
-    const cricket::Candidate *cand = &candidates->at(i)->candidate();
-    Output5Tuple(cand);
-    return;
-  }
-}
-
 void Natty::OnDataChannel(DataChannelInterface* data_channel) {
   LOG(INFO) << "New data channel created " << data_channel;
 }
@@ -435,7 +422,20 @@ void Natty::setMode(Natty::Mode m) {
   mode = m;
 }
 
+void Natty::InitConnectionStates() {
+  const string states[] = {"New", "Checking", "Connected", "Completed",
+    "Failed", "Disconnected", "Closed"};
+  for ( int i = PeerConnection::kIceConnectionNew; 
+       i != PeerConnection::kIceConnectionClosed; i++ )
+  {
+    ConnState state = static_cast<ConnState>(i);
+    connection_states[state] = states[i].c_str();
+  }
+
+}
+
 void Natty::Init(bool offer) {
+  InitConnectionStates();
   InitializePeerConnection();
   if (offer) {
     Natty::setMode(Natty::OFFER);

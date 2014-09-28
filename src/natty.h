@@ -36,6 +36,9 @@
 #include "webrtc/base/ssladapter.h"
 #include "webrtc/base/json.h"
 
+typedef webrtc::PeerConnection::IceConnectionState ConnState;
+typedef webrtc::DataChannelInterface::DataState DCState;
+
 class NattyDataChannelObserver 
 : public webrtc::DataChannelObserver {
  public:
@@ -48,9 +51,22 @@ class NattyDataChannelObserver
     channel_->UnregisterObserver();
   }
   virtual void OnStateChange() { 
-    LOG(INFO) << "Data channel state changed";
     state_ = channel_->state(); 
+    LOG(INFO) << "Data channel state changed " << dc_states[state_]; 
   }
+
+  virtual void InitStates() {
+    const std::string data_states[] = {"Connecting", "Open", 
+      "Closing", "Closed"};
+
+    for ( int i = DCState::kConnecting; 
+         i != DCState::kClosed; i++ )
+    {
+      DCState state = static_cast<DCState>(i);
+      dc_states[state] = data_states[i].c_str();
+    }
+  }
+
   virtual void OnMessage(const webrtc::DataBuffer& buffer) {
     LOG(INFO) << "Received data buffer message";
     last_message_.assign(buffer.data.data(), buffer.data.length());
@@ -62,6 +78,7 @@ class NattyDataChannelObserver
   size_t received_message_count() const { return received_message_count_; }
 
  private:
+  std::map<DCState, std::string> dc_states;
   rtc::scoped_refptr<webrtc::DataChannelInterface> channel_;
   webrtc::DataChannelInterface::DataState state_;
   std::string last_message_;
@@ -127,10 +144,11 @@ class Natty
   virtual void OnDataChannel(webrtc::DataChannelInterface *data_channel);
   virtual void OnIceCandidate(const webrtc::IceCandidateInterface* candidate);
 
-  virtual void PickFinalCandidate();
   virtual void OnFailure(const std::string& msg);
 
   virtual void Output5Tuple(const cricket::Candidate *cand);
+
+  virtual void InitConnectionStates();
 
 
   virtual void OnServerConnectionFailure();
@@ -150,24 +168,17 @@ class Natty
   rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface>
       peer_connection_factory_;
   std::deque<std::string*> pending_messages_;
-
-
-
+  std::map<ConnState, std::string> connection_states;
   webrtc::SessionDescriptionInterface* session_description;
   int sdp_mlineindex;
   rtc::scoped_refptr<webrtc::PortAllocatorFactoryInterface> allocator_factory_;
   cricket::PortAllocator* allocator;
 
-  uint32 highestPrioritySeen;
-  const cricket::Candidate *bestCandidate;
-
   /* stdout */
   std::ofstream outfile;
 
   enum Mode { OFFER, TRAVERSE };
-
   void setMode(Mode m);
-  //Mode getMode() const;
   Mode mode;
 
   Json::Value fivetuple;
