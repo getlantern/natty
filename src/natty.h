@@ -45,16 +45,22 @@ class NattyDataChannelObserver
   explicit NattyDataChannelObserver(webrtc::DataChannelInterface* channel)
       : channel_(channel), received_message_count_(0) {
         channel_->RegisterObserver(this);
+        InitStates();
         state_ = channel_->state();
       }
   virtual ~NattyDataChannelObserver() {
     channel_->UnregisterObserver();
   }
+
+  /* if data channel is open and writable, we know a successful 
+   * traversal happened and the best connection has been settled on
+   */                                                               
   virtual void OnStateChange() { 
     state_ = channel_->state(); 
     LOG(INFO) << "Data channel state changed " << dc_states[state_]; 
   }
 
+  /* map data channel connection states enums to strings */
   virtual void InitStates() {
     const std::string data_states[] = {"Connecting", "Open", 
       "Closing", "Closed"};
@@ -110,6 +116,7 @@ class Natty
   : public webrtc::PeerConnectionObserver,
     public webrtc::CreateSessionDescriptionObserver {
  public:
+
   Natty(rtc::Thread* thread);
 
   bool connection_active() const;
@@ -146,8 +153,6 @@ class Natty
 
   virtual void OnFailure(const std::string& msg);
 
-  virtual void Output5Tuple(const cricket::Candidate *cand);
-
   virtual void InitConnectionStates();
 
 
@@ -161,18 +166,15 @@ class Natty
   NattyDataChannelObserver* data_channel_observer_;
 
  protected:
-  int peer_id_;
   rtc::Thread* thread_;
   rtc::scoped_refptr<webrtc::MediaStreamInterface> stream;
-
   rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface>
       peer_connection_factory_;
-  std::deque<std::string*> pending_messages_;
+
   std::map<ConnState, std::string> connection_states;
   webrtc::SessionDescriptionInterface* session_description;
-  int sdp_mlineindex;
-  rtc::scoped_refptr<webrtc::PortAllocatorFactoryInterface> allocator_factory_;
-  cricket::PortAllocator* allocator;
+  //rtc::scoped_refptr<webrtc::PortAllocatorFactoryInterface> allocator_factory_;
+  //cricket::PortAllocator* allocator;
 
   /* stdout */
   std::ofstream outfile;
@@ -180,8 +182,6 @@ class Natty
   enum Mode { OFFER, TRAVERSE };
   void setMode(Mode m);
   Mode mode;
-
-  Json::Value fivetuple;
 
   std::map<std::string, rtc::scoped_refptr<webrtc::MediaStreamInterface> >
     active_streams_;

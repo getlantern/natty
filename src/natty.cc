@@ -82,8 +82,7 @@ string Natty::InputStream::build() const {
 
 Natty::Natty(rtc::Thread* thread
     )
-: peer_id_(-1),
-  thread_(thread) {
+: thread_(thread) {
   }
 
 Natty::~Natty() {
@@ -143,10 +142,15 @@ bool Natty::InitializePeerConnection() {
   IceServers servers;
   IceServer server;
   FakeConstraints constraints;
+  webrtc::InternalDataChannelInit dci;
+  const string& dc_name = "datachannel";
+
+  // Enable RTP DataChannels
   constraints.SetAllowRtpDataChannels();
+  // Enable DTLS-SRTP
+  // http://tools.ietf.org/html/rfc5764
   constraints.AddOptional(
       webrtc::MediaConstraintsInterface::kEnableDtlsSrtp, false);
-
 
   ASSERT(peer_connection_factory_.get() == NULL);
   ASSERT(peer_connection_.get() == NULL);
@@ -163,13 +167,13 @@ bool Natty::InitializePeerConnection() {
   server.uri = GetPeerConnectionString();
   servers.push_back(server);
 
-  //peer_connection_ = peer_connection_factory_->CreatePeerConnection(servers, NULL, NULL, NULL, this);
+  /* Creating a peer connection object is when
+   * we start to generate ICE candidates
+   */
   peer_connection_ = peer_connection_factory_->CreatePeerConnection(servers, &constraints, NULL, NULL, this);
-  webrtc::InternalDataChannelInit dci;
   dci.reliable = false;
-  data_channel_ = peer_connection_->CreateDataChannel("datachannel", &dci);
+  data_channel_ = peer_connection_->CreateDataChannel(dc_name, &dci);
   data_channel_observer_ = new NattyDataChannelObserver(data_channel_);
-  data_channel_observer_->InitStates();
 
   if (!peer_connection_.get()) {
     LOG(INFO) << "Create peer connection failed";
@@ -184,7 +188,6 @@ void Natty::Shutdown() {
   LOG(INFO) << "Deleting peer connection";
   peer_connection_ = NULL;
   peer_connection_factory_ = NULL;
-  peer_id_ = -1;
   //active_streams_.clear();
   rtc::CleanupSSL();
   thread_->Stop();
@@ -195,6 +198,7 @@ void Natty::Shutdown() {
 //
 
 void Natty::OnError() {
+  LOG(INFO) << "Peer connection error encountered";
   LOG(INFO) << __FUNCTION__;
 }
 
@@ -214,13 +218,17 @@ void Natty::OnRemoveStream(MediaStreamInterface* stream) {
 }
 
 void Natty::OnSignalingChange(PeerConnectionInterface::SignalingState new_state) {
-  LOG(INFO) << "Signaling change";
+  LOG(INFO) << "Signaling state change";
 }
 
 void Natty::OnStateChange(
     PeerConnectionObserver::StateType state_changed) {
 }
 
+/* Once an ice candidate have been found PeerConnection will call the
+ * observer function OnIceCandidate. The candidate is serialized
+ * to be sent to the remote peer.
+ */
 void Natty::OnIceCandidate(const IceCandidateInterface* candidate) {
   Json::FastWriter writer;
   Json::Value jmessage;
@@ -263,9 +271,9 @@ void Natty::OnRenegotiationNeeded() {
   LOG(INFO) << "Renegotiation needed";
 }
 
-/* New message arrived on stdin
- *
- * this is used on the answerer side
+/* New natty JSON arrived on stdin
+ * if type is defined, we have an SDP message
+ * otherwise, it's a remote ICE candidate 
  */
 void Natty::ReadMessage(const std::string& message) {
   Json::Reader reader;
@@ -303,7 +311,7 @@ void Natty::ReadMessage(const std::string& message) {
   }
   else {
     std::string sdp_mid;
-    sdp_mlineindex = 0;
+    int sdp_mlineindex = 0;
     std::string sdp;
     if (!GetStringFromJsonObject(jmessage, kCandidateSdpMidName, &sdp_mid) ||
         !GetIntFromJsonObject(jmessage, kCandidateSdpMlineIndexName,
@@ -326,7 +334,6 @@ void Natty::ReadMessage(const std::string& message) {
     }
     LOG(INFO) << candidate.get()->candidate().ToString();
     LOG(INFO) << " Received candidate :" << message;
-    //InspectTransportChannel();
     return;
   }
 };
@@ -369,17 +376,6 @@ void Natty::InspectTransportChannel() {
  * the remote connection. If a particular connection fails, P2PTransportChannel
  * will seamlessly switch to the next best connection.
  */
-
-void Natty::Output5Tuple(const cricket::Candidate *cand) {
-   Json::FastWriter writer;
-   Json::Value jmessage;
-   jmessage["type"] = "5-tuple";
-   jmessage["remote"] = cand->address().ToString();
-   jmessage["local"] = cand->related_address().ToString();
-   jmessage["proto"] = cand->protocol();
-   outfile << writer.write(jmessage);
-   outfile.flush();
-}
 
 /* Used when ICE has checked all candidate pairs
  * and failed to find a connection for at least one
@@ -469,9 +465,12 @@ void Natty::OpenDumpFile(const std::string& filename) {
   }
 }
 
-/* create offer callback 
- * outputs SDP offer
- * */
+/* Jsep CreateOffer and CreateAnswer on success callback
+ * 
+ * the generated blob of SDP data contains session information
+ * and configuration
+ * this is called after createOffer and createAnswer
+ */
 void Natty::OnSuccess(SessionDescriptionInterface* desc) {
   LOG(INFO) << "Setting local description";
   peer_connection_->SetLocalDescription(
