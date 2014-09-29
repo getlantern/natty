@@ -702,12 +702,17 @@ void WriteFiveTuple(const ConnectionInfo *info) {
   Json::FastWriter writer;
   Json::Value jmessage;
   if (info->best_connection && info ->writable) {
+    std::ofstream outfile;
+    outfile.copyfmt(std::cout);
+    outfile.clear(std::cout.rdstate());
+    outfile.basic_ios<char>::rdbuf(std::cout.rdbuf());
+
     jmessage["local"] = info->local_candidate.address().ToString();
     jmessage["remote"] = info->remote_candidate.address().ToString();
     jmessage["type"] = "5-tuple";
     jmessage["proto"] = info->local_candidate.protocol();
-    std::cout << writer.write(jmessage);
-    std::flush(std::cout);
+    outfile << writer.write(jmessage);
+    outfile.flush();
     exit(0);
   }
 }

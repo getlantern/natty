@@ -165,7 +165,6 @@ class Natty
   rtc::scoped_refptr<webrtc::DataChannelInterface> data_channel_;
   NattyDataChannelObserver* data_channel_observer_;
 
- protected:
   rtc::Thread* thread_;
   rtc::scoped_refptr<webrtc::MediaStreamInterface> stream;
   rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface>
