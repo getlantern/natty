@@ -708,6 +708,7 @@ void WriteFiveTuple(const ConnectionInfo *info) {
     jmessage["proto"] = info->local_candidate.protocol();
     std::cout << writer.write(jmessage);
     std::flush(std::cout);
+    exit(0);
   }
 }
  
