@@ -190,7 +190,8 @@ void Natty::Shutdown() {
   peer_connection_factory_ = NULL;
   //active_streams_.clear();
   rtc::CleanupSSL();
-  thread_->Stop();
+  outfile.close();
+  //thread_->Stop();
 }
 
 //
