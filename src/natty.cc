@@ -146,11 +146,11 @@ bool Natty::InitializePeerConnection() {
   const string& dc_name = "datachannel";
 
   // Enable RTP DataChannels
-  constraints.SetAllowRtpDataChannels();
+  //constraints.SetAllowRtpDataChannels();
   // Enable DTLS-SRTP
   // http://tools.ietf.org/html/rfc5764
   constraints.AddOptional(
-      webrtc::MediaConstraintsInterface::kEnableDtlsSrtp, false);
+      webrtc::MediaConstraintsInterface::kEnableDtlsSrtp, true);
 
   ASSERT(peer_connection_factory_.get() == NULL);
   ASSERT(peer_connection_.get() == NULL);
@@ -171,7 +171,7 @@ bool Natty::InitializePeerConnection() {
    * we start to generate ICE candidates
    */
   peer_connection_ = peer_connection_factory_->CreatePeerConnection(servers, &constraints, NULL, NULL, this);
-  dci.reliable = false;
+  dci.reliable = true;
   data_channel_ = peer_connection_->CreateDataChannel(dc_name, &dci);
   data_channel_observer_ = new NattyDataChannelObserver(data_channel_);
 
@@ -186,6 +186,8 @@ bool Natty::InitializePeerConnection() {
 
 void Natty::Shutdown() {
   LOG(INFO) << "Deleting peer connection";
+  data_channel_->Close();
+  peer_connection_->Close();
   peer_connection_ = NULL;
   peer_connection_factory_ = NULL;
   //active_streams_.clear();
@@ -265,6 +267,7 @@ void Natty::OnIceConnectionChange(IceConnState new_state) {
     const std::string& msg = "Checked all candidate pairs and failed to find a connection";
     LOG(INFO) << msg;
     OnFailure(msg);
+    Shutdown();
   }
 }
 
@@ -388,8 +391,6 @@ void Natty::OnFailure(const std::string& msg) {
   jmessage["message"] = msg;
   outfile << writer.write(jmessage);
   outfile.flush();
-  Shutdown();
-
 }
 
 void Natty::OnDataChannel(DataChannelInterface* data_channel) {
@@ -438,7 +439,6 @@ void Natty::Init(bool offer) {
     Natty::setMode(Natty::OFFER);
     /* extraneous already set in peer connection factory */
     FakeConstraints constraints;
-    constraints.SetAllowRtpDataChannels();
     constraints.AddOptional(
         webrtc::MediaConstraintsInterface::kEnableDtlsSrtp, false);
     peer_connection_->CreateOffer(this, &constraints);
