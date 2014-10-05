@@ -1,14 +1,18 @@
 #!/bin/bash
 
+CHROME_STABLE="37.0.2062.124"
+# check http://src.chromium.org/viewvc/chrome/releases/37.0.2062.12/DEPS?revision=281122
+WEBRTC_VERSION="/branches/3.55/webrtc@6541"
+
 # Change directory to the PRODUCT_DIR (e.g. out/Release).
 export LD_LIBRARY_PATH=`pwd`
 
-mkdir build
-cd build
+mkdir build2
+cd build2
 gclient config --name trunk 'git+https://chromium.googlesource.com/external/webrtc'
 gclient sync -j200
 cd trunk
-git svn init --prefix=origin/ https://webrtc.googlecode.com/svn -Ttrunk --rewrite-root=http://webrtc.googlecode.com/svn
+git svn init --prefix=origin/ https://webrtc.googlecode.com/svn "-T$WEBRTC_VERSION" --rewrite-root=http://webrtc.googlecode.com/svn
 git config svn-remote.svn.fetch trunk:refs/remotes/origin/master
 git svn fetch
 git checkout master
