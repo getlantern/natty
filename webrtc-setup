@@ -7,9 +7,9 @@ WEBRTC_VERSION="/branches/3.55/webrtc@6541"
 # Change directory to the PRODUCT_DIR (e.g. out/Release).
 export LD_LIBRARY_PATH=`pwd`
 
-mkdir build2
-cd build2
-gclient config --name trunk 'git+https://chromium.googlesource.com/external/webrtc'
+mkdir build
+cd build
+gclient config --name src 'git+https://chromium.googlesource.com/external/webrtc'
 gclient sync -j200
 cd trunk
 git svn init --prefix=origin/ https://webrtc.googlecode.com/svn "-T$WEBRTC_VERSION" --rewrite-root=http://webrtc.googlecode.com/svn
@@ -18,3 +18,5 @@ git svn fetch
 git checkout master
 gclient sync --force
 ninja -C out/Release
+
+# cp src/webrtc/channel.cc build/trunk/talk/session/media/
