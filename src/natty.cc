@@ -24,6 +24,8 @@
 #include <string>
 
 #include "talk/app/webrtc/videosourceinterface.h"
+#include "talk/app/webrtc/jsep.h"
+#include "talk/app/webrtc/mediaconstraintsinterface.h"
 #include "webrtc/base/common.h"
 #include "talk/p2p/base/sessiondescription.h"
 #include "talk/app/webrtc/test/fakeconstraints.h"
@@ -86,7 +88,7 @@ Natty::Natty(rtc::Thread* thread
   }
 
 Natty::~Natty() {
-  if (outfile != NULL) {
+  if (outfile) {
     outfile.close();
   }
   ASSERT(peer_connection_.get() == NULL);
