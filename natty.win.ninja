@@ -1,0 +1,319 @@
+arch = environment.x86
+cl_x86 = "C:\Users\adamf_000\Desktop\depot_tools\win_toolchain\vs2013_files\VC\bin\cl.exe"
+cl_x64 = "C:\Users\adamf_000\Desktop\depot_tools\win_toolchain\vs2013_files\VC\bin\x86_amd64\cl.exe"
+cc = $cl_x86
+cxx = $cl_x86
+cc_host = $cl_x86
+cxx_host = $cl_x86
+ld = link.exe
+idl = midl.exe
+ar = lib.exe
+rc = rc.exe
+asm = ml.exe
+mt = mt.exe
+
+pool link_pool
+  depth = 1
+
+rule cc
+  command = ninja -t msvc -e $arch -- $cc /nologo /showIncludes /FC @$out.rsp /c $in /Fo$out /Fd$pdbname_c 
+  description = CC $out
+  rspfile = $out.rsp
+  rspfile_content = $defines $includes $cflags $cflags_c
+  deps = msvc
+rule cxx
+  command = ninja -t msvc -e $arch -- $cxx /nologo /showIncludes /FC @$out.rsp /c $in /Fo$out /Fd$pdbname_cc 
+  description = CXX $out
+  rspfile = $out.rsp
+  rspfile_content = $defines $includes $cflags $cflags_cc
+  deps = msvc
+rule idl
+  command = C:\Users\adamf_000\Desktop\depot_tools\python276_bin\python.exe build\src\out\Release\gyp-win-tool midl-wrapper $arch $outdir $
+      $tlb $h $dlldata $iid $proxy $in $midl_includes $idlflags
+  description = IDL $in
+rule rc
+  command = C:\Users\adamf_000\Desktop\depot_tools\python276_bin\python.exe build\src\out\Release\gyp-win-tool rc-wrapper $arch $rc $
+      $defines $resource_includes $rcflags /fo$out $in
+  description = RC $in
+rule asm
+  command = C:\Users\adamf_000\Desktop\depot_tools\python276_bin\python.exe build\src\out\Release\gyp-win-tool asm-wrapper $arch $asm $
+      $defines $includes $asmflags /c /Fo $out $in
+  description = ASM $out
+rule alink
+  command = C:\Users\adamf_000\Desktop\depot_tools\python276_bin\python.exe build\src\out\Release\gyp-win-tool link-wrapper $arch False $ar $
+      /nologo /ignore:4221 /OUT:$out @$out.rsp
+  description = LIB $out
+  rspfile = $out.rsp
+  rspfile_content = $in_newline $libflags
+rule solink_embed
+  command = C:\Users\adamf_000\Desktop\depot_tools\python276_bin\python.exe build\src\out\Release\gyp-win-tool link-with-manifests $arch $
+      True $binary "C:\Users\adamf_000\Desktop\depot_tools\python276_bin\python.exe build\src\out\Release\gyp-win-tool link-wrapper $arch $
+      False $ld /nologo $implibflag /DLL /OUT:$binary @$binary.rsp" 2 $mt $rc "$intermediatemanifest" $manifests
+  description = LINK_EMBED(DLL) $binary
+  pool = link_pool
+  restat = 1
+  rspfile = $binary.rsp
+  rspfile_content = $libs $in_newline $ldflags
+rule solink_module_embed
+  command = C:\Users\adamf_000\Desktop\depot_tools\python276_bin\python.exe build\src\out\Release\gyp-win-tool link-with-manifests $arch $
+      True $binary "C:\Users\adamf_000\Desktop\depot_tools\python276_bin\python.exe build\src\out\Release\gyp-win-tool link-wrapper $arch $
+      False $ld /nologo $implibflag /DLL /OUT:$binary @$binary.rsp" 2 $mt $rc "$intermediatemanifest" $manifests
+  description = LINK_EMBED(DLL) $binary
+  pool = link_pool
+  restat = 1
+  rspfile = $binary.rsp
+  rspfile_content = $libs $in_newline $ldflags
+rule link_embed
+  command = C:\Users\adamf_000\Desktop\depot_tools\python276_bin\python.exe build\src\out\Release\gyp-win-tool link-with-manifests $arch $
+      True $binary "C:\Users\adamf_000\Desktop\depot_tools\python276_bin\python.exe build\src\out\Release\gyp-win-tool link-wrapper $arch $
+      False $ld /nologo /OUT:$binary @$binary.rsp" 1 $mt $rc "$intermediatemanifest" $manifests
+  description = LINK_EMBED $binary
+  pool = link_pool
+  rspfile = $binary.rsp
+  rspfile_content = $in_newline $libs $ldflags
+rule solink
+  command = C:\Users\adamf_000\Desktop\depot_tools\python276_bin\python.exe build\src\out\Release\gyp-win-tool link-with-manifests $arch $
+      False $binary "C:\Users\adamf_000\Desktop\depot_tools\python276_bin\python.exe build\src\out\Release\gyp-win-tool link-wrapper $arch $
+      False $ld /nologo $implibflag /DLL /OUT:$binary @$binary.rsp" 2 $mt $rc "$intermediatemanifest" $manifests
+  description = LINK(DLL) $binary
+  pool = link_pool
+  restat = 1
+  rspfile = $binary.rsp
+  rspfile_content = $libs $in_newline $ldflags
+rule solink_module
+  command = C:\Users\adamf_000\Desktop\depot_tools\python276_bin\python.exe build\src\out\Release\gyp-win-tool link-with-manifests $arch $
+      False $binary "C:\Users\adamf_000\Desktop\depot_tools\python276_bin\python.exe build\src\out\Release\gyp-win-tool link-wrapper $arch $
+      False $ld /nologo $implibflag /DLL /OUT:$binary @$binary.rsp" 2 $mt $rc "$intermediatemanifest" $manifests
+  description = LINK(DLL) $binary
+  pool = link_pool
+  restat = 1
+  rspfile = $binary.rsp
+  rspfile_content = $libs $in_newline $ldflags
+rule link
+  command = C:\Users\adamf_000\Desktop\depot_tools\python276_bin\python.exe build\src\out\Release\gyp-win-tool link-with-manifests $arch $
+      False $binary "C:\Users\adamf_000\Desktop\depot_tools\python276_bin\python.exe build\src\out\Release\gyp-win-tool link-wrapper $arch $
+      False $ld /nologo /OUT:$binary @$binary.rsp" 1 $mt $rc "$intermediatemanifest" $manifests
+  description = LINK $binary
+  pool = link_pool
+  rspfile = $binary.rsp
+  rspfile_content = $in_newline $libs $ldflags
+rule stamp
+  command = C:\Users\adamf_000\Desktop\depot_tools\python276_bin\python.exe C:\Users\adamf_000\Desktop\natty\build\src\out\Release\gyp-win-tool stamp $out
+  description = STAMP $out
+rule copy
+  command = C:\Users\adamf_000\Desktop\depot_tools\python276_bin\python.exe build\src\out\Release\gyp-win-tool recursive-mirror $in $out
+  description = COPY $in $out
+
+build build\src\out\Release\obj\talk\natty.actions_depends.stamp: stamp $
+    build\src\out\Release\obj\third_party\jsoncpp\jsoncpp.lib $
+    build\src\out\Release\obj\talk\libjingle_peerconnection.lib $
+    build\src\out\Release\obj\talk\libjingle.actions_depends.stamp $
+    build\src\out\Release\obj\third_party\expat\expat.lib build\src\out\Release\obj\webrtc\base\rtc_base.lib $
+    build\src\out\Release\obj\webrtc\base\rtc_base_approved.lib build\src\out\Release\obj\net\third_party\nss\crssl.lib $
+    build\src\out\Release\obj\third_party\nss\crnspr.lib build\src\out\Release\obj\third_party\nss\crnss.lib $
+    build\src\out\Release\obj\third_party\nss\nss_static.lib $
+    build\src\out\Release\obj\third_party\nss\nss_static_avx.lib $
+    build\src\out\Release\obj\third_party\sqlite\sqlite3.lib build\src\out\Release\obj\third_party\icu\icui18n.lib $
+    build\src\out\Release\obj\third_party\icu\icuuc.lib build\src\out\Release\obj\third_party\icu\icudata.lib $
+    build\src\out\Release\icudtl.dat build\src\out\Release\obj\talk\libjingle_media.lib build\src\out\Release\libyuv.lib $
+    build\src\out\Release\obj\third_party\libjpeg_turbo\libjpeg.lib $
+    build\src\out\Release\obj\third_party\usrsctp\usrsctplib.lib $
+    build\src\out\Release\obj\webrtc\modules\video_render_module.lib $
+    build\src\out\Release\obj\webrtc\modules\webrtc_utility.lib $
+    build\src\out\Release\obj\webrtc\modules\audio_coding_module.lib build\src\out\Release\obj\webrtc\modules\CNG.lib $
+    build\src\out\Release\obj\webrtc\common_audio\common_audio.lib $
+    build\src\out\Release\obj\webrtc\system_wrappers\source\system_wrappers.lib $
+    build\src\out\Release\obj\third_party\openmax_dl\dl\openmax_dl.lib $
+    build\src\out\Release\obj\webrtc\common_audio\common_audio_sse2.lib $
+    build\src\out\Release\obj\webrtc\modules\G711.lib build\src\out\Release\obj\webrtc\modules\G722.lib $
+    build\src\out\Release\obj\webrtc\modules\iLBC.lib build\src\out\Release\obj\webrtc\modules\iSAC.lib $
+    build\src\out\Release\obj\webrtc\modules\iSACFix.lib build\src\out\Release\obj\webrtc\modules\PCM16B.lib $
+    build\src\out\Release\obj\webrtc\modules\webrtc_opus.lib build\src\out\Release\obj\third_party\opus\opus.lib $
+    build\src\out\Release\obj\webrtc\modules\neteq.lib build\src\out\Release\obj\webrtc\modules\media_file.lib $
+    build\src\out\Release\obj\webrtc\modules\webrtc_video_coding.lib $
+    build\src\out\Release\obj\webrtc\modules\webrtc_i420.lib $
+    build\src\out\Release\obj\webrtc\common_video\common_video.lib $
+    build\src\out\Release\obj\webrtc\modules\video_coding\utility\video_coding_utility.lib $
+    build\src\out\Release\obj\webrtc\modules\video_coding\codecs\vp8\webrtc_vp8.lib $
+    build\src\out\Release\obj\third_party\libvpx\libvpx.lib $
+    build\src\out\Release\obj\third_party\libvpx\gen_asm_offsets_vp8.actions_rules_copies.stamp $
+    build\src\out\Release\obj\third_party\libvpx\libvpx_asm_offsets_vp8.lib $
+    build\src\out\Release\obj\third_party\libvpx\libvpx_intrinsics_mmx.lib $
+    build\src\out\Release\obj\third_party\libvpx\libvpx_intrinsics_sse2.lib $
+    build\src\out\Release\obj\third_party\libvpx\libvpx_intrinsics_ssse3.lib $
+    build\src\out\Release\obj\third_party\libvpx\libvpx_intrinsics_sse4_1.lib $
+    build\src\out\Release\obj\webrtc\webrtc.lib build\src\out\Release\obj\webrtc\webrtc_common.lib $
+    build\src\out\Release\obj\webrtc\video_engine\video_engine_core.lib $
+    build\src\out\Release\obj\webrtc\modules\rtp_rtcp.lib build\src\out\Release\obj\webrtc\modules\paced_sender.lib $
+    build\src\out\Release\obj\webrtc\modules\remote_bitrate_estimator.lib $
+    build\src\out\Release\obj\webrtc\modules\remote_bitrate_estimator\rbe_components.lib $
+    build\src\out\Release\obj\webrtc\modules\bitrate_controller.lib $
+    build\src\out\Release\obj\webrtc\modules\video_capture_module.lib $
+    build\src\out\Release\obj\webrtc\modules\video_processing.lib $
+    build\src\out\Release\obj\webrtc\modules\video_processing_sse2.lib $
+    build\src\out\Release\obj\webrtc\voice_engine\voice_engine.lib $
+    build\src\out\Release\obj\webrtc\modules\audio_conference_mixer.lib $
+    build\src\out\Release\obj\webrtc\modules\audio_processing.lib $
+    build\src\out\Release\obj\webrtc\modules\audioproc_debug_proto.lib $
+    build\src\out\Release\obj\third_party\protobuf\protobuf_lite.lib $
+    build\src\out\Release\obj\webrtc\modules\audio_processing_sse2.lib $
+    build\src\out\Release\obj\webrtc\modules\audio_device.lib build\src\out\Release\obj\webrtc\sound\rtc_sound.lib $
+    build\src\out\Release\obj\webrtc\system_wrappers\source\field_trial_default.lib $
+    build\src\out\Release\obj\webrtc\system_wrappers\source\metrics_default.lib $
+    build\src\out\Release\obj\webrtc\libjingle\xmllite\rtc_xmllite.lib $
+    build\src\out\Release\obj\webrtc\libjingle\xmpp\rtc_xmpp.lib build\src\out\Release\obj\webrtc\base\rtc_base.lib $
+    build\src\out\Release\obj\webrtc\p2p\rtc_p2p.lib $
+    build\src\out\Release\obj\webrtc\modules\video_capture_module_internal_impl.lib $
+    build\src\out\Release\obj\third_party\winsdk_samples\directshow_baseclasses.lib $
+    build\src\out\Release\obj\webrtc\modules\video_render_module_internal_impl.lib $
+    build\src\out\Release\obj\talk\libjingle_p2p.lib build\src\out\Release\obj\third_party\libsrtp\libsrtp.lib
+
+build build\src\out\Release\obj\talk\natty.compile_depends.stamp: stamp $
+    build\src\out\Release\icudtl.dat build\src\out\Release\icudtl.dat $
+    build\src\out\Release\obj\third_party\libjpeg_turbo\libjpeg.actions_rules_copies.stamp $
+    build\src\out\Release\obj\third_party\libvpx\libvpx.actions_rules_copies.stamp $
+    build\src\out\Release\obj\third_party\libvpx\gen_asm_offsets_vp8.actions_rules_copies.stamp $
+    build\src\out\Release\obj\webrtc\modules\audioproc_debug_proto.actions_rules_copies.stamp $
+    build\src\out\Release\obj\webrtc\modules\audioproc_debug_proto.actions_rules_copies.stamp
+
+pdbname_c = build\src\out\Release\obj\talk\natty.c.pdb
+pdbname_cc = build\src\out\Release\obj\talk\natty.cc.pdb
+pchprefix = natty
+defines = -DV8_DEPRECATION_WARNINGS -DEXPAT_RELATIVE_PATH $
+    -DFEATURE_ENABLE_VOICEMAIL -DGTEST_RELATIVE_PATH $
+    -DJSONCPP_RELATIVE_PATH -DLOGGING=1 -DSRTP_RELATIVE_PATH $
+    -DFEATURE_ENABLE_SSL -DFEATURE_ENABLE_PSTN -DHAVE_SCTP -DHAVE_SRTP $
+    -DHAVE_WEBRTC_VIDEO -DHAVE_WEBRTC_VOICE -DUSE_WEBRTC_DEV_BRANCH $
+    -D_WIN32_WINNT=0x0602 -DWINVER=0x0602 -DWIN32 -D_WINDOWS -DNOMINMAX $
+    -DPSAPI_VERSION=1 -D_CRT_RAND_S -DCERT_CHAIN_PARA_HAS_EXTRA_FIELDS $
+    -DWIN32_LEAN_AND_MEAN -D_ATL_NO_OPENGL -D_HAS_EXCEPTIONS=0 $
+    -DCHROMIUM_BUILD -DTOOLKIT_VIEWS=1 -DUSE_AURA=1 -DUSE_ASH=1 $
+    -DUSE_DEFAULT_RENDER_THEME=1 -DUSE_LIBJPEG_TURBO=1 $
+    -DENABLE_ONE_CLICK_SIGNIN -DENABLE_PRE_SYNC_BACKUP -DENABLE_REMOTING=1 $
+    -DENABLE_WEBRTC=1 -DENABLE_PEPPER_CDMS -DENABLE_CONFIGURATION_POLICY $
+    -DENABLE_NOTIFICATIONS -DENABLE_HIDPI=1 -DENABLE_EGLIMAGE=1 -D__STD_C $
+    -D_CRT_SECURE_NO_DEPRECATE -D_SCL_SECURE_NO_DEPRECATE $
+    -DNTDDI_VERSION=0x06020000 -D_USING_V110_SDK71_ -DENABLE_TASK_MANAGER=1 $
+    -DENABLE_EXTENSIONS=1 -DENABLE_PLUGIN_INSTALLATION=1 -DENABLE_PLUGINS=1 $
+    -DENABLE_SESSION_SERVICE=1 -DENABLE_THEMES=1 -DENABLE_AUTOFILL_DIALOG=1 $
+    -DENABLE_BACKGROUND=1 -DENABLE_GOOGLE_NOW=1 -DCLD_VERSION=2 $
+    -DCLD2_DATA_SOURCE=static -DENABLE_FULL_PRINTING=1 -DENABLE_PRINTING=1 $
+    -DENABLE_SPELLCHECK=1 -DENABLE_CAPTIVE_PORTAL_DETECTION=1 $
+    -DENABLE_APP_LIST=1 -DENABLE_SETTINGS_APP=1 -DENABLE_MANAGED_USERS=1 $
+    -DENABLE_MDNS=1 -DENABLE_SERVICE_DISCOVERY=1 $
+    -DENABLE_WIFI_BOOTSTRAPPING=1 -DENABLE_LOAD_COMPLETION_HACKS=1 $
+    -DLIBPEERCONNECTION_LIB=1 -DWEBRTC_WIN -D_CRT_NONSTDC_NO_WARNINGS $
+    -D_CRT_NONSTDC_NO_DEPRECATE -DNDEBUG -DNVALGRIND $
+    -DDYNAMIC_ANNOTATIONS_ENABLED=0 -D_UNICODE -DUNICODE
+asmflags = 
+rcflags = /Ibuild\src /Igen /Ibuild\src\talk /l409
+includes = -Igen -Ibuild\src -Ibuild\src -Ibuild\src\third_party $
+    -Ibuild\src\third_party\webrtc -Ibuild\src\webrtc $
+    -Ibuild\src\third_party\wtl\include $
+    -Ibuild\src\third_party\jsoncpp\overrides\include $
+    -Ibuild\src\third_party\jsoncpp\source\include
+midl_includes = 
+cflags = /wd4127 /wd4351 /wd4355 /wd4503 /wd4611 /wd4100 /wd4121 /wd4189 $
+    /wd4244 /wd4481 /wd4505 /wd4510 /wd4512 /wd4610 /wd4702 /wd4800 /O2 $
+    /Ob2 /GF /Oy- /W3 /WX /Zi /GR- /Gy /GS /MT /d2Zi+ /Oy- /FS
+cflags_c = 
+cflags_cc = /TP
+
+build $
+    out\natty\client\natty.obj: $
+    cxx src\natty.cc || $
+    build\src\out\Release\obj\talk\natty.compile_depends.stamp
+build $
+    out\natty\client\client.main.obj: $
+    cxx src\main.cc || $
+    build\src\out\Release\obj\talk\natty.compile_depends.stamp
+
+manifests = $
+    build\src\out\Release\obj\talk\natty.natty.exe.generated.manifest $
+    build\src\build\win\compatibility.manifest
+intermediatemanifest = $
+    build\src\out\Release\obj\talk\natty.natty.exe.intermediate.manifest
+ldflags = /DEBUG /MACHINE:X86 $
+    /LIBPATH:"C:\Users\adamf_000\Desktop\depot_tools\win_toolchain\vs2013_files\win8sdk\Lib\win8\um\x86" $
+    /LIBPATH:"C:\Users\adamf_000\Desktop\depot_tools\win_toolchain\vs2013_files\wdk\lib\ATL\amd64" $
+    /DELAYLOAD:dbghelp.dll /DELAYLOAD:dwmapi.dll /DELAYLOAD:shell32.dll $
+    /DELAYLOAD:uxtheme.dll /PDB:natty.exe.pdb /ignore:4254 $
+    /ignore:4078 /dynamicbase /ignore:4199 /ignore:4221 /nxcompat $
+    /SUBSYSTEM:CONSOLE,5.02 /INCREMENTAL:NO /FIXED:NO /OPT:REF /OPT:ICF $
+    /NODEFAULTLIB:olepro32.lib /PROFILE wininet.lib dnsapi.lib version.lib $
+    msimg32.lib ws2_32.lib usp10.lib psapi.lib dbghelp.lib winmm.lib $
+    shlwapi.lib atlthunk.lib advapi32.lib kernel32.lib gdi32.lib $
+    winspool.lib comdlg32.lib shell32.lib ole32.lib oleaut32.lib user32.lib $
+    uuid.lib odbc32.lib odbccp32.lib delayimp.lib credui.lib netapi32.lib $
+    /DYNAMICBASE /NXCOMPAT /MANIFEST $
+    /ManifestFile:build\src\out\Release\obj\talk\natty.natty.exe.intermediate.manifest $
+    /MANIFESTUAC:NO /ALLOWISOLATION
+libs = crypt32.lib iphlpapi.lib secur32.lib winmm.lib dmoguids.lib $
+    wmcodecdspuuid.lib amstrmid.lib msdmo.lib Strmiids.lib
+build natty.exe natty.exe.pdb: link_embed $
+    out\natty\client\natty.obj $
+    out\natty\client\client.main.obj $
+    build\src\out\Release\obj\third_party\jsoncpp\jsoncpp.lib $
+    build\src\out\Release\obj\talk\libjingle_peerconnection.lib build\src\out\Release\obj\third_party\expat\expat.lib $
+    build\src\out\Release\obj\webrtc\base\rtc_base.lib build\src\out\Release\obj\webrtc\base\rtc_base_approved.lib $
+    build\src\out\Release\obj\net\third_party\nss\crssl.lib build\src\out\Release\obj\third_party\nss\crnspr.lib $
+    build\src\out\Release\obj\third_party\nss\crnss.lib build\src\out\Release\obj\third_party\nss\nss_static.lib $
+    build\src\out\Release\obj\third_party\nss\nss_static_avx.lib $
+    build\src\out\Release\obj\third_party\sqlite\sqlite3.lib build\src\out\Release\obj\third_party\icu\icui18n.lib $
+    build\src\out\Release\obj\third_party\icu\icuuc.lib build\src\out\Release\obj\third_party\icu\icudata.lib $
+    build\src\out\Release\obj\talk\libjingle_media.lib build\src\out\Release\libyuv.lib $
+    build\src\out\Release\obj\third_party\libjpeg_turbo\libjpeg.lib $
+    build\src\out\Release\obj\third_party\usrsctp\usrsctplib.lib $
+    build\src\out\Release\obj\webrtc\modules\video_render_module.lib $
+    build\src\out\Release\obj\webrtc\modules\webrtc_utility.lib $
+    build\src\out\Release\obj\webrtc\modules\audio_coding_module.lib build\src\out\Release\obj\webrtc\modules\CNG.lib $
+    build\src\out\Release\obj\webrtc\common_audio\common_audio.lib $
+    build\src\out\Release\obj\webrtc\system_wrappers\source\system_wrappers.lib $
+    build\src\out\Release\obj\third_party\openmax_dl\dl\openmax_dl.lib $
+    build\src\out\Release\obj\webrtc\common_audio\common_audio_sse2.lib $
+    build\src\out\Release\obj\webrtc\modules\G711.lib build\src\out\Release\obj\webrtc\modules\G722.lib $
+    build\src\out\Release\obj\webrtc\modules\iLBC.lib build\src\out\Release\obj\webrtc\modules\iSAC.lib $
+    build\src\out\Release\obj\webrtc\modules\iSACFix.lib build\src\out\Release\obj\webrtc\modules\PCM16B.lib $
+    build\src\out\Release\obj\webrtc\modules\webrtc_opus.lib build\src\out\Release\obj\third_party\opus\opus.lib $
+    build\src\out\Release\obj\webrtc\modules\neteq.lib build\src\out\Release\obj\webrtc\modules\media_file.lib $
+    build\src\out\Release\obj\webrtc\modules\webrtc_video_coding.lib $
+    build\src\out\Release\obj\webrtc\modules\webrtc_i420.lib $
+    build\src\out\Release\obj\webrtc\common_video\common_video.lib $
+    build\src\out\Release\obj\webrtc\modules\video_coding\utility\video_coding_utility.lib $
+    build\src\out\Release\obj\webrtc\modules\video_coding\codecs\vp8\webrtc_vp8.lib $
+    build\src\out\Release\obj\third_party\libvpx\libvpx.lib $
+    build\src\out\Release\obj\third_party\libvpx\libvpx_asm_offsets_vp8.lib $
+    build\src\out\Release\obj\third_party\libvpx\libvpx_intrinsics_mmx.lib $
+    build\src\out\Release\obj\third_party\libvpx\libvpx_intrinsics_sse2.lib $
+    build\src\out\Release\obj\third_party\libvpx\libvpx_intrinsics_ssse3.lib $
+    build\src\out\Release\obj\third_party\libvpx\libvpx_intrinsics_sse4_1.lib $
+    build\src\out\Release\obj\webrtc\webrtc.lib build\src\out\Release\obj\webrtc\webrtc_common.lib $
+    build\src\out\Release\obj\webrtc\video_engine\video_engine_core.lib $
+    build\src\out\Release\obj\webrtc\modules\rtp_rtcp.lib build\src\out\Release\obj\webrtc\modules\paced_sender.lib $
+    build\src\out\Release\obj\webrtc\modules\remote_bitrate_estimator.lib $
+    build\src\out\Release\obj\webrtc\modules\remote_bitrate_estimator\rbe_components.lib $
+    build\src\out\Release\obj\webrtc\modules\bitrate_controller.lib $
+    build\src\out\Release\obj\webrtc\modules\video_capture_module.lib $
+    build\src\out\Release\obj\webrtc\modules\video_processing.lib $
+    build\src\out\Release\obj\webrtc\modules\video_processing_sse2.lib $
+    build\src\out\Release\obj\webrtc\voice_engine\voice_engine.lib $
+    build\src\out\Release\obj\webrtc\modules\audio_conference_mixer.lib $
+    build\src\out\Release\obj\webrtc\modules\audio_processing.lib $
+    build\src\out\Release\obj\webrtc\modules\audioproc_debug_proto.lib $
+    build\src\out\Release\obj\third_party\protobuf\protobuf_lite.lib $
+    build\src\out\Release\obj\webrtc\modules\audio_processing_sse2.lib $
+    build\src\out\Release\obj\webrtc\modules\audio_device.lib build\src\out\Release\obj\webrtc\sound\rtc_sound.lib $
+    build\src\out\Release\obj\webrtc\system_wrappers\source\field_trial_default.lib $
+    build\src\out\Release\obj\webrtc\system_wrappers\source\metrics_default.lib $
+    build\src\out\Release\obj\webrtc\libjingle\xmllite\rtc_xmllite.lib $
+    build\src\out\Release\obj\webrtc\libjingle\xmpp\rtc_xmpp.lib build\src\out\Release\obj\webrtc\p2p\rtc_p2p.lib $
+    build\src\out\Release\obj\webrtc\modules\video_capture_module_internal_impl.lib $
+    build\src\out\Release\obj\third_party\winsdk_samples\directshow_baseclasses.lib $
+    build\src\out\Release\obj\webrtc\modules\video_render_module_internal_impl.lib $
+    build\src\out\Release\obj\talk\libjingle_p2p.lib build\src\out\Release\obj\third_party\libsrtp\libsrtp.lib | $
+    build\src\out\Release\obj\webrtc\base\rtc_base.lib $
+    build\src\out\Release\obj\third_party\libvpx\gen_asm_offsets_vp8.actions_rules_copies.stamp $
+    build\src\out\Release\obj\talk\natty.natty.exe.generated.manifest $
+    build\src\out\Release\icudtl.dat build\src\out\Release\obj\talk\libjingle.actions_depends.stamp $
+    build\src\build\win\compatibility.manifest
+  binary = natty.exe
