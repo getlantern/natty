@@ -11,7 +11,7 @@ mkdir build
 cd build
 gclient config --name src 'git+https://chromium.googlesource.com/external/webrtc'
 gclient sync -j200
-cd trunk
+cd src
 git svn init --prefix=origin/ https://webrtc.googlecode.com/svn "-T$WEBRTC_VERSION" --rewrite-root=http://webrtc.googlecode.com/svn
 git config svn-remote.svn.fetch trunk:refs/remotes/origin/master
 git svn fetch
@@ -19,4 +19,4 @@ git checkout master
 gclient sync --force
 ninja -C out/Release
 
-# cp src/webrtc/channel.cc build/trunk/talk/session/media/
+cp src/webrtc/channel.cc build/src/talk/session/media/
