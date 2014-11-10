@@ -1,0 +1,202 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		088CA5A1B865729F4D0CA819 /* vp8_factory.cc in Sources */ = {isa = PBXBuildFile; fileRef = 79DA84C703602C4DD23FBB3B /* vp8_factory.cc */; };
+		683B798BFF7491EFEF193BCD /* realtime_temporal_layers.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4825C675BF13B716BDD12073 /* realtime_temporal_layers.cc */; };
+		72EA4A9C470672556A052D65 /* vp8_impl.cc in Sources */ = {isa = PBXBuildFile; fileRef = 6078975F6C4D84CE7DA8BA0F /* vp8_impl.cc */; };
+		F08B37B7083A3BE42C05A77C /* reference_picture_selection.cc in Sources */ = {isa = PBXBuildFile; fileRef = 0E66B7C91BD01B0FDD9CECAA /* reference_picture_selection.cc */; };
+		F18624E0DB69752F0C6138EA /* default_temporal_layers.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7CA7CF9E9B9D7571FF1F7A39 /* default_temporal_layers.cc */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		0E66B7C91BD01B0FDD9CECAA /* reference_picture_selection.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = reference_picture_selection.cc; sourceTree = "<group>"; };
+		1D9E31B13A6D77E8965C093B /* common.gypi */ = {isa = PBXFileReference; explicitFileType = sourcecode; name = common.gypi; path = ../../../../build/common.gypi; sourceTree = "<group>"; };
+		2B9995F509E322693C3E9BC8 /* default_temporal_layers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = default_temporal_layers.h; sourceTree = "<group>"; };
+		419653351388736FA0930EFD /* vp8.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = vp8.h; sourceTree = "<group>"; };
+		4244D6BBDEAD70BD5289807F /* vp8_common_types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = vp8_common_types.h; sourceTree = "<group>"; };
+		4825C675BF13B716BDD12073 /* realtime_temporal_layers.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = realtime_temporal_layers.cc; sourceTree = "<group>"; };
+		6078975F6C4D84CE7DA8BA0F /* vp8_impl.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = vp8_impl.cc; sourceTree = "<group>"; };
+		79DA84C703602C4DD23FBB3B /* vp8_factory.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = vp8_factory.cc; sourceTree = "<group>"; };
+		7A5474FD45EBA59AE1D8C6B5 /* reference_picture_selection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = reference_picture_selection.h; sourceTree = "<group>"; };
+		7CA7CF9E9B9D7571FF1F7A39 /* default_temporal_layers.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = default_temporal_layers.cc; sourceTree = "<group>"; };
+		9B2AFE48B3D5505B23FD2CA5 /* libwebrtc_vp8.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libwebrtc_vp8.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		9DF51A0548E43D9750F71AC1 /* vp8.gyp */ = {isa = PBXFileReference; explicitFileType = sourcecode; path = vp8.gyp; sourceTree = "<group>"; };
+		BBBCA2435C98038960036761 /* temporal_layers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = temporal_layers.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		3F41CCEF2F94816A9588DFC2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		26DB9254D6B246F6E56734E3 /* Build */ = {
+			isa = PBXGroup;
+			children = (
+				1D9E31B13A6D77E8965C093B /* common.gypi */,
+				9DF51A0548E43D9750F71AC1 /* vp8.gyp */,
+			);
+			name = Build;
+			sourceTree = "<group>";
+		};
+		611FFEE594CFE11C1E3D599D /* include */ = {
+			isa = PBXGroup;
+			children = (
+				419653351388736FA0930EFD /* vp8.h */,
+				4244D6BBDEAD70BD5289807F /* vp8_common_types.h */,
+			);
+			path = include;
+			sourceTree = "<group>";
+		};
+		7A2EA3CFA4BB4D2DC92D8114 /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				611FFEE594CFE11C1E3D599D /* include */,
+				7CA7CF9E9B9D7571FF1F7A39 /* default_temporal_layers.cc */,
+				2B9995F509E322693C3E9BC8 /* default_temporal_layers.h */,
+				4825C675BF13B716BDD12073 /* realtime_temporal_layers.cc */,
+				0E66B7C91BD01B0FDD9CECAA /* reference_picture_selection.cc */,
+				7A5474FD45EBA59AE1D8C6B5 /* reference_picture_selection.h */,
+				BBBCA2435C98038960036761 /* temporal_layers.h */,
+				79DA84C703602C4DD23FBB3B /* vp8_factory.cc */,
+				6078975F6C4D84CE7DA8BA0F /* vp8_impl.cc */,
+			);
+			name = Source;
+			sourceTree = "<group>";
+		};
+		8BF531D580C56E3F3CC68785 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9B2AFE48B3D5505B23FD2CA5 /* libwebrtc_vp8.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		D91B7E7F02F25223D81BA4D1 = {
+			isa = PBXGroup;
+			children = (
+				7A2EA3CFA4BB4D2DC92D8114 /* Source */,
+				8BF531D580C56E3F3CC68785 /* Products */,
+				26DB9254D6B246F6E56734E3 /* Build */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		8574C931F99AA24A5EFF48C0 /* webrtc_vp8 */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4DDA8A2874A2E604EC1A7645 /* Build configuration list for PBXNativeTarget "webrtc_vp8" */;
+			buildPhases = (
+				B4730002DF0E02DA82CE892E /* Sources */,
+				3F41CCEF2F94816A9588DFC2 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = webrtc_vp8;
+			productName = webrtc_vp8;
+			productReference = 9B2AFE48B3D5505B23FD2CA5 /* libwebrtc_vp8.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		92E42C4138D79CA125D36ECA /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+			};
+			buildConfigurationList = B1DB23C410D9D4D350402762 /* Build configuration list for PBXProject "vp8" */;
+			compatibilityVersion = "Xcode 3.2";
+			hasScannedForEncodings = 1;
+			mainGroup = D91B7E7F02F25223D81BA4D1;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				8574C931F99AA24A5EFF48C0 /* webrtc_vp8 */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		B4730002DF0E02DA82CE892E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F08B37B7083A3BE42C05A77C /* reference_picture_selection.cc in Sources */,
+				088CA5A1B865729F4D0CA819 /* vp8_factory.cc in Sources */,
+				72EA4A9C470672556A052D65 /* vp8_impl.cc in Sources */,
+				F18624E0DB69752F0C6138EA /* default_temporal_layers.cc in Sources */,
+				683B798BFF7491EFEF193BCD /* realtime_temporal_layers.cc in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		C713E34C66F62954AB217CBF /* Debug_Base */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXECUTABLE_PREFIX = lib;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					EXPAT_RELATIVE_PATH,
+					WEBRTC_MODULE_UTILITY_VIDEO,
+					WEBRTC_POSIX,
+					WEBRTC_MAC,
+					_DEBUG,
+				);
+				HEADER_SEARCH_PATHS = (
+					../../../../..,
+					../../../../common_video/interface,
+					../../../../common_video/libyuv/include,
+					../../../../system_wrappers/interface,
+					../../../../../chromium/src/third_party/libvpx/source/libvpx,
+				);
+				PRODUCT_NAME = webrtc_vp8;
+			};
+			name = Debug_Base;
+		};
+		ECFA6F91B3A1A28C7E0E1A72 /* Debug_Base */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INTERMEDIATE_DIR = "$(PROJECT_DERIVED_FILE_DIR)/$(CONFIGURATION)";
+				SHARED_INTERMEDIATE_DIR = "$(SYMROOT)/DerivedSources/$(CONFIGURATION)";
+			};
+			name = Debug_Base;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		4DDA8A2874A2E604EC1A7645 /* Build configuration list for PBXNativeTarget "webrtc_vp8" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C713E34C66F62954AB217CBF /* Debug_Base */,
+			);
+			defaultConfigurationIsVisible = 1;
+			defaultConfigurationName = Debug_Base;
+		};
+		B1DB23C410D9D4D350402762 /* Build configuration list for PBXProject "vp8" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				ECFA6F91B3A1A28C7E0E1A72 /* Debug_Base */,
+			);
+			defaultConfigurationIsVisible = 1;
+			defaultConfigurationName = Debug_Base;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 92E42C4138D79CA125D36ECA /* Project object */;
+}

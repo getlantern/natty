@@ -1,0 +1,450 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		149B52F9F9EE318BD649EB2F /* presenceouttask.cc in Sources */ = {isa = PBXBuildFile; fileRef = 5FCACE48EFE6F11D4E17B6D9 /* presenceouttask.cc */; };
+		20FBB417FC0E0DF0ECDDC38D /* moduleimpl.cc in Sources */ = {isa = PBXBuildFile; fileRef = AD93C7F0AE3211D912625324 /* moduleimpl.cc */; };
+		2A89F455F874CD38647626B7 /* xmpplogintask.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCAEAF95D053A0E5B8A1AE35 /* xmpplogintask.cc */; };
+		2C9F4F0B9841F8A0439B2186 /* xmppthread.cc in Sources */ = {isa = PBXBuildFile; fileRef = 39B34186FACE032FFED2F6FE /* xmppthread.cc */; };
+		3ACC404029D5850EB4D70360 /* xmpppump.cc in Sources */ = {isa = PBXBuildFile; fileRef = 9425DFC4B64ECADA17FD34A4 /* xmpppump.cc */; };
+		3DFCD539FE6C19A53305FAEF /* constants.cc in Sources */ = {isa = PBXBuildFile; fileRef = EFDCE2AD2568E371C99D5838 /* constants.cc */; };
+		45B844E408C36169EA457B54 /* pubsubclient.cc in Sources */ = {isa = PBXBuildFile; fileRef = 91453E5F432CD86379137928 /* pubsubclient.cc */; };
+		4A2CF77EC86805FC78670A8B /* xmppauth.cc in Sources */ = {isa = PBXBuildFile; fileRef = 347837BECA701F3CEEA38CE5 /* xmppauth.cc */; };
+		4BD4B1F732B9BBAC5BE4F6E1 /* iqtask.cc in Sources */ = {isa = PBXBuildFile; fileRef = 8404850D2E21708507A4FC7B /* iqtask.cc */; };
+		5A958C734836063788020027 /* saslmechanism.cc in Sources */ = {isa = PBXBuildFile; fileRef = C2239B27E9B74C300E29C926 /* saslmechanism.cc */; };
+		6A01A4DBBC256ADD523C7BA2 /* xmppsocket.cc in Sources */ = {isa = PBXBuildFile; fileRef = 8E35877D0747508A6213113F /* xmppsocket.cc */; };
+		6D46DE2CC61306D04F4E17CE /* discoitemsquerytask.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2E6559814BFBD069B8C1CF7C /* discoitemsquerytask.cc */; };
+		6EC9B23F91CCA5AB1B7FFE5B /* pubsub_task.cc in Sources */ = {isa = PBXBuildFile; fileRef = EDBC6B88FF7577DED04FB963 /* pubsub_task.cc */; };
+		74D7A166E828769F269C6A47 /* presencestatus.cc in Sources */ = {isa = PBXBuildFile; fileRef = 472B366F5B6FF9157D78ADC1 /* presencestatus.cc */; };
+		83C288ABDD77349EEB4BC039 /* xmppclient.cc in Sources */ = {isa = PBXBuildFile; fileRef = 82037520E65BC0F92327984F /* xmppclient.cc */; };
+		89B0CC0B4FB70B71F6A2A72A /* rostermoduleimpl.cc in Sources */ = {isa = PBXBuildFile; fileRef = 963CA7F2AC429C0E82B01181 /* rostermoduleimpl.cc */; };
+		8B42C80854F0B3582D6C215C /* mucroomdiscoverytask.cc in Sources */ = {isa = PBXBuildFile; fileRef = 03E9EE0F22C75365CD0F53BC /* mucroomdiscoverytask.cc */; };
+		9236C51E6CF3E03EB0C82F13 /* xmppengineimpl.cc in Sources */ = {isa = PBXBuildFile; fileRef = 102311E98C0E5A145508AB19 /* xmppengineimpl.cc */; };
+		AAAC16FDDDAC245ED0A06C47 /* receivetask.cc in Sources */ = {isa = PBXBuildFile; fileRef = B5CAD2C67A626A93D09BB210 /* receivetask.cc */; };
+		AE531F708EC0F649617FE2D6 /* mucroomuniquehangoutidtask.cc in Sources */ = {isa = PBXBuildFile; fileRef = AFAD4FE05368A53A49E69129 /* mucroomuniquehangoutidtask.cc */; };
+		B21A913E01DC9B83EF1F3635 /* mucroomlookuptask.cc in Sources */ = {isa = PBXBuildFile; fileRef = F94A2B97526134CB284039C4 /* mucroomlookuptask.cc */; };
+		B4128BE395F10CDCDAAF29B0 /* xmppengineimpl_iq.cc in Sources */ = {isa = PBXBuildFile; fileRef = 36F7D2A0ACC420D1AD737407 /* xmppengineimpl_iq.cc */; };
+		B8479E2FEB8338B3C939A83F /* xmppstanzaparser.cc in Sources */ = {isa = PBXBuildFile; fileRef = 52625D3C92DC0A7EA5A0A2B2 /* xmppstanzaparser.cc */; };
+		BA516385ED571C1F3FD82F31 /* hangoutpubsubclient.cc in Sources */ = {isa = PBXBuildFile; fileRef = F769FE617A63A543A15D1FF6 /* hangoutpubsubclient.cc */; };
+		C1577240EF54711263D57AB4 /* jid.cc in Sources */ = {isa = PBXBuildFile; fileRef = D209D0474AE15572B9F0FBA4 /* jid.cc */; };
+		C40BF1CDDF23807FA9F6BE5E /* chatroommoduleimpl.cc in Sources */ = {isa = PBXBuildFile; fileRef = 71422BA74FAC6A2D2747B055 /* chatroommoduleimpl.cc */; };
+		CD59ECE9B902B4FA726BF60C /* pubsubtasks.cc in Sources */ = {isa = PBXBuildFile; fileRef = 78C00701C5B89AC315D4F0E1 /* pubsubtasks.cc */; };
+		DACDF7AB5815D22E5A6CBC01 /* pubsubstateclient.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CBA6DD3E2FFFAC0DBE5857A /* pubsubstateclient.cc */; };
+		DC366428BA25BA020B9B3D99 /* xmpptask.cc in Sources */ = {isa = PBXBuildFile; fileRef = F22FD2489CE414792EB0A8BE /* xmpptask.cc */; };
+		E96632095B19A9A1348A4924 /* pingtask.cc in Sources */ = {isa = PBXBuildFile; fileRef = 37C0796C95A11964A32A3C56 /* pingtask.cc */; };
+		FBF6C611E65000F6C9B043CD /* mucroomconfigtask.cc in Sources */ = {isa = PBXBuildFile; fileRef = 355853653F1042454A91D986 /* mucroomconfigtask.cc */; };
+		FF80AC895B295AC173D96E51 /* presencereceivetask.cc in Sources */ = {isa = PBXBuildFile; fileRef = D4E08CE94EF6CB0942065F07 /* presencereceivetask.cc */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		157461FA43E03B44F51D53DD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2AFD871FE7168C67B6889817 /* base.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 7839076A2B30A5986F50637B;
+			remoteInfo = webrtc_base;
+		};
+		1C5CF7FE46556EB0D89FA0F5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2AFD871FE7168C67B6889817 /* base.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 5809C5C10D6E35A589F217D2;
+			remoteInfo = rtc_base_approved;
+		};
+		469060074613D174A562A046 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2AFD871FE7168C67B6889817 /* base.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 435B4DF89A1F8BA3CD370591;
+			remoteInfo = rtc_base;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		03E9EE0F22C75365CD0F53BC /* mucroomdiscoverytask.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = mucroomdiscoverytask.cc; sourceTree = "<group>"; };
+		0EBADDBB4407C1B82C32D540 /* xmppstanzaparser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = xmppstanzaparser.h; sourceTree = "<group>"; };
+		102311E98C0E5A145508AB19 /* xmppengineimpl.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = xmppengineimpl.cc; sourceTree = "<group>"; };
+		102409871D2272946A31F503 /* jid.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = jid.h; sourceTree = "<group>"; };
+		13253FF4E00AC3E844D60A75 /* xmpp.gyp */ = {isa = PBXFileReference; explicitFileType = sourcecode; path = xmpp.gyp; sourceTree = "<group>"; };
+		1B61479358F2274BE9E34072 /* chatroommodule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = chatroommodule.h; sourceTree = "<group>"; };
+		1C6BDCBA37E8A4B0175DE68D /* saslplainmechanism.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = saslplainmechanism.h; sourceTree = "<group>"; };
+		1CBA6DD3E2FFFAC0DBE5857A /* pubsubstateclient.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = pubsubstateclient.cc; sourceTree = "<group>"; };
+		1CE7396EC5ED521033A6C6CC /* rostermoduleimpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = rostermoduleimpl.h; sourceTree = "<group>"; };
+		1CE95A28FE5196317C948593 /* common.gypi */ = {isa = PBXFileReference; explicitFileType = sourcecode; name = common.gypi; path = ../../build/common.gypi; sourceTree = "<group>"; };
+		254EE6F9BC8CE43D38E28D8A /* asyncsocket.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = asyncsocket.h; sourceTree = "<group>"; };
+		27EC08E861258F893BF2EEEB /* iqtask.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = iqtask.h; sourceTree = "<group>"; };
+		2AFD871FE7168C67B6889817 /* base.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = base.xcodeproj; path = ../../base/base.xcodeproj; sourceTree = SOURCE_ROOT; };
+		2B0C08B60BA25DF4756706A1 /* saslmechanism.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = saslmechanism.h; sourceTree = "<group>"; };
+		2E6559814BFBD069B8C1CF7C /* discoitemsquerytask.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = discoitemsquerytask.cc; sourceTree = "<group>"; };
+		2F8801B8B1F4C8143EB718A5 /* saslhandler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = saslhandler.h; sourceTree = "<group>"; };
+		3457C80D49EDF5AD04E18B8F /* xmppauth.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = xmppauth.h; sourceTree = "<group>"; };
+		347837BECA701F3CEEA38CE5 /* xmppauth.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = xmppauth.cc; sourceTree = "<group>"; };
+		355853653F1042454A91D986 /* mucroomconfigtask.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = mucroomconfigtask.cc; sourceTree = "<group>"; };
+		362E94D2B27C6A73FA233C67 /* presenceouttask.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = presenceouttask.h; sourceTree = "<group>"; };
+		36F7D2A0ACC420D1AD737407 /* xmppengineimpl_iq.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = xmppengineimpl_iq.cc; sourceTree = "<group>"; };
+		37C0796C95A11964A32A3C56 /* pingtask.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = pingtask.cc; sourceTree = "<group>"; };
+		37EEB46CFAE889838C603E8F /* constants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = constants.h; sourceTree = "<group>"; };
+		39B34186FACE032FFED2F6FE /* xmppthread.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = xmppthread.cc; sourceTree = "<group>"; };
+		3A7A035ADAEA8FE8A6705F11 /* mucroomdiscoverytask.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mucroomdiscoverytask.h; sourceTree = "<group>"; };
+		4024FC0584339A22730FA54C /* xmppengine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = xmppengine.h; sourceTree = "<group>"; };
+		45C1612B2F112EEF3558B538 /* hangoutpubsubclient.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = hangoutpubsubclient.h; sourceTree = "<group>"; };
+		471CFD1C5FAF1DE317E9C66F /* module.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = module.h; sourceTree = "<group>"; };
+		472B366F5B6FF9157D78ADC1 /* presencestatus.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = presencestatus.cc; sourceTree = "<group>"; };
+		479CE6EC82E4CC8CBA8045DE /* mucroomuniquehangoutidtask.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mucroomuniquehangoutidtask.h; sourceTree = "<group>"; };
+		4DD58B782AFFA6442E2C7BEC /* pubsubclient.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = pubsubclient.h; sourceTree = "<group>"; };
+		4F9B8FC6A9A719DE038C0253 /* xmpppump.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = xmpppump.h; sourceTree = "<group>"; };
+		513468F0ACDB0040982746A3 /* xmppsocket.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = xmppsocket.h; sourceTree = "<group>"; };
+		52625D3C92DC0A7EA5A0A2B2 /* xmppstanzaparser.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = xmppstanzaparser.cc; sourceTree = "<group>"; };
+		55FB1B92705446898DF63D07 /* moduleimpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = moduleimpl.h; sourceTree = "<group>"; };
+		5A51011267FE51FDEB61CC64 /* xmpplogintask.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = xmpplogintask.h; sourceTree = "<group>"; };
+		5FCACE48EFE6F11D4E17B6D9 /* presenceouttask.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = presenceouttask.cc; sourceTree = "<group>"; };
+		681BCD462DF52D20DFE09840 /* saslcookiemechanism.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = saslcookiemechanism.h; sourceTree = "<group>"; };
+		70E167C6FD5449367B120985 /* xmpptask.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = xmpptask.h; sourceTree = "<group>"; };
+		71422BA74FAC6A2D2747B055 /* chatroommoduleimpl.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = chatroommoduleimpl.cc; sourceTree = "<group>"; };
+		73F64997390697EFF57CAD86 /* prexmppauth.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = prexmppauth.h; sourceTree = "<group>"; };
+		78C00701C5B89AC315D4F0E1 /* pubsubtasks.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = pubsubtasks.cc; sourceTree = "<group>"; };
+		82037520E65BC0F92327984F /* xmppclient.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = xmppclient.cc; sourceTree = "<group>"; };
+		8404850D2E21708507A4FC7B /* iqtask.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = iqtask.cc; sourceTree = "<group>"; };
+		8A41721D9C361A1628DDDA58 /* xmppclientsettings.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = xmppclientsettings.h; sourceTree = "<group>"; };
+		8E35877D0747508A6213113F /* xmppsocket.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = xmppsocket.cc; sourceTree = "<group>"; };
+		91453E5F432CD86379137928 /* pubsubclient.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = pubsubclient.cc; sourceTree = "<group>"; };
+		9155040739606A8CC83D14F2 /* receivetask.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = receivetask.h; sourceTree = "<group>"; };
+		92BD0719F74ED322390996F1 /* xmppclient.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = xmppclient.h; sourceTree = "<group>"; };
+		93E4EC40517DDBC586DA2D2A /* presencestatus.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = presencestatus.h; sourceTree = "<group>"; };
+		9425DFC4B64ECADA17FD34A4 /* xmpppump.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = xmpppump.cc; sourceTree = "<group>"; };
+		963CA7F2AC429C0E82B01181 /* rostermoduleimpl.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = rostermoduleimpl.cc; sourceTree = "<group>"; };
+		9AF47328273EB4E7EE5A30FE /* pingtask.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = pingtask.h; sourceTree = "<group>"; };
+		A9FA12F36BEC143440C7A158 /* mucroomlookuptask.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mucroomlookuptask.h; sourceTree = "<group>"; };
+		AD93C7F0AE3211D912625324 /* moduleimpl.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = moduleimpl.cc; sourceTree = "<group>"; };
+		AFAD4FE05368A53A49E69129 /* mucroomuniquehangoutidtask.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = mucroomuniquehangoutidtask.cc; sourceTree = "<group>"; };
+		B1DB21FF06D13E48F4B5AFA6 /* xmppengineimpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = xmppengineimpl.h; sourceTree = "<group>"; };
+		B5CAD2C67A626A93D09BB210 /* receivetask.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = receivetask.cc; sourceTree = "<group>"; };
+		C2239B27E9B74C300E29C926 /* saslmechanism.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = saslmechanism.cc; sourceTree = "<group>"; };
+		C49E4C11D5F93A6012F1960E /* discoitemsquerytask.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = discoitemsquerytask.h; sourceTree = "<group>"; };
+		C8ED836CA62421780EF502FB /* pubsubstateclient.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = pubsubstateclient.h; sourceTree = "<group>"; };
+		CCCDC980B2FF62B33F26E115 /* mucroomconfigtask.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mucroomconfigtask.h; sourceTree = "<group>"; };
+		D209D0474AE15572B9F0FBA4 /* jid.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = jid.cc; sourceTree = "<group>"; };
+		D4E08CE94EF6CB0942065F07 /* presencereceivetask.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = presencereceivetask.cc; sourceTree = "<group>"; };
+		DC1F4FBAA806D106EDB0BF46 /* plainsaslhandler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = plainsaslhandler.h; sourceTree = "<group>"; };
+		DCAEAF95D053A0E5B8A1AE35 /* xmpplogintask.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = xmpplogintask.cc; sourceTree = "<group>"; };
+		E58243D93BE70346092F6BF9 /* pubsubtasks.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = pubsubtasks.h; sourceTree = "<group>"; };
+		E95B60CD81CF2A07E1F223D8 /* presencereceivetask.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = presencereceivetask.h; sourceTree = "<group>"; };
+		EDBC6B88FF7577DED04FB963 /* pubsub_task.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = pubsub_task.cc; sourceTree = "<group>"; };
+		EFDCE2AD2568E371C99D5838 /* constants.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = constants.cc; sourceTree = "<group>"; };
+		F22FD2489CE414792EB0A8BE /* xmpptask.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = xmpptask.cc; sourceTree = "<group>"; };
+		F5E00F264C6BD3D9B75A0E0C /* pubsub_task.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = pubsub_task.h; sourceTree = "<group>"; };
+		F64A9F3A0A5CF39AE95A12BF /* rostermodule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = rostermodule.h; sourceTree = "<group>"; };
+		F769FE617A63A543A15D1FF6 /* hangoutpubsubclient.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = hangoutpubsubclient.cc; sourceTree = "<group>"; };
+		F94A2B97526134CB284039C4 /* mucroomlookuptask.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = mucroomlookuptask.cc; sourceTree = "<group>"; };
+		FB796DE221DF482D169B0798 /* xmppthread.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = xmppthread.h; sourceTree = "<group>"; };
+		FE3602437C740D2B63475A55 /* librtc_xmpp.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = librtc_xmpp.a; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		7C6054FA1CD5CB5568A7EA9E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		353156EF8E280F81338B14BC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				6655C98375A18397F5E5CDEB /* librtc_base_approved.a */,
+				F0A284831F415085BBC28AE5 /* librtc_base.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		59CA9CF3DC777246CF760F62 = {
+			isa = PBXGroup;
+			children = (
+				6A49A625ECDA6398CFD6C7D5 /* Source */,
+				D5706A223DA3BA387269533C /* Projects */,
+				BF98C6163D1DA3AABA3F5A20 /* Products */,
+				938815CBBE586172A19938BC /* Build */,
+			);
+			sourceTree = "<group>";
+		};
+		6A49A625ECDA6398CFD6C7D5 /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				254EE6F9BC8CE43D38E28D8A /* asyncsocket.h */,
+				1B61479358F2274BE9E34072 /* chatroommodule.h */,
+				71422BA74FAC6A2D2747B055 /* chatroommoduleimpl.cc */,
+				EFDCE2AD2568E371C99D5838 /* constants.cc */,
+				37EEB46CFAE889838C603E8F /* constants.h */,
+				2E6559814BFBD069B8C1CF7C /* discoitemsquerytask.cc */,
+				C49E4C11D5F93A6012F1960E /* discoitemsquerytask.h */,
+				F769FE617A63A543A15D1FF6 /* hangoutpubsubclient.cc */,
+				45C1612B2F112EEF3558B538 /* hangoutpubsubclient.h */,
+				8404850D2E21708507A4FC7B /* iqtask.cc */,
+				27EC08E861258F893BF2EEEB /* iqtask.h */,
+				D209D0474AE15572B9F0FBA4 /* jid.cc */,
+				102409871D2272946A31F503 /* jid.h */,
+				471CFD1C5FAF1DE317E9C66F /* module.h */,
+				AD93C7F0AE3211D912625324 /* moduleimpl.cc */,
+				55FB1B92705446898DF63D07 /* moduleimpl.h */,
+				355853653F1042454A91D986 /* mucroomconfigtask.cc */,
+				CCCDC980B2FF62B33F26E115 /* mucroomconfigtask.h */,
+				03E9EE0F22C75365CD0F53BC /* mucroomdiscoverytask.cc */,
+				3A7A035ADAEA8FE8A6705F11 /* mucroomdiscoverytask.h */,
+				F94A2B97526134CB284039C4 /* mucroomlookuptask.cc */,
+				A9FA12F36BEC143440C7A158 /* mucroomlookuptask.h */,
+				AFAD4FE05368A53A49E69129 /* mucroomuniquehangoutidtask.cc */,
+				479CE6EC82E4CC8CBA8045DE /* mucroomuniquehangoutidtask.h */,
+				37C0796C95A11964A32A3C56 /* pingtask.cc */,
+				9AF47328273EB4E7EE5A30FE /* pingtask.h */,
+				DC1F4FBAA806D106EDB0BF46 /* plainsaslhandler.h */,
+				5FCACE48EFE6F11D4E17B6D9 /* presenceouttask.cc */,
+				362E94D2B27C6A73FA233C67 /* presenceouttask.h */,
+				D4E08CE94EF6CB0942065F07 /* presencereceivetask.cc */,
+				E95B60CD81CF2A07E1F223D8 /* presencereceivetask.h */,
+				472B366F5B6FF9157D78ADC1 /* presencestatus.cc */,
+				93E4EC40517DDBC586DA2D2A /* presencestatus.h */,
+				73F64997390697EFF57CAD86 /* prexmppauth.h */,
+				EDBC6B88FF7577DED04FB963 /* pubsub_task.cc */,
+				F5E00F264C6BD3D9B75A0E0C /* pubsub_task.h */,
+				91453E5F432CD86379137928 /* pubsubclient.cc */,
+				4DD58B782AFFA6442E2C7BEC /* pubsubclient.h */,
+				1CBA6DD3E2FFFAC0DBE5857A /* pubsubstateclient.cc */,
+				C8ED836CA62421780EF502FB /* pubsubstateclient.h */,
+				78C00701C5B89AC315D4F0E1 /* pubsubtasks.cc */,
+				E58243D93BE70346092F6BF9 /* pubsubtasks.h */,
+				B5CAD2C67A626A93D09BB210 /* receivetask.cc */,
+				9155040739606A8CC83D14F2 /* receivetask.h */,
+				F64A9F3A0A5CF39AE95A12BF /* rostermodule.h */,
+				963CA7F2AC429C0E82B01181 /* rostermoduleimpl.cc */,
+				1CE7396EC5ED521033A6C6CC /* rostermoduleimpl.h */,
+				681BCD462DF52D20DFE09840 /* saslcookiemechanism.h */,
+				2F8801B8B1F4C8143EB718A5 /* saslhandler.h */,
+				C2239B27E9B74C300E29C926 /* saslmechanism.cc */,
+				2B0C08B60BA25DF4756706A1 /* saslmechanism.h */,
+				1C6BDCBA37E8A4B0175DE68D /* saslplainmechanism.h */,
+				347837BECA701F3CEEA38CE5 /* xmppauth.cc */,
+				3457C80D49EDF5AD04E18B8F /* xmppauth.h */,
+				82037520E65BC0F92327984F /* xmppclient.cc */,
+				92BD0719F74ED322390996F1 /* xmppclient.h */,
+				8A41721D9C361A1628DDDA58 /* xmppclientsettings.h */,
+				4024FC0584339A22730FA54C /* xmppengine.h */,
+				102311E98C0E5A145508AB19 /* xmppengineimpl.cc */,
+				B1DB21FF06D13E48F4B5AFA6 /* xmppengineimpl.h */,
+				36F7D2A0ACC420D1AD737407 /* xmppengineimpl_iq.cc */,
+				DCAEAF95D053A0E5B8A1AE35 /* xmpplogintask.cc */,
+				5A51011267FE51FDEB61CC64 /* xmpplogintask.h */,
+				9425DFC4B64ECADA17FD34A4 /* xmpppump.cc */,
+				4F9B8FC6A9A719DE038C0253 /* xmpppump.h */,
+				8E35877D0747508A6213113F /* xmppsocket.cc */,
+				513468F0ACDB0040982746A3 /* xmppsocket.h */,
+				52625D3C92DC0A7EA5A0A2B2 /* xmppstanzaparser.cc */,
+				0EBADDBB4407C1B82C32D540 /* xmppstanzaparser.h */,
+				F22FD2489CE414792EB0A8BE /* xmpptask.cc */,
+				70E167C6FD5449367B120985 /* xmpptask.h */,
+				39B34186FACE032FFED2F6FE /* xmppthread.cc */,
+				FB796DE221DF482D169B0798 /* xmppthread.h */,
+			);
+			name = Source;
+			sourceTree = "<group>";
+		};
+		938815CBBE586172A19938BC /* Build */ = {
+			isa = PBXGroup;
+			children = (
+				1CE95A28FE5196317C948593 /* common.gypi */,
+				13253FF4E00AC3E844D60A75 /* xmpp.gyp */,
+			);
+			name = Build;
+			sourceTree = "<group>";
+		};
+		BF98C6163D1DA3AABA3F5A20 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FE3602437C740D2B63475A55 /* librtc_xmpp.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		D5706A223DA3BA387269533C /* Projects */ = {
+			isa = PBXGroup;
+			children = (
+				2AFD871FE7168C67B6889817 /* base.xcodeproj */,
+			);
+			name = Projects;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		056C9358707197F5E76F01E5 /* rtc_xmpp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A8CC6EE7422A27B740D17410 /* Build configuration list for PBXNativeTarget "rtc_xmpp" */;
+			buildPhases = (
+				5ACFFEDF05B52285812FDDE9 /* Sources */,
+				7C6054FA1CD5CB5568A7EA9E /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				6598816EB3942B4A2E7CF682 /* PBXTargetDependency */,
+			);
+			name = rtc_xmpp;
+			productName = rtc_xmpp;
+			productReference = FE3602437C740D2B63475A55 /* librtc_xmpp.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		9C6880A9BE8BCB5D9A0EA8C2 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+			};
+			buildConfigurationList = 8FAA485EA1738968E9FFF304 /* Build configuration list for PBXProject "xmpp" */;
+			compatibilityVersion = "Xcode 3.2";
+			hasScannedForEncodings = 1;
+			mainGroup = 59CA9CF3DC777246CF760F62;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 353156EF8E280F81338B14BC /* Products */;
+					ProjectRef = 2AFD871FE7168C67B6889817 /* base.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				056C9358707197F5E76F01E5 /* rtc_xmpp */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		6655C98375A18397F5E5CDEB /* librtc_base_approved.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = librtc_base_approved.a;
+			remoteRef = 1C5CF7FE46556EB0D89FA0F5 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F0A284831F415085BBC28AE5 /* librtc_base.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = librtc_base.a;
+			remoteRef = 469060074613D174A562A046 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXSourcesBuildPhase section */
+		5ACFFEDF05B52285812FDDE9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C40BF1CDDF23807FA9F6BE5E /* chatroommoduleimpl.cc in Sources */,
+				3DFCD539FE6C19A53305FAEF /* constants.cc in Sources */,
+				6D46DE2CC61306D04F4E17CE /* discoitemsquerytask.cc in Sources */,
+				BA516385ED571C1F3FD82F31 /* hangoutpubsubclient.cc in Sources */,
+				4BD4B1F732B9BBAC5BE4F6E1 /* iqtask.cc in Sources */,
+				C1577240EF54711263D57AB4 /* jid.cc in Sources */,
+				20FBB417FC0E0DF0ECDDC38D /* moduleimpl.cc in Sources */,
+				FBF6C611E65000F6C9B043CD /* mucroomconfigtask.cc in Sources */,
+				8B42C80854F0B3582D6C215C /* mucroomdiscoverytask.cc in Sources */,
+				B21A913E01DC9B83EF1F3635 /* mucroomlookuptask.cc in Sources */,
+				AE531F708EC0F649617FE2D6 /* mucroomuniquehangoutidtask.cc in Sources */,
+				E96632095B19A9A1348A4924 /* pingtask.cc in Sources */,
+				149B52F9F9EE318BD649EB2F /* presenceouttask.cc in Sources */,
+				FF80AC895B295AC173D96E51 /* presencereceivetask.cc in Sources */,
+				74D7A166E828769F269C6A47 /* presencestatus.cc in Sources */,
+				6EC9B23F91CCA5AB1B7FFE5B /* pubsub_task.cc in Sources */,
+				45B844E408C36169EA457B54 /* pubsubclient.cc in Sources */,
+				DACDF7AB5815D22E5A6CBC01 /* pubsubstateclient.cc in Sources */,
+				CD59ECE9B902B4FA726BF60C /* pubsubtasks.cc in Sources */,
+				AAAC16FDDDAC245ED0A06C47 /* receivetask.cc in Sources */,
+				89B0CC0B4FB70B71F6A2A72A /* rostermoduleimpl.cc in Sources */,
+				5A958C734836063788020027 /* saslmechanism.cc in Sources */,
+				4A2CF77EC86805FC78670A8B /* xmppauth.cc in Sources */,
+				83C288ABDD77349EEB4BC039 /* xmppclient.cc in Sources */,
+				9236C51E6CF3E03EB0C82F13 /* xmppengineimpl.cc in Sources */,
+				B4128BE395F10CDCDAAF29B0 /* xmppengineimpl_iq.cc in Sources */,
+				2A89F455F874CD38647626B7 /* xmpplogintask.cc in Sources */,
+				3ACC404029D5850EB4D70360 /* xmpppump.cc in Sources */,
+				6A01A4DBBC256ADD523C7BA2 /* xmppsocket.cc in Sources */,
+				B8479E2FEB8338B3C939A83F /* xmppstanzaparser.cc in Sources */,
+				DC366428BA25BA020B9B3D99 /* xmpptask.cc in Sources */,
+				2C9F4F0B9841F8A0439B2186 /* xmppthread.cc in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		6598816EB3942B4A2E7CF682 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = webrtc_base;
+			targetProxy = 157461FA43E03B44F51D53DD /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		3087FA4F1CDC2CAA465578AF /* Debug_Base */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INTERMEDIATE_DIR = "$(PROJECT_DERIVED_FILE_DIR)/$(CONFIGURATION)";
+				SHARED_INTERMEDIATE_DIR = "$(SYMROOT)/DerivedSources/$(CONFIGURATION)";
+			};
+			name = Debug_Base;
+		};
+		B271458682DE62CAF8A8F7E9 /* Debug_Base */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXECUTABLE_PREFIX = lib;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					EXPAT_RELATIVE_PATH,
+					WEBRTC_MODULE_UTILITY_VIDEO,
+					WEBRTC_POSIX,
+					WEBRTC_MAC,
+					FEATURE_ENABLE_SSL,
+					FEATURE_ENABLE_VOICEMAIL,
+					FEATURE_ENABLE_PSTN,
+					XML_STATIC,
+					_DEBUG,
+				);
+				HEADER_SEARCH_PATHS = (
+					../../..,
+					../../../chromium/src/third_party/expat/files/lib,
+				);
+				PRODUCT_NAME = rtc_xmpp;
+			};
+			name = Debug_Base;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		8FAA485EA1738968E9FFF304 /* Build configuration list for PBXProject "xmpp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3087FA4F1CDC2CAA465578AF /* Debug_Base */,
+			);
+			defaultConfigurationIsVisible = 1;
+			defaultConfigurationName = Debug_Base;
+		};
+		A8CC6EE7422A27B740D17410 /* Build configuration list for PBXNativeTarget "rtc_xmpp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B271458682DE62CAF8A8F7E9 /* Debug_Base */,
+			);
+			defaultConfigurationIsVisible = 1;
+			defaultConfigurationName = Debug_Base;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 9C6880A9BE8BCB5D9A0EA8C2 /* Project object */;
+}

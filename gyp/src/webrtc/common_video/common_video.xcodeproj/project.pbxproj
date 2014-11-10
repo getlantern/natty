@@ -1,0 +1,222 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		116712BD238B8CCDBA39960B /* texture_video_frame.cc in Sources */ = {isa = PBXBuildFile; fileRef = E39B4E9EAC24FF1BCC3BD0A6 /* texture_video_frame.cc */; };
+		299264006E7B5B4E73B75C87 /* webrtc_libyuv.cc in Sources */ = {isa = PBXBuildFile; fileRef = 905CC7937E5603CA930F9EF1 /* webrtc_libyuv.cc */; };
+		4DCC8A3234F92675DB5E5D72 /* scaler.cc in Sources */ = {isa = PBXBuildFile; fileRef = 5397F844F5C49B8B8490D024 /* scaler.cc */; };
+		7A1DF11756D41A4945226DF9 /* plane.cc in Sources */ = {isa = PBXBuildFile; fileRef = 31BFAC0EBCB2393B5F7F394F /* plane.cc */; };
+		F36010716476C102B6953152 /* i420_video_frame.cc in Sources */ = {isa = PBXBuildFile; fileRef = 53409F10A314D4635D1323D5 /* i420_video_frame.cc */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		1D2935939D9C7DA19325EBDF /* native_handle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = native_handle.h; sourceTree = "<group>"; };
+		31BFAC0EBCB2393B5F7F394F /* plane.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = plane.cc; sourceTree = "<group>"; };
+		53409F10A314D4635D1323D5 /* i420_video_frame.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = i420_video_frame.cc; sourceTree = "<group>"; };
+		5397F844F5C49B8B8490D024 /* scaler.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = scaler.cc; sourceTree = "<group>"; };
+		8793AD66AD8F3E449670E534 /* webrtc_libyuv.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = webrtc_libyuv.h; sourceTree = "<group>"; };
+		905CC7937E5603CA930F9EF1 /* webrtc_libyuv.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = webrtc_libyuv.cc; sourceTree = "<group>"; };
+		9EDFBC236195B6024EBD6268 /* common_video.gyp */ = {isa = PBXFileReference; explicitFileType = sourcecode; path = common_video.gyp; sourceTree = "<group>"; };
+		A7B0266F7B9DE15D147D1F1C /* i420_video_frame.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = i420_video_frame.h; sourceTree = "<group>"; };
+		ADF10FF516E7424960C453EC /* common.gypi */ = {isa = PBXFileReference; explicitFileType = sourcecode; name = common.gypi; path = ../build/common.gypi; sourceTree = "<group>"; };
+		BBD772A9F8616A58D1D34145 /* libcommon_video.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcommon_video.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		D451B63C9B46A10720B8909D /* texture_video_frame.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = texture_video_frame.h; sourceTree = "<group>"; };
+		E1A21784F774D110FEDE6C76 /* plane.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = plane.h; sourceTree = "<group>"; };
+		E39B4E9EAC24FF1BCC3BD0A6 /* texture_video_frame.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = texture_video_frame.cc; sourceTree = "<group>"; };
+		FC823F2EB773A4C808A338BD /* scaler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = scaler.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		05A897221BC547754EC128CE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		06FC588C40E3D31AECECEC2C /* include */ = {
+			isa = PBXGroup;
+			children = (
+				FC823F2EB773A4C808A338BD /* scaler.h */,
+				8793AD66AD8F3E449670E534 /* webrtc_libyuv.h */,
+			);
+			path = include;
+			sourceTree = "<group>";
+		};
+		42D81C9CF0C1887F65EC20ED /* Build */ = {
+			isa = PBXGroup;
+			children = (
+				ADF10FF516E7424960C453EC /* common.gypi */,
+				9EDFBC236195B6024EBD6268 /* common_video.gyp */,
+			);
+			name = Build;
+			sourceTree = "<group>";
+		};
+		751EABCD4D7B02B8B8B7A1B8 = {
+			isa = PBXGroup;
+			children = (
+				DD2EA85A93BDA11AC6494C71 /* Source */,
+				B40A29204DB4FDEE1435EBBE /* Products */,
+				42D81C9CF0C1887F65EC20ED /* Build */,
+			);
+			sourceTree = "<group>";
+		};
+		B0A3A69F63C68632454DB1B5 /* interface */ = {
+			isa = PBXGroup;
+			children = (
+				A7B0266F7B9DE15D147D1F1C /* i420_video_frame.h */,
+				1D2935939D9C7DA19325EBDF /* native_handle.h */,
+				D451B63C9B46A10720B8909D /* texture_video_frame.h */,
+			);
+			path = interface;
+			sourceTree = "<group>";
+		};
+		B40A29204DB4FDEE1435EBBE /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				BBD772A9F8616A58D1D34145 /* libcommon_video.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		DD2EA85A93BDA11AC6494C71 /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				B0A3A69F63C68632454DB1B5 /* interface */,
+				FCFA0E507AA4B43092A38D54 /* libyuv */,
+				53409F10A314D4635D1323D5 /* i420_video_frame.cc */,
+				31BFAC0EBCB2393B5F7F394F /* plane.cc */,
+				E1A21784F774D110FEDE6C76 /* plane.h */,
+				E39B4E9EAC24FF1BCC3BD0A6 /* texture_video_frame.cc */,
+			);
+			name = Source;
+			sourceTree = "<group>";
+		};
+		FCFA0E507AA4B43092A38D54 /* libyuv */ = {
+			isa = PBXGroup;
+			children = (
+				06FC588C40E3D31AECECEC2C /* include */,
+				5397F844F5C49B8B8490D024 /* scaler.cc */,
+				905CC7937E5603CA930F9EF1 /* webrtc_libyuv.cc */,
+			);
+			path = libyuv;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		7C7BFBE130B42EB6D24D4F1C /* common_video */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1D865CB9C9FF25506EBD8414 /* Build configuration list for PBXNativeTarget "common_video" */;
+			buildPhases = (
+				115FF6F4179E88F94CCAC575 /* Sources */,
+				05A897221BC547754EC128CE /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = common_video;
+			productName = common_video;
+			productReference = BBD772A9F8616A58D1D34145 /* libcommon_video.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		134A6D48944C1E3CFA6D2C3F /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+			};
+			buildConfigurationList = E74C9F19E677C6777DB6DADD /* Build configuration list for PBXProject "common_video" */;
+			compatibilityVersion = "Xcode 3.2";
+			hasScannedForEncodings = 1;
+			mainGroup = 751EABCD4D7B02B8B8B7A1B8;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				7C7BFBE130B42EB6D24D4F1C /* common_video */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		115FF6F4179E88F94CCAC575 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F36010716476C102B6953152 /* i420_video_frame.cc in Sources */,
+				299264006E7B5B4E73B75C87 /* webrtc_libyuv.cc in Sources */,
+				4DCC8A3234F92675DB5E5D72 /* scaler.cc in Sources */,
+				7A1DF11756D41A4945226DF9 /* plane.cc in Sources */,
+				116712BD238B8CCDBA39960B /* texture_video_frame.cc in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		0059BDAAED6A3EE691EDAF26 /* Debug_Base */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXECUTABLE_PREFIX = lib;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					EXPAT_RELATIVE_PATH,
+					WEBRTC_MODULE_UTILITY_VIDEO,
+					WEBRTC_POSIX,
+					WEBRTC_MAC,
+					_DEBUG,
+				);
+				HEADER_SEARCH_PATHS = (
+					../..,
+					../../webrtc/modules/interface/,
+					interface,
+					libyuv/include,
+					../system_wrappers/interface,
+					../../chromium/src/third_party/libyuv/include,
+					../../chromium/src/third_party/libyuv,
+				);
+				PRODUCT_NAME = common_video;
+			};
+			name = Debug_Base;
+		};
+		1A28B7622E1F238EECBAF9D0 /* Debug_Base */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INTERMEDIATE_DIR = "$(PROJECT_DERIVED_FILE_DIR)/$(CONFIGURATION)";
+				SHARED_INTERMEDIATE_DIR = "$(SYMROOT)/DerivedSources/$(CONFIGURATION)";
+			};
+			name = Debug_Base;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1D865CB9C9FF25506EBD8414 /* Build configuration list for PBXNativeTarget "common_video" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0059BDAAED6A3EE691EDAF26 /* Debug_Base */,
+			);
+			defaultConfigurationIsVisible = 1;
+			defaultConfigurationName = Debug_Base;
+		};
+		E74C9F19E677C6777DB6DADD /* Build configuration list for PBXProject "common_video" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1A28B7622E1F238EECBAF9D0 /* Debug_Base */,
+			);
+			defaultConfigurationIsVisible = 1;
+			defaultConfigurationName = Debug_Base;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 134A6D48944C1E3CFA6D2C3F /* Project object */;
+}
