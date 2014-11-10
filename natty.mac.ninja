@@ -1,5 +1,5 @@
-cc = build/trunk/third_party/llvm-build/Release+Asserts/bin/clang
-cxx = build/trunk/third_party/llvm-build/Release+Asserts/bin/clang++
+cc = build/src/third_party/llvm-build/Release+Asserts/bin/clang
+cxx = build/src/third_party/llvm-build/Release+Asserts/bin/clang++
 ld = $cc
 ldxx = $cxx
 ar = ar
@@ -88,74 +88,71 @@ rule copy
   description = COPY $in $out
  
 
-build build/trunk/out/Release/natty.actions_depends.stamp: stamp $
-    build/trunk/out/Release/libjingle.a build/trunk/out/Release/libexpat.a $
-    build/trunk/out/Release/libjingle_media.a $
-    build/trunk/out/Release/libvoice_engine.a $
-    build/trunk/out/Release/libwebrtc_utility.a $
-    build/trunk/out/Release/libcommon_audio.a $
-    build/trunk/out/Release/libprotobuf_lite.a $
-    build/trunk/out/Release/libmedia_file.a $
-    build/trunk/out/Release/libbitrate_controller.a $
-    build/trunk/out/Release/libcommon_video.a $
-    build/trunk/out/Release/libsystem_wrappers.a $
-    build/trunk/out/Release/libPCM16B.a $
-    build/trunk/out/Release/libG711.a $
-    build/trunk/out/Release/libiSAC.a $
-    build/trunk/out/Release/libCNG.a $
-    build/trunk/out/Release/libneteq.a $
-    build/trunk/out/Release/libaudio_processing.a $
-    build/trunk/out/Release/libaudioproc_debug_proto.a $
-    build/trunk/out/Release/libaudio_processing_sse2.a $
-    build/trunk/out/Release/libvpx_intrinsics_sse4_1.a $
-    build/trunk/out/Release/librbe_components.a $
-    build/trunk/out/Release/libbwe_tools_util.a $
-    build/trunk/out/Release/librtp_rtcp.a $
-    build/trunk/out/Release/libpaced_sender.a $
-    build/trunk/out/Release/libremote_bitrate_estimator.a $
-    build/trunk/out/Release/libvideo_engine_core.a $
-    build/trunk/out/Release/librtc_base_approved.a $
-    build/trunk/out/Release/libvideo_render_module.a $
-    build/trunk/out/Release/libvideo_render_module_impl.a $
-    build/trunk/out/Release/libaudio_device.a $
-    build/trunk/out/Release/libaudio_conference_mixer.a $
-    build/trunk/out/Release/libiLBC.a $
-    build/trunk/out/Release/libG722.a $
-    build/trunk/out/Release/libopus.a $
-    build/trunk/out/Release/libwebrtc_opus.a $
-    build/trunk/out/Release/libwebrtc.a $
-    build/trunk/out/Release/libsrtp.a $
-    build/trunk/out/Release/libwebrtc_video_coding.a $
-    build/trunk/out/Release/libvpx.a $
-    build/trunk/out/release/libvpx_intrinsics_sse2.a $
-    build/trunk/out/Release/libvpx_intrinsics_ssse3.a $
-    build/trunk/out/Release/libwebrtc_vp8.a $
-    build/trunk/out/Release/libwebrtc_i420.a $
-    build/trunk/out/Release/libvideo_coding_utility.a $
-    build/trunk/out/Release/libvideo_processing.a $
-    build/trunk/out/Release/libvideo_processing_sse2.a $
-    build/trunk/out/Release/libvideo_capture_module.a $
-    build/trunk/out/Release/libvideo_capture_module_impl.a $
-    build/trunk/out/Release/libusrsctplib.a $
-    build/trunk/out/Release/libcommon_audio_sse2.a $
-    build/trunk/out/Release/libaudio_coding_module.a $
-    build/trunk/out/Release/libchannel_transport.a $
-    build/trunk/out/Release/libyuv.a $
-    build/trunk/out/Release/libjpeg_turbo.a $
-    build/trunk/out/Release/libjingle_p2p.a $
-    build/trunk/out/Release/libjingle_peerconnection.a $
-    build/trunk/out/Release/libjsoncpp.a build/trunk/out/Release/librtc_base.a $
-    build/trunk/out/Release/libcrssl.a $
-    build/trunk/out/Release/libcrnspr.a build/trunk/out/Release/libcrnss.a $
-    build/trunk/out/Release/libnss_static.a $
-    build/trunk/out/Release/libsqlite3.a $
-    build/trunk/out/Release/libicui18n.a $
-    build/trunk/out/Release/libicuuc.a build/trunk/out/Release/libicudata.a $
-    build/trunk/out/Release/icudtl.dat $
+build build/src/out/Release/natty.actions_depends.stamp: stamp $
+    build/src/out/Release/libjingle.a build/src/out/Release/libexpat.a $
+    build/src/out/Release/libjingle_media.a $
+    build/src/out/Release/libvoice_engine.a $
+    build/src/out/Release/libwebrtc_utility.a $
+    build/src/out/Release/libcommon_audio.a $
+    build/src/out/Release/libprotobuf_lite.a $
+    build/src/out/Release/libmedia_file.a $
+    build/src/out/Release/libbitrate_controller.a $
+    build/src/out/Release/libcommon_video.a $
+    build/src/out/Release/libsystem_wrappers.a $
+    build/src/out/Release/libPCM16B.a $
+    build/src/out/Release/libG711.a $
+    build/src/out/Release/libiSAC.a $
+    build/src/out/Release/libCNG.a $
+    build/src/out/Release/libneteq.a $
+    build/src/out/Release/libaudio_processing.a $
+    build/src/out/Release/libaudioproc_debug_proto.a $
+    build/src/out/Release/libaudio_processing_sse2.a $
+    build/src/out/Release/libvpx_intrinsics_sse4_1.a $
+    build/src/out/Release/librbe_components.a $
+    build/src/out/Release/libbwe_tools_util.a $
+    build/src/out/Release/librtp_rtcp.a $
+    build/src/out/Release/libpaced_sender.a $
+    build/src/out/Release/libremote_bitrate_estimator.a $
+    build/src/out/Release/libvideo_engine_core.a $
+    build/src/out/Release/librtc_base_approved.a $
+    build/src/out/Release/libvideo_render_module.a $
+    build/src/out/Release/libvideo_render_module_impl.a $
+    build/src/out/Release/libaudio_device.a $
+    build/src/out/Release/libaudio_conference_mixer.a $
+    build/src/out/Release/libiLBC.a $
+    build/src/out/Release/libG722.a $
+    build/src/out/Release/libopus.a $
+    build/src/out/Release/libwebrtc_opus.a $
+    build/src/out/Release/libwebrtc.a $
+    build/src/out/Release/libsrtp.a $
+    build/src/out/Release/libwebrtc_video_coding.a $
+    build/src/out/Release/libvpx.a $
+    build/src/out/release/libvpx_intrinsics_sse2.a $
+    build/src/out/Release/libvpx_intrinsics_ssse3.a $
+    build/src/out/Release/libwebrtc_vp8.a $
+    build/src/out/Release/libwebrtc_vp9.a $
+    build/src/out/Release/libwebrtc_i420.a $
+    build/src/out/Release/libvideo_coding_utility.a $
+    build/src/out/Release/libmetrics_default.a $
+    build/src/out/Release/libfield_trial.a $
+    build/src/out/Release/libvideo_processing.a $
+    build/src/out/Release/libvideo_processing_sse2.a $
+    build/src/out/Release/libvideo_capture_module.a $
+    build/src/out/Release/libvideo_capture_module_impl.a $
+    build/src/out/Release/libusrsctplib.a $
+    build/src/out/Release/libcommon_audio_sse2.a $
+    build/src/out/Release/libaudio_coding_module.a $
+    build/src/out/Release/libchannel_transport.a $
+    build/src/out/Release/libyuv.a $
+    build/src/out/Release/libjpeg_turbo.a $
+    build/src/out/Release/librtc_p2p.a $
+    build/src/out/Release/libjingle_peerconnection.a $
+    build/src/out/Release/libboringssl.a $
+    build/src/out/Release/libjsoncpp.a build/src/out/Release/librtc_base.a $
  
 
-build build/trunk/out/Release/natty.compile_depends.stamp: stamp $
-    build/trunk/out/Release/icudtl.dat
+build build/src/out/Release/natty.compile_depends.stamp: stamp $
+    build/src/chromium/src/third_party/icu/source/data/in/icudtl.dat
 defines = -DV8_DEPRECATION_WARNINGS -DEXPAT_RELATIVE_PATH $
     -DFEATURE_ENABLE_VOICEMAIL -DGTEST_RELATIVE_PATH $
     -DJSONCPP_RELATIVE_PATH -DLOGGING=0 -DSRTP_RELATIVE_PATH $
@@ -179,36 +176,36 @@ defines = -DV8_DEPRECATION_WARNINGS -DEXPAT_RELATIVE_PATH $
     -DLIBPEERCONNECTION_LIB=1 -DOSX -DWEBRTC_MAC -DHASH_NAMESPACE=__gnu_cxx $
     -DPOSIX -DWEBRTC_POSIX -DDISABLE_DYNAMIC_CAST -D_REENTRANT -DXML_STATIC $
     -DNDEBUG -DNVALGRIND -DDYNAMIC_ANNOTATIONS_ENABLED=0
-includes = -Igen -Ibuild/trunk -Ibuild/trunk -Ibuild/trunk/third_party $
-    -Ibuild/trunk/third_party/webrtc -Ibuild/trunk/webrtc $
-    -Ibuild/trunk/third_party/libsrtp/srtp $
-    -Ibuild/trunk/chromium/src/third_party/libsrtyp/config $
-    -Ibuild/trunk/chromium/src/third_party/libsrtp/srtp/include $
-    -Ibuild/trunk/chromium/src/third_party/libsrtp/srtp/crypto/include $
-    -Ibuild/trunk/chromium/src/testing/gtest/include $
-    -Ibuild/trunk/chromium/src/third_party/expat/files/lib $
-    -Ibuild/trunk/webrtc -Ibuild/trunk/net/third_party/nss/ssl $
-    -Ibuild/trunk/third_party/nss/nspr/pr/include $
-    -Ibuild/trunk/third_party/nss/nspr/lib/ds $
-    -Ibuild/trunk/third_party/nss/nspr/lib/libc/include $
-    -Ibuild/trunk/third_party/nss/nss/lib/base $
-    -Ibuild/trunk/third_party/nss/nss/lib/certdb $
-    -Ibuild/trunk/third_party/nss/nss/lib/certhigh $
-    -Ibuild/trunk/third_party/nss/nss/lib/cryptohi $
-    -Ibuild/trunk/third_party/nss/nss/lib/dev $
-    -Ibuild/trunk/third_party/nss/nss/lib/freebl $
-    -Ibuild/trunk/third_party/nss/nss/lib/freebl/ecl $
-    -Ibuild/trunk/third_party/nss/nss/lib/nss $
-    -Ibuild/trunk/third_party/nss/nss/lib/pk11wrap $
-    -Ibuild/trunk/third_party/nss/nss/lib/pkcs7 $
-    -Ibuild/trunk/third_party/nss/nss/lib/pki $
-    -Ibuild/trunk/third_party/nss/nss/lib/smime $
-    -Ibuild/trunk/third_party/nss/nss/lib/softoken $
-    -Ibuild/trunk/third_party/nss/nss/lib/util -Ibuild/trunk/testing/gtest/include $
-    -Ibuild/trunk/chromium/src/third_party/expat/files/lib $
-    -Ibuild/trunk/chromium/src/third_party/jsoncpp/overrides/include $
-    -Ibuild/trunk/chromium/src/third_party/jsoncpp/source/include $
-    -Ibuild/trunk/chromium/src/third_party/libyuv/include
+includes = -Igen -Ibuild/src -Ibuild/src -Ibuild/src/third_party $
+    -Ibuild/src/third_party/webrtc -Ibuild/src/webrtc $
+    -Ibuild/src/third_party/libsrtp/srtp $
+    -Ibuild/src/chromium/src/third_party/libsrtyp/config $
+    -Ibuild/src/chromium/src/third_party/libsrtp/srtp/include $
+    -Ibuild/src/chromium/src/third_party/libsrtp/srtp/crypto/include $
+    -Ibuild/src/chromium/src/testing/gtest/include $
+    -Ibuild/src/chromium/src/third_party/expat/files/lib $
+    -Ibuild/src/webrtc -Ibuild/src/net/third_party/nss/ssl $
+    -Ibuild/src/third_party/nss/nspr/pr/include $
+    -Ibuild/src/third_party/nss/nspr/lib/ds $
+    -Ibuild/src/third_party/nss/nspr/lib/libc/include $
+    -Ibuild/src/third_party/nss/nss/lib/base $
+    -Ibuild/src/third_party/nss/nss/lib/certdb $
+    -Ibuild/src/third_party/nss/nss/lib/certhigh $
+    -Ibuild/src/third_party/nss/nss/lib/cryptohi $
+    -Ibuild/src/third_party/nss/nss/lib/dev $
+    -Ibuild/src/third_party/nss/nss/lib/freebl $
+    -Ibuild/src/third_party/nss/nss/lib/freebl/ecl $
+    -Ibuild/src/third_party/nss/nss/lib/nss $
+    -Ibuild/src/third_party/nss/nss/lib/pk11wrap $
+    -Ibuild/src/third_party/nss/nss/lib/pkcs7 $
+    -Ibuild/src/third_party/nss/nss/lib/pki $
+    -Ibuild/src/third_party/nss/nss/lib/smime $
+    -Ibuild/src/third_party/nss/nss/lib/softoken $
+    -Ibuild/src/third_party/nss/nss/lib/util -Ibuild/src/testing/gtest/include $
+    -Ibuild/src/chromium/src/third_party/expat/files/lib $
+    -Ibuild/src/chromium/src/third_party/jsoncpp/overrides/include $
+    -Ibuild/src/chromium/src/third_party/jsoncpp/source/include $
+    -Ibuild/src/chromium/src/third_party/libyuv/include
 cflags = -isysroot $
     /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk $
     -O3 -gdwarf-2 -fvisibility=hidden -Werror -Wnewline-eof $
@@ -228,11 +225,11 @@ cflags_objcc = $cflags_cc -Wobjc-missing-property-synthesis $
 build $
     out/natty/client/client.natty.o: $
     cxx src/natty.cc || $
-    build/trunk/out/Release/natty.compile_depends.stamp
+    build/src/out/Release/natty.compile_depends.stamp
 build $
     out/natty/client/client.main.o: $
     cxx src/main.cc || $
-    build/trunk/out/Release/natty.compile_depends.stamp
+    build/src/out/Release/natty.compile_depends.stamp
  
 ldflags = -framework Cocoa -framework Foundation -framework IOKit $
     -framework Security -framework SystemConfiguration -framework Carbon $
@@ -250,74 +247,70 @@ libs = -framework Security -framework CoreFoundation -framework $
 build natty: link $
     out/natty/client/client.natty.o $
     out/natty/client/client.main.o $
-    build/trunk/out/Release/libjingle.a $
-    build/trunk/out/Release/libjingle_p2p.a $
-    build/trunk/out/Release/libchannel_transport.a $
-    build/trunk/out/Release/libjingle_media.a $
-    build/trunk/out/Release/libaudio_coding_module.a $
-    build/trunk/out/Release/libvoice_engine.a $
-    build/trunk/out/Release/libwebrtc_utility.a $
-    build/trunk/out/Release/libcommon_audio.a $
-    build/trunk/out/Release/libprotobuf_lite.a $
-    build/trunk/out/Release/libmedia_file.a $
-    build/trunk/out/Release/libbitrate_controller.a $
-    build/trunk/out/Release/libcommon_video.a $
-    build/trunk/out/Release/libsystem_wrappers.a $
-    build/trunk/out/Release/libPCM16B.a $
-    build/trunk/out/Release/libG711.a $
-    build/trunk/out/Release/libG722.a $
-    build/trunk/out/Release/libiSAC.a $
-    build/trunk/out/Release/libCNG.a $
-    build/trunk/out/Release/libneteq.a $
-    build/trunk/out/Release/libaudio_processing.a $
-    build/trunk/out/Release/libaudioproc_debug_proto.a $
-    build/trunk/out/Release/libaudio_processing_sse2.a $
-    build/trunk/out/Release/librbe_components.a $
-    build/trunk/out/Release/libbwe_tools_util.a $
-    build/trunk/out/Release/librtp_rtcp.a $
-    build/trunk/out/Release/libvpx_intrinsics_sse4_1.a $
-    build/trunk/out/Release/libpaced_sender.a $
-    build/trunk/out/Release/libremote_bitrate_estimator.a $
-    build/trunk/out/Release/libvideo_engine_core.a $
-    build/trunk/out/Release/librtc_base_approved.a $
-    build/trunk/out/Release/libvideo_render_module.a $
-    build/trunk/out/Release/libvideo_render_module_impl.a $
-    build/trunk/out/Release/libaudio_device.a $
-    build/trunk/out/Release/libaudio_conference_mixer.a $
-    build/trunk/out/Release/libiLBC.a $
-    build/trunk/out/Release/libopus.a $
-    build/trunk/out/Release/libwebrtc.a $
-    build/trunk/out/Release/libsrtp.a $
-    build/trunk/out/Release/libusrsctplib.a $
-    build/trunk/out/Release/libwebrtc_video_coding.a $
-    build/trunk/out/Release/libvpx.a $
-    build/trunk/out/Release/libvpx_intrinsics_sse2.a $
-    build/trunk/out/Release/libvpx_intrinsics_ssse3.a $
-    build/trunk/out/Release/libvpx_intrinsics_mmx.a $
-    build/trunk/out/Release/libwebrtc_vp8.a $
-    build/trunk/out/Release/libwebrtc_i420.a $
-    build/trunk/out/Release/libvideo_coding_utility.a $
-    build/trunk/out/Release/libvideo_processing.a $
-    build/trunk/out/Release/libvideo_processing_sse2.a $
-    build/trunk/out/Release/libvideo_capture_module.a $
-    build/trunk/out/Release/libvideo_capture_module_impl.a $
-    build/trunk/out/Release/libwebrtc_opus.a $
-    build/trunk/out/Release/libcommon_audio_sse2.a $
-    build/trunk/out/Release/libyuv.a $
-    build/trunk/out/Release/libjpeg_turbo.a $
-    build/trunk/out/Release/libjingle_peerconnection.a $
-    build/trunk/out/Release/libexpat.a $
-    build/trunk/out/RElease/libjsoncpp.a $
-    build/trunk/out/Release/librtc_base.a $
-    build/trunk/out/Release/libcrssl.a $
-    build/trunk/out/Release/libcrnspr.a $
-    build/trunk/out/Release/libcrnss.a $
-    build/trunk/out/Release/libnss_static.a $
-    build/trunk/out/Release/libsqlite3.a $
-    build/trunk/out/Release/libicui18n.a $
-    build/trunk/out/Release/libicuuc.a $
-    build/trunk/out/Release/libicudata.a $
-    build/trunk/out/Release/icudtl.dat
+    build/src/out/Release/libjingle.a $
+    build/src/out/Release/libjingle_p2p.a $
+    build/src/out/Release/libchannel_transport.a $
+    build/src/out/Release/libjingle_media.a $
+    build/src/out/Release/libaudio_coding_module.a $
+    build/src/out/Release/libvoice_engine.a $
+    build/src/out/Release/libwebrtc_utility.a $
+    build/src/out/Release/libcommon_audio.a $
+    build/src/out/Release/libprotobuf_lite.a $
+    build/src/out/Release/libmedia_file.a $
+    build/src/out/Release/libbitrate_controller.a $
+    build/src/out/Release/libcommon_video.a $
+    build/src/out/Release/libsystem_wrappers.a $
+    build/src/out/Release/libPCM16B.a $
+    build/src/out/Release/libG711.a $
+    build/src/out/Release/libG722.a $
+    build/src/out/Release/libiSAC.a $
+    build/src/out/Release/libCNG.a $
+    build/src/out/Release/libneteq.a $
+    build/src/out/Release/libaudio_processing.a $
+    build/src/out/Release/libaudioproc_debug_proto.a $
+    build/src/out/Release/libaudio_processing_sse2.a $
+    build/src/out/Release/librbe_components.a $
+    build/src/out/Release/libbwe_tools_util.a $
+    build/src/out/Release/librtp_rtcp.a $
+    build/src/out/Release/libvpx_intrinsics_sse4_1.a $
+    build/src/out/Release/libpaced_sender.a $
+    build/src/out/Release/libremote_bitrate_estimator.a $
+    build/src/out/Release/libvideo_engine_core.a $
+    build/src/out/Release/librtc_base_approved.a $
+    build/src/out/Release/libvideo_render_module.a $
+    build/src/out/Release/libvideo_render_module_impl.a $
+    build/src/out/Release/libaudio_device.a $
+    build/src/out/Release/libaudio_conference_mixer.a $
+    build/src/out/Release/libiLBC.a $
+    build/src/out/Release/libopus.a $
+    build/src/out/Release/libwebrtc.a $
+    build/src/out/Release/libsrtp.a $
+    build/src/out/Release/libusrsctplib.a $
+    build/src/out/Release/libwebrtc_video_coding.a $
+    build/src/out/Release/libvpx.a $
+    build/src/out/Release/libvpx_intrinsics_sse2.a $
+    build/src/out/Release/libvpx_intrinsics_ssse3.a $
+    build/src/out/Release/libvpx_intrinsics_mmx.a $
+    build/src/out/Release/libwebrtc_vp8.a $
+    build/src/out/Release/libwebrtc_vp9.a $
+    build/src/out/Release/libwebrtc_i420.a $
+    build/src/out/Release/libvideo_coding_utility.a $
+    build/src/out/Release/libmetrics_default.a $
+    build/src/out/Release/libfield_trial.a $
+    build/src/out/Release/libvideo_processing.a $
+    build/src/out/Release/libvideo_processing_sse2.a $
+    build/src/out/Release/libvideo_capture_module.a $
+    build/src/out/Release/libvideo_capture_module_impl.a $
+    build/src/out/Release/libwebrtc_opus.a $
+    build/src/out/Release/libcommon_audio_sse2.a $
+    build/src/out/Release/libyuv.a $
+    build/src/out/Release/librtc_p2p.a $
+    build/src/out/Release/libjpeg_turbo.a $
+    build/src/out/Release/libjingle_peerconnection.a $
+    build/src/out/Release/libexpat.a $
+    build/src/out/RElease/libjsoncpp.a $
+    build/src/out/Release/libboringssl.a $
+    build/src/out/Release/librtc_base.a
   ld = $ldxx
   postbuilds = $ && (export $
       BUILT_PRODUCTS_DIR=./; $

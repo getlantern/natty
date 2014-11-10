@@ -1,7 +1,0 @@
-# compile the project
-ninja -f natty.ninja
-# clean up
-ninja -f natty.ninja -t clean
-# execute natty
-./natty
-
