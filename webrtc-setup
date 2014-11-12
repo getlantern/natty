@@ -7,16 +7,19 @@ WEBRTC_VERSION="/branches/3.55/webrtc@6541"
 # Change directory to the PRODUCT_DIR (e.g. out/Release).
 export LD_LIBRARY_PATH=`pwd`
 
-mkdir build
+#mkdir build
 cd build
-gclient config --name src 'git+https://chromium.googlesource.com/external/webrtc'
-gclient sync -j200
+#gclient config --name src 'git+https://chromium.googlesource.com/external/webrtc'
+#gclient sync -j200
 cd src
-git svn init --prefix=origin/ https://webrtc.googlecode.com/svn "-T$WEBRTC_VERSION" --rewrite-root=http://webrtc.googlecode.com/svn
-git config svn-remote.svn.fetch trunk:refs/remotes/origin/master
-git svn fetch
-git checkout master
+#git svn init --prefix=origin/ https://webrtc.googlecode.com/svn "-T$WEBRTC_VERSION" --rewrite-root=http://webrtc.googlecode.com/svn
+#git config svn-remote.svn.fetch trunk:refs/remotes/origin/master
+#git svn fetch
+#git checkout master
 gclient sync --force
-ninja -C out/Release
 
-cp src/webrtc/channel.cc build/src/talk/session/media/
+cp ../../src/webrtc/channel.cc talk/session/media/
+cp -r ../../src/natty .
+cp ../../gyp/all.gyp .
+cp ../../gyp/natty.gyp .
+ninja -C out/Release
