@@ -9,13 +9,13 @@ export LD_LIBRARY_PATH=`pwd`
 
 #mkdir build
 cd build
-#gclient config --name src 'git+https://chromium.googlesource.com/external/webrtc'
-#gclient sync -j200
+gclient config --name src 'git+https://chromium.googlesource.com/external/webrtc'
+gclient sync -j200
 cd src
-#git svn init --prefix=origin/ https://webrtc.googlecode.com/svn "-T$WEBRTC_VERSION" --rewrite-root=http://webrtc.googlecode.com/svn
-#git config svn-remote.svn.fetch trunk:refs/remotes/origin/master
-#git svn fetch
-#git checkout master
+git svn init --prefix=origin/ https://webrtc.googlecode.com/svn "-T$WEBRTC_VERSION" --rewrite-root=http://webrtc.googlecode.com/svn
+git config svn-remote.svn.fetch trunk:refs/remotes/origin/master
+git svn fetch
+git checkout master
 gclient sync --force
 
 cp ../../src/webrtc/channel.cc talk/session/media/
@@ -23,3 +23,4 @@ cp -r ../../src/natty .
 cp ../../gyp/all.gyp .
 cp ../../gyp/natty.gyp .
 ninja -C out/Release
+cp out/Release/natty ../../
