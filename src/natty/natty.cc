@@ -442,11 +442,6 @@ void Natty::Init(bool offer) {
   InitializePeerConnection();
   if (offer) {
     Natty::setMode(Natty::OFFER);
-    /* extraneous already set in peer connection factory */
-    FakeConstraints constraints;
-    constraints.AddOptional("DtlsSrtpKeyAgreement", false);
-    //constraints.AddOptional(
-    //    webrtc::MediaConstraintsInterface::kEnableDtlsSrtp, false);
     peer_connection_->CreateOffer(this, &constraints);
   }
 }
