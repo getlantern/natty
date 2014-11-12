@@ -55,7 +55,7 @@ Here's an example session:
 ./natty -offer -out offerer
 cat test
 {"sdp":"v=0\r\no=- 4872732101493451958 2 IN IP4 127.0.0.1\r\ns=-\r\nt=0 0\r\na=msid-semantic: WMS\r\nm=application 9 DTLS/SCTP 5000\r\nc=IN IP4 0.0.0.0\r\na=ice-ufrag:t/JZ+l7sDBx99Zcy\r\na=ice-pwd:FWg9xOKBe51/2IMxWjkqqXYg\r\na=ice-options:google-ice\r\na=fingerprint:sha-1 46:BC:06:FE:C4:EC:D5:0B:CE:B9:FC:BE:55:3E:65:EB:85:28:26:06\r\na=setup:actpass\r\na=mid:data\r\na=sctpmap:5000 webrtc-datachannel 1024\r\n","type":"offer"}
-{"candidate":"candidate:2085243720 1 udp 2122063615 192.168.1.70 59631 typ host generation 0","sdpMLineIndex":0,"sdpMid":"data"}
+{"candidate":"candidate:2085243720 1 udp 2122063615 192.168.1.70 59631 typ host generation 0","sdpMLineIndex":0,"sdpMid":"datae}
 {"candidate":"candidate:852080568 1 tcp 1518083839 192.168.1.70 53788 typ host tcptype passive generation 0","sdpMLineIndex":0,"sdpMid":"data"}
 {"candidate":"candidate:2321167004 1 udp 1685855999 107.201.128.213 59631 typ srflx raddr 192.168.1.70 rport 59631 generation 0","sdpMLineIndex":0,"sdpMid":"data"}
 
@@ -71,5 +71,9 @@ offer -> answer: {"local":"192.168.1.70:65410","proto":"udp","remote":"192.168.1
 
 answer -> offer: {"local":"192.168.1.70:50746","proto":"udp","remote":"192.168.1.70:65410","type":"5-tuple"}
 ```
+
+
+You can download the latest builds here: 
+[Windows](https://s3.amazonaws.com/bifurcate/natty/windows/x86/natty.exe), Linux [32](https://s3.amazonaws.com/bifurcate/natty/linux/i386/natty) [64](https://s3.amazonaws.com/bifurcate/natty/linux/x86_64/natty), and [OS X](https://s3.amazonaws.com/bifurcate/natty/osx/natty) [sig](https://s3.amazonaws.com/bifurcate/natty/osx/natty.asc)
                                                 
 A full demo using natty is available [here](https://github.com/getlantern/go-natty) using the [waddell](https://github.com/getlantern/waddell) signaling server.
