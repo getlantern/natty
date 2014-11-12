@@ -65,7 +65,7 @@ cat test
 {"candidate":"candidate:852080568 1 tcp 1518083839 192.168.1.70 53790 typ host tcptype passive generation 0","sdpMLineIndex":0,"sdpMid":"data"}
 {"candidate":"candidate:2321167004 1 udp 1685855999 107.201.128.213 64492 typ srflx raddr 192.168.1.70 rport 64492 generation 0","sdpMLineIndex":0,"sdpMid":"data"}
 ```
-On both sides, if the NAT traversal succeeded, after a series of connectivity checks, you should see five tuples emitted on both endpoints. 
+On both sides, if the NAT traversal succeeds, after a series of connectivity checks, you should see five tuples emitted on both the offerer and answerer side 
 ```
 offer -> answer: {"local":"192.168.1.70:65410","proto":"udp","remote":"192.168.1.70:50746","type":"5-tuple"}
 
