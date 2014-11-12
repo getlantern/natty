@@ -74,6 +74,6 @@ answer -> offer: {"local":"192.168.1.70:50746","proto":"udp","remote":"192.168.1
 
 
 You can download the latest builds here: 
-[Windows](https://s3.amazonaws.com/bifurcate/natty/windows/x86/natty.exe), Linux [32](https://s3.amazonaws.com/bifurcate/natty/linux/i386/natty)/[64](https://s3.amazonaws.com/bifurcate/natty/linux/x86_64/natty), and [OS X](https://s3.amazonaws.com/bifurcate/natty/osx/natty)/[PGP sig](https://s3.amazonaws.com/bifurcate/natty/osx/natty.asc)
+[Windows](https://s3.amazonaws.com/bifurcate/windows/natty.exe), Linux [32](https://s3.amazonaws.com/bifurcate/linux/i386/natty)/[64](https://s3.amazonaws.com/bifurcate/linux/x86_64/natty), and [OS X](https://s3.amazonaws.com/bifurcate/osx/natty)/[PGP sig](https://s3.amazonaws.com/bifurcate/osx/natty.asc)
                                                 
 A full demo using natty is available [here](https://github.com/getlantern/go-natty) using the [waddell](https://github.com/getlantern/waddell) signaling server.
