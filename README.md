@@ -38,10 +38,11 @@ Building natty
 ```
 ninja -C build/src/out/Release
 ```
-If all goes well, the natty binary is then available in build/src/out/Release
+
+If all goes well, the natty binary should be available in the build/src/out/Release directory.
 
 ### Usage
-You interact with the natty process over stdin/stdout.
+You communicate with a natty process over stdin/stdout.
 
 ```bash
    ./natty
@@ -71,4 +72,4 @@ offer -> answer: {"local":"192.168.1.70:65410","proto":"udp","remote":"192.168.1
 answer -> offer: {"local":"192.168.1.70:50746","proto":"udp","remote":"192.168.1.70:65410","type":"5-tuple"}
 ```
                                                 
-A full demo using natty is available [here](https://github.com/getlantern/go-natty) using the [waddell](https://github.com/getlantern/waddell) signaling server
+A full demo using natty is available [here](https://github.com/getlantern/go-natty) using the [waddell](https://github.com/getlantern/waddell) signaling server.
