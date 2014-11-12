@@ -12,7 +12,37 @@ traversal process.
 Natty relies almost entirely on the ICE framework to perform NAT traversals. ICE works, for a given peer, by gathering a prioritized list of possible IP address and port candidates. This list of candidates is accumulated by natty and forwarded to the signaling intermediary. Once a full set of candidate pairs is available on a specific endpoint, natty relies on ICE to perform a series of connectivity checks.
 When/if a connectivity check succeeds, and a connection is successfully established, natty outputs the resultant 5-tuple(s) on both sides. Natty, by default, consumes and returns JSON messages. After multiple rounds of tests, if no pair is found, natty assumes no working candidate pair for connecting the peers exists and returns an error message, assuming some fallback mechanism is subsequently necessary.
 
+## Installation
+These instructions are also available in the webrtc-setup file. 
+
+First, checkout and build the WebRTC source:
+```bash
+mkdir build
+cd build
+gclient config --name src 'git+https://chromium.googlesource.com/external/webrtc'
+gclient sync -j200
+cd src
+git svn init --prefix=origin/ https://webrtc.googlecode.com/svn -T/branches/3.55/webrtc@6541 --rewrite-root=http://webrtc.googlecode.com/svn
+git svn fetch
+git checkout master
+```
+
+Copy over natty source and *.gyp files. Then generate build files:
+```bash
+cp ../../src/webrtc/channel.cc build/src
+cp -r src/natty build/src
+cp gyp/* build/src
+```
+
+Building natty
+```
+ninja -C build/src/out/Release
+```
+If all goes well, the natty binary is then available in build/src/out/Release
+
 ### Usage
+You interact with the natty process over stdin/stdout.
+
 ```bash
    ./natty
     -offer (used on the initiator side)
@@ -21,78 +51,24 @@ When/if a connectivity check succeeds, and a connection is successfully establis
 ```
 Here's an example session:
 ```
-./natty -offer -out test
+./natty -offer -out offerer
 cat test
-{"sdp":"v=0\r\no=- 4652263964728009613 2 IN IP4 127.0.0.1\r\ns=-\r\nt=0 0\r\na=group:BUNDLE audio\r\na=msid-semantic: WMS\r\nm=audio 1 RTP/SAVPF 111 103 104 9 102 0 8 106 105 13 127 126\r\nc=IN IP4 0.0.0.0\r\na=rtcp:1 IN IP4 0.0.0.0\r\na=ice-ufrag:f3py6nfbZqDyjaub\r\na=ice-pwd:RqN17HNmLH6aQRLB+bsffxH9\r\na=ice-options:google-ice\r\na=mid:audio\r\na=extmap:1 urn:ietf:params:rtp-hdrext:ssrc-audio-level\r\na=extmap:3 http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time\r\na=recvonly\r\na=rtcp-mux\r\na=crypto:0 AES_CM_128_HMAC_SHA1_32 inline:jTq/Ml/M7Rf0+nDbgoMIDrAo+YCN1iwLvFrd8VoK\r\na=crypto:1 AES_CM_128_HMAC_SHA1_80 inline:KrEcsYGkiLyoWRz6NIKk3MOkvIg7znU1dY31IptC\r\na=rtpmap:111 opus/48000/2\r\na=fmtp:111 minptime=10\r\na=rtpmap:103 ISAC/16000\r\na=rtpmap:104 ISAC/32000\r\na=rtpmap:9 G722/16000\r\na=rtpmap:102 ILBC/8000\r\na=rtpmap:0 PCMU/8000\r\na=rtpmap:8 PCMA/8000\r\na=rtpmap:106 CN/32000\r\na=rtpmap:105 CN/16000\r\na=rtpmap:13 CN/8000\r\na=rtpmap:127 red/8000\r\na=rtpmap:126 telephone-event/8000\r\na=maxptime:60\r\n","type":"offer"}
-{"candidate":"a=candidate:3090910651 1 udp 2122194687 10.171.165.178 54357 typ host generation 0\r\n","sdpMLineIndex":0,"sdpMid":"audio"}
-{"candidate":"a=candidate:3090910651 2 udp 2122194687 10.171.165.178 54357 typ host generation 0\r\n","sdpMLineIndex":0,"sdpMid":"audio"}
-{"candidate":"a=candidate:4139282763 1 tcp 1518214911 10.171.165.178 50947 typ host generation 0\r\n","sdpMLineIndex":0,"sdpMid":"audio"}
-{"candidate":"a=candidate:4139282763 2 tcp 1518214911 10.171.165.178 50947 typ host generation 0\r\n","sdpMLineIndex":0,"sdpMid":"audio"}
-{"candidate":"a=candidate:1958130216 1 udp 1685987071 70.209.197.25 4791 typ srflx raddr 10.171.165.178 rport 54357 generation 0\r\n","sdpMLineIndex":0,"sdpMid":"audio"}
-{"candidate":"a=candidate:1958130216 2 udp 1685987071 70.209.197.25 4791 typ srflx raddr 10.171.165.178 rport 54357 generation 0\r\n","sdpMLineIndex":0,"sdpMid":"audio"}
+{"sdp":"v=0\r\no=- 4872732101493451958 2 IN IP4 127.0.0.1\r\ns=-\r\nt=0 0\r\na=msid-semantic: WMS\r\nm=application 9 DTLS/SCTP 5000\r\nc=IN IP4 0.0.0.0\r\na=ice-ufrag:t/JZ+l7sDBx99Zcy\r\na=ice-pwd:FWg9xOKBe51/2IMxWjkqqXYg\r\na=ice-options:google-ice\r\na=fingerprint:sha-1 46:BC:06:FE:C4:EC:D5:0B:CE:B9:FC:BE:55:3E:65:EB:85:28:26:06\r\na=setup:actpass\r\na=mid:data\r\na=sctpmap:5000 webrtc-datachannel 1024\r\n","type":"offer"}
+{"candidate":"candidate:2085243720 1 udp 2122063615 192.168.1.70 59631 typ host generation 0","sdpMLineIndex":0,"sdpMid":"data"}
+{"candidate":"candidate:852080568 1 tcp 1518083839 192.168.1.70 53788 typ host tcptype passive generation 0","sdpMLineIndex":0,"sdpMid":"data"}
+{"candidate":"candidate:2321167004 1 udp 1685855999 107.201.128.213 59631 typ srflx raddr 192.168.1.70 rport 59631 generation 0","sdpMLineIndex":0,"sdpMid":"data"}
 
-./natty -out resp < test
-{"sdp":"v=0\r\no=- 3252870593939442268 2 IN IP4 127.0.0.1\r\ns=-\r\nt=0 0\r\na=group:BUNDLE audio\r\na=msid-semantic: WMS\r\nm=audio 1 RTP/SAVPF 111 103 104 9 102 0 8 106 105 13 127 126\r\nc=IN IP4 0.0.0.0\r\na=rtcp:1 IN IP4 0.0.0.0\r\na=ice-ufrag:rav4zT6QOjPTw1AO\r\na=ice-pwd:ejQCrilVxI6zapOclGyIfiIK\r\na=mid:audio\r\na=extmap:1 urn:ietf:params:rtp-hdrext:ssrc-audio-level\r\na=extmap:3 http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time\r\na=sendonly\r\na=rtcp-mux\r\na=crypto:1 AES_CM_128_HMAC_SHA1_80 inline:zezEDJ85fa61k7u0HVDfUBcWNuwoOUGz1lUAig1o\r\na=rtpmap:111 opus/48000/2\r\na=fmtp:111 minptime=10\r\na=rtpmap:103 ISAC/16000\r\na=rtpmap:104 ISAC/32000\r\na=rtpmap:9 G722/16000\r\na=rtpmap:102 ILBC/8000\r\na=rtpmap:0 PCMU/8000\r\na=rtpmap:8 PCMA/8000\r\na=rtpmap:106 CN/32000\r\na=rtpmap:105 CN/16000\r\na=rtpmap:13 CN/8000\r\na=rtpmap:127 red/8000\r\na=rtpmap:126 telephone-event/8000\r\na=maxptime:60\r\n","type":"answer"}
-{"candidate":"a=candidate:1526242907 1 udp 2122194687 107.170.244.214 34487 typ host generation 0\r\n","sdpMLineIndex":0,"sdpMid":"audio"}
-{"candidate":"a=candidate:343630507 1 tcp 1518214911 107.170.244.214 39301 typ host generation 0\r\n","sdpMLineIndex":0,"sdpMid":"audio"}
+./natty -out answerer < offerer
+{"sdp":"v=0\r\no=- 3470342631269636907 2 IN IP4 127.0.0.1\r\ns=-\r\nt=0 0\r\na=msid-semantic: WMS\r\nm=application 9 DTLS/SCTP 5000\r\nc=IN IP4 0.0.0.0\r\nb=AS:30\r\na=ice-ufrag:kAk9nHxBSAnIU5w9\r\na=ice-pwd:SgPPuhcyl/qZu/cdZiJTQyJq\r\na=fingerprint:sha-1 05:60:24:81:2D:8F:B6:10:C6:EE:20:0E:59:CA:F9:5E:E2:19:42:D5\r\na=setup:active\r\na=mid:data\r\na=sctpmap:5000 webrtc-datachannel 1024\r\n","type":"answer"}
+{"candidate":"candidate:2085243720 1 udp 2122063615 192.168.1.70 64492 typ host generation 0","sdpMLineIndex":0,"sdpMid":"data"}
+{"candidate":"candidate:852080568 1 tcp 1518083839 192.168.1.70 53790 typ host tcptype passive generation 0","sdpMLineIndex":0,"sdpMid":"data"}
+{"candidate":"candidate:2321167004 1 udp 1685855999 107.201.128.213 64492 typ srflx raddr 192.168.1.70 rport 64492 generation 0","sdpMLineIndex":0,"sdpMid":"data"}
 ```
+On both sides, if the NAT traversal succeeded, after a series of connectivity checks, you should see five tuples emitted on both endpoints. 
+```
+offer -> answer: {"local":"192.168.1.70:65410","proto":"udp","remote":"192.168.1.70:50746","type":"5-tuple"}
 
-A full file transfer test using natty is available [here](https://github.com/getlantern/natty-java-xmpp)
-
-## Build instructions
- 
-    # Download webrtc trunk
-    ./webrtc-setup
-
-    # build latest code with debugging enabled
-    ninja -C build/trunk/out/Debug
-
-    # build natty
-    ninja -f natty.ninja
-
-    # execute natty
-    ./natty
-
-    # clean up
-    ninja -f natty.ninja -t clean
-    
-    # sample sessions
-    #
-    Initializing session description
-    Session id 8864502416870081173
-    Creating port allocator session
-    ice sid HCV6ayfcZsugQjaX:bJgo20cB0leKTV1Th1ibJx6/
-    Creating port allocator session
-    Cce sid HCV6ayfcZsugQjaX:bJgo20cB0leKTV1Th1ibJx6/
-    Ice candidate 4079541279:1:udp:2122194687:192.168.1.74:51478:local::0:
-                  HCV6ayfcZsugQjaX:bJgo20cB0leKTV1Th1ibJx6
-    -> 192.168.1.74:51478
-    Found port Port[audio:1:0::Net[en0:192.168.1.0/24]]
-    Found port Port[audio:1:0::Net[en0:192.168.1.0/24]]
-    Ice candidate 2182108911:1:tcp:1518214911:192.168.1.74:64346:local::0:
-                  HCV6ayfcZsugQjaX:bJgo20cB0leKTV1Th1ibJx6
-    -> 192.168.1.74:64346
-    Found port Port[audio:1:0:local:Net[en0:192.168.1.0/24]]
-    Found port Port[audio:1:0:local:Net[en0:192.168.1.0/24]]
-    Ice candidate 87598539:1:udp:1685987071:107.201.128.213:51478:stun:192.168.1.74:51478:
-                  HCV6ayfcZsugQjaX:bJgo20cB0leKTV1Th1ibJx6
-    -> 107.201.128.213:51478
-
-    Initializing session description
-    Session id 658569486909023361
-    Creating port allocator session
-    Ice sid ailLdeH/UkVxqSG2:+eUJYFBUeZSZ2yuIHZa2S7lV
-    Creating port allocator session muxer
-    Creating port allocator session
-    Ice sid ailLdeH/UkVxqSG2:+eUJYFBUeZSZ2yuIHZa2S7lV
-    Ice candidate 833690215:1:udp:2122194687:192.168.1.138:60868:local::0:
-                  ailLdeH/UkVxqSG2:+eUJYFBUeZSZ2yuIHZa2S7lV
-    -> 192.168.1.138:60868
-    Found port Port[audio:1:0::Net[en0:192.168.1.0/24]]
-    Found port Port[audio:1:0::Net[en0:192.168.1.0/24]]
-    Ice candidate 2969115859:1:udp:1685987071:12.167.51.34:38249:stun:192.168.1.138:60868:
-                  ailLdeH/UkVxqSG2:+eUJYFBUeZSZ2yuIHZa2S7lV
-    -> 12.167.51.34:38249
-    Ice candidate 2134042263:1:tcp:1518214911:192.168.1.138:52894:local::0:
-                  ailLdeH/UkVxqSG2:+eUJYFBUeZSZ2yuIHZa2S7lV
-    -> 192.168.1.138:52894
+answer -> offer: {"local":"192.168.1.70:50746","proto":"udp","remote":"192.168.1.70:65410","type":"5-tuple"}
+```
+                                                
+A full demo using natty is available [here](https://github.com/getlantern/go-natty) using the [waddell](https://github.com/getlantern/waddell) signaling server
