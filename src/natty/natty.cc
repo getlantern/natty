@@ -131,9 +131,10 @@ bool Natty::InitializePeerConnection() {
   FakeConstraints constraints;
   webrtc::InternalDataChannelInit dci;
   const string& dc_name = "datachannel";
-
-  // Enable DTLS-SRTP
-  // http://tools.ietf.org/html/rfc5764
+  // "enable" DTLS-SRTP initially just to get the data
+  // channel initialized
+  // channel.cc ShouldSetupDtlsSrtp() returns false now
+  // so this will never actually happen
   constraints.AddOptional(
       webrtc::MediaConstraintsInterface::kEnableDtlsSrtp, true);
 
@@ -156,7 +157,7 @@ bool Natty::InitializePeerConnection() {
    * we start to generate ICE candidates
    */
   peer_connection_ = peer_connection_factory_->CreatePeerConnection(servers, &constraints, NULL, NULL, this);
-  dci.reliable = true;
+  dci.reliable = false;
   data_channel_ = peer_connection_->CreateDataChannel("datachannel", &dci);
   data_channel_observer_ = new NattyDataChannelObserver(data_channel_);
   data_channel_observer_->InitStates();
@@ -191,7 +192,6 @@ void Natty::OnError() {
 
 void Natty::OnAddStream(MediaStreamInterface* stream) {
   LOG(INFO) << "Successfully added stream";
-  stream->AddRef();
 }
 
 /* the answerer removes his media stream before disconnecting
@@ -200,7 +200,6 @@ void Natty::OnAddStream(MediaStreamInterface* stream) {
  */
 void Natty::OnRemoveStream(MediaStreamInterface* stream) {
   LOG(INFO) << "Successfully removed stream";
-  stream->AddRef(); 
 }
 
 void Natty::OnSignalingChange(PeerConnectionInterface::SignalingState new_state) {
