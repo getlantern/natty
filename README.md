@@ -27,9 +27,9 @@ git svn fetch
 git checkout master
 ```
 
-Copy over natty source and *.gyp files. Then generate build files:
+Copy over natty patch and *.gyp files. Then generate build files:
 ```bash
-cp ../../src/webrtc/channel.cc build/src
+patch talk/session/media/channel.cc < ../../src/webrtc/channel.patch
 cp gyp/* build/src
 ```
 

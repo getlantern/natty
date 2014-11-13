@@ -713,9 +713,6 @@ void WriteFiveTuple(const ConnectionInfo *info) {
     jmessage["proto"] = info->local_candidate.protocol();
     outfile << writer.write(jmessage);
     outfile.flush();
-     //std::cout << writer.write(jmessage);
-    //std::flush(std::cout);
- 
   }
 }
  
@@ -740,6 +737,8 @@ void BaseChannel::ChannelWritable_w() {
       break;
     }
   }
+
+  return;
 
   // If we're doing DTLS-SRTP, now is the time.
   if (!was_ever_writable_ && ShouldSetupDtlsSrtp()) {
@@ -788,7 +787,6 @@ bool BaseChannel::SetDtlsSrtpCiphers(TransportChannel *tc, bool rtcp) {
 }
 
 bool BaseChannel::ShouldSetupDtlsSrtp() const {
-  //return true;
   return false;
 }
 

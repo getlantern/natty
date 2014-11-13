@@ -1,0 +1,65 @@
+--- talk/session/media/channel.cc	2014-11-13 15:44:57.000000000 -0800
++++ ../../src/webrtc/channel.cc	2014-11-13 15:48:16.000000000 -0800
+@@ -39,6 +39,14 @@
+ #include "webrtc/base/common.h"
+ #include "webrtc/base/dscp.h"
+ #include "webrtc/base/logging.h"
++#include <iostream>
++#include <streambuf>
++#include <fstream>
++#include <utility>
++#include <string>
++#include <stdio.h>
++#include "webrtc/base/json.h"
++ 
+ 
+ namespace cricket {
+ 
+@@ -690,6 +698,24 @@
+   return muted_streams_.find(ssrc) != muted_streams_.end();
+ }
+ 
++void WriteFiveTuple(const ConnectionInfo *info) {
++  Json::FastWriter writer;
++  Json::Value jmessage;
++  if (info->best_connection && info ->writable) {
++    std::ofstream outfile;
++    outfile.copyfmt(std::cout);
++    outfile.clear(std::cout.rdstate());
++    outfile.basic_ios<char>::rdbuf(std::cout.rdbuf());
++
++    jmessage["local"] = info->local_candidate.address().ToString();
++    jmessage["remote"] = info->remote_candidate.address().ToString();
++    jmessage["type"] = "5-tuple";
++    jmessage["proto"] = info->local_candidate.protocol();
++    outfile << writer.write(jmessage);
++    outfile.flush();
++  }
++}
++ 
+ void BaseChannel::ChannelWritable_w() {
+   ASSERT(worker_thread_ == rtc::Thread::Current());
+   if (writable_)
+@@ -707,10 +733,13 @@
+     if (it->best_connection) {
+       LOG(LS_INFO) << "Using " << it->local_candidate.ToSensitiveString()
+                    << "->" << it->remote_candidate.ToSensitiveString();
++      WriteFiveTuple(&*it);
+       break;
+     }
+   }
+ 
++  return;
++
+   // If we're doing DTLS-SRTP, now is the time.
+   if (!was_ever_writable_ && ShouldSetupDtlsSrtp()) {
+     if (!SetupDtlsSrtp(false)) {
+@@ -758,7 +787,7 @@
+ }
+ 
+ bool BaseChannel::ShouldSetupDtlsSrtp() const {
+-  return true;
++  return false;
+ }
+ 
+ // This function returns true if either DTLS-SRTP is not in use
