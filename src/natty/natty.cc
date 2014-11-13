@@ -1,20 +1,3 @@
-/**
- * Copyright (C) 2014 Lantern
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 #include "natty.h"
 
 #include <utility>
@@ -149,8 +132,6 @@ bool Natty::InitializePeerConnection() {
   webrtc::InternalDataChannelInit dci;
   const string& dc_name = "datachannel";
 
-  // Enable RTP DataChannels
-  //constraints.SetAllowRtpDataChannels();
   // Enable DTLS-SRTP
   // http://tools.ietf.org/html/rfc5764
   constraints.AddOptional(
@@ -175,7 +156,7 @@ bool Natty::InitializePeerConnection() {
    * we start to generate ICE candidates
    */
   peer_connection_ = peer_connection_factory_->CreatePeerConnection(servers, &constraints, NULL, NULL, this);
-  dci.reliable = false;
+  dci.reliable = true;
   data_channel_ = peer_connection_->CreateDataChannel("datachannel", &dci);
   data_channel_observer_ = new NattyDataChannelObserver(data_channel_);
   data_channel_observer_->InitStates();
@@ -195,10 +176,8 @@ void Natty::Shutdown() {
   peer_connection_->Close();
   peer_connection_ = NULL;
   peer_connection_factory_ = NULL;
-  //active_streams_.clear();
   rtc::CleanupSSL();
   outfile.close();
-  //thread_->Stop();
 }
 
 //
@@ -222,7 +201,6 @@ void Natty::OnAddStream(MediaStreamInterface* stream) {
 void Natty::OnRemoveStream(MediaStreamInterface* stream) {
   LOG(INFO) << "Successfully removed stream";
   stream->AddRef(); 
-  //PickFinalCandidate();
 }
 
 void Natty::OnSignalingChange(PeerConnectionInterface::SignalingState new_state) {
@@ -411,16 +389,6 @@ void Natty::OnServerConnectionFailure() {
 
 }
 
-std::string GetPeerName() {
-  char computer_name[256];
-  if (gethostname(computer_name, ARRAY_SIZE(computer_name)) != 0)
-    strcpy(computer_name, "host");
-  std::string ret(GetEnvVarOrDefault("USERNAME", "user"));
-  ret += '@';
-  ret += computer_name;
-  return ret;
-}   
-
 void Natty::setMode(Natty::Mode m) {
   mode = m;
 }
@@ -442,7 +410,7 @@ void Natty::Init(bool offer) {
   InitializePeerConnection();
   if (offer) {
     Natty::setMode(Natty::OFFER);
-    peer_connection_->CreateOffer(this, &constraints);
+    peer_connection_->CreateOffer(this, NULL);
   }
 }
 
