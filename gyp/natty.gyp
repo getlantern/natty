@@ -7,11 +7,11 @@
    'target_name': 'natty',
         'type': 'executable',
         'sources': [
-            'natty/defaults.h',
-            'natty/flagdefs.h',
-            'natty/main.cc',
-            'natty/natty.cc',
-            'natty/natty.h',
+            '../../src/natty/defaults.h',
+            '../../src/natty/flagdefs.h',
+            '../../src/natty/main.cc',
+            '../../src/natty/natty.cc',
+            '../../src/natty/natty.h',
         ],
         'dependencies': [
             'talk/libjingle.gyp:libjingle',

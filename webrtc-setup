@@ -19,8 +19,7 @@ git checkout master
 gclient sync --force
 
 cp ../../src/webrtc/channel.cc talk/session/media/
-cp -r ../../src/natty .
-cp ../../gyp/all.gyp .
-cp ../../gyp/natty.gyp .
+cp ../../gyp/* .
+
 ninja -C out/Release
 cp out/Release/natty ../../
