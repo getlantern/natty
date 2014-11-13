@@ -788,7 +788,8 @@ bool BaseChannel::SetDtlsSrtpCiphers(TransportChannel *tc, bool rtcp) {
 }
 
 bool BaseChannel::ShouldSetupDtlsSrtp() const {
-  return true;
+  //return true;
+  return false;
 }
 
 // This function returns true if either DTLS-SRTP is not in use
