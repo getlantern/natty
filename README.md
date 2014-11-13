@@ -30,7 +30,6 @@ git checkout master
 Copy over natty source and *.gyp files. Then generate build files:
 ```bash
 cp ../../src/webrtc/channel.cc build/src
-cp -r src/natty build/src
 cp gyp/* build/src
 ```
 
