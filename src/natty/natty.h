@@ -136,9 +136,6 @@ class Natty
 
   virtual void OnFailure(const std::string& msg);
 
-  virtual void InitConnectionStates();
-
-
   virtual void OnServerConnectionFailure();
 
   // CreateSessionDescriptionObserver implementation.
@@ -155,8 +152,6 @@ class Natty
 
   std::map<ConnState, std::string> connection_states;
   webrtc::SessionDescriptionInterface* session_description;
-  //rtc::scoped_refptr<webrtc::PortAllocatorFactoryInterface> allocator_factory_;
-  //cricket::PortAllocator* allocator;
 
   /* stdout */
   std::ofstream outfile;

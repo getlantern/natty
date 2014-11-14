@@ -136,6 +136,10 @@ bool Natty::InitializePeerConnection() {
   // channel.cc ShouldSetupDtlsSrtp() returns false now
   // so this will never actually happen
   constraints.AddOptional(
+      webrtc::MediaConstraintsInterface::kOfferToReceiveVideo, false);
+  constraints.AddOptional(
+      webrtc::MediaConstraintsInterface::kOfferToReceiveAudio, false);
+  constraints.AddOptional(
       webrtc::MediaConstraintsInterface::kEnableDtlsSrtp, true);
 
   ASSERT(peer_connection_factory_.get() == NULL);
@@ -158,9 +162,7 @@ bool Natty::InitializePeerConnection() {
    */
   peer_connection_ = peer_connection_factory_->CreatePeerConnection(servers, &constraints, NULL, NULL, this);
   dci.reliable = false;
-  data_channel_ = peer_connection_->CreateDataChannel("datachannel", &dci);
-  data_channel_observer_ = new NattyDataChannelObserver(data_channel_);
-  data_channel_observer_->InitStates();
+  data_channel_ = peer_connection_->CreateDataChannel(dc_name, &dci);
 
   if (!peer_connection_.get()) {
     LOG(INFO) << "Create peer connection failed";
@@ -231,26 +233,8 @@ void Natty::OnIceCandidate(const IceCandidateInterface* candidate) {
   outfile.flush();
 }
 
-/* ICE observer that signals when our connection state changes
- * "Completed" means ICE has finished gathering and checking and found a connection
- * for all components.
- *
- */
 void Natty::OnIceConnectionChange(IceConnState new_state) {
-  LOG(INFO) << "New connection state: " << connection_states[new_state];
-  if (new_state == PeerConnection::kIceConnectionCompleted ||
-      new_state == PeerConnection::kIceConnectionClosed) {
-    /* The ICE agent has finished gathering and checking and found a connection
-     * for all components.
-     */
-    LOG(INFO) << "Found ideal connection";
-    //Shutdown();
-  } else if (new_state == PeerConnection::kIceConnectionFailed) {
-    const std::string& msg = "Checked all candidate pairs and failed to find a connection";
-    LOG(INFO) << msg;
-    OnFailure(msg);
-    Shutdown();
-  }
+  LOG(INFO) << "New connection state " << new_state;
 }
 
 void Natty::OnRenegotiationNeeded() {
@@ -392,20 +376,7 @@ void Natty::setMode(Natty::Mode m) {
   mode = m;
 }
 
-void Natty::InitConnectionStates() {
-  const string states[] = {"New", "Checking", "Connected", "Completed",
-    "Failed", "Disconnected", "Closed"};
-  for ( int i = PeerConnection::kIceConnectionNew; 
-       i != PeerConnection::kIceConnectionClosed; i++ )
-  {
-    ConnState state = static_cast<ConnState>(i);
-    connection_states[state] = states[i].c_str();
-  }
-
-}
-
 void Natty::Init(bool offer) {
-  InitConnectionStates();
   InitializePeerConnection();
   if (offer) {
     Natty::setMode(Natty::OFFER);

@@ -18,7 +18,7 @@ git svn fetch
 git checkout master
 gclient sync --force
 
-cp ../../src/webrtc/channel.cc talk/session/media/
+patch talk/session/media/channel.cc < ../../src/webrtc/channel.patch
 cp ../../gyp/* .
 
 ninja -C out/Release

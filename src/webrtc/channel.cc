@@ -738,8 +738,6 @@ void BaseChannel::ChannelWritable_w() {
     }
   }
 
-  return;
-
   // If we're doing DTLS-SRTP, now is the time.
   if (!was_ever_writable_ && ShouldSetupDtlsSrtp()) {
     if (!SetupDtlsSrtp(false)) {
