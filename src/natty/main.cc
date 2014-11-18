@@ -21,16 +21,21 @@ int main(int argc, char* argv[]) {
 
   if (FLAG_debug) {
     rtc::LogMessage::LogTimestamps();
-    rtc::LogMessage::LogToDebug(rtc::LS_INFO);
+    rtc::LogMessage::LogToDebug(LOG_DEFAULT);
   }
 
+  /* InitializeSSL is where you confirm which TLS implementation you want to use
+   * for peer connection sessions 
+   */
   rtc::InitializeSSL();
   rtc::Thread* thread = rtc::Thread::Current();
+
   /* Scopers help maintain ownership of a pointer
    */
   rtc::scoped_refptr<Natty> natty(
       new rtc::RefCountedObject<Natty>(thread));
 
+  /* OpenDumpFile checks if stdout should be redirected to an outfile */
   natty.get()->OpenDumpFile(FLAG_out);
   natty.get()->Init(FLAG_offer); 
   

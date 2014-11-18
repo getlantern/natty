@@ -19,7 +19,6 @@
 #include "webrtc/base/ssladapter.h"
 #include "webrtc/base/json.h"
 
-typedef webrtc::PeerConnection::IceConnectionState ConnState;
 typedef webrtc::DataChannelInterface::DataState DCState;
 
 class NattyDataChannelObserver 
@@ -114,12 +113,9 @@ class Natty
  protected:
   ~Natty();
  
-  void AddStreams(); 
-
   //
   // PeerConnectionObserver implementation.
   //
-  virtual void InspectTransportChannel();
   virtual void OnError();
   virtual void OnStateChange(
       webrtc::PeerConnectionObserver::StateType state_changed);
@@ -146,23 +142,13 @@ class Natty
   NattyDataChannelObserver* data_channel_observer_;
 
   rtc::Thread* thread_;
-  rtc::scoped_refptr<webrtc::MediaStreamInterface> stream;
   rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface>
       peer_connection_factory_;
 
-  std::map<ConnState, std::string> connection_states;
   webrtc::SessionDescriptionInterface* session_description;
 
   /* stdout */
   std::ofstream outfile;
-
-  enum Mode { OFFER, TRAVERSE };
-  void setMode(Mode m);
-  Mode mode;
-
-  std::map<std::string, rtc::scoped_refptr<webrtc::MediaStreamInterface> >
-    active_streams_;
-
 
   class InputStream {
     public:

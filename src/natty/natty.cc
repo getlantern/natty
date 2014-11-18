@@ -100,30 +100,6 @@ std::string GetPeerConnectionString() {
   return GetEnvVarOrDefault("WEBRTC_CONNECT", "stun:stun.l.google.com:19302");
 }
 
-void Natty::AddStreams() {
-  const char kStreamLabel[] = "stream_label";
-  const uint16 kDefaultServerPort = 8888;
-  const char kAudioLabel[] = "audio_label";
-  if (active_streams_.find(kStreamLabel) != active_streams_.end())
-    return;  // Already added.
-
-  rtc::scoped_refptr<AudioTrackInterface> audio_track(
-      peer_connection_factory_->CreateAudioTrack(
-          kAudioLabel, peer_connection_factory_->CreateAudioSource(NULL)));
-  stream =
-      peer_connection_factory_->CreateLocalMediaStream(kStreamLabel);
-
-  stream->AddTrack(audio_track);
-  if (!peer_connection_->AddStream(stream)) {
-    LOG(LS_ERROR) << "Adding stream to PeerConnection failed";
-  }
-  typedef std::pair<std::string,
-                    rtc::scoped_refptr<MediaStreamInterface> >
-      MediaStreamPair;
-  active_streams_.insert(MediaStreamPair(stream->label(), stream));
-}
-
-
 bool Natty::InitializePeerConnection() {
 
   IceServers servers;
@@ -210,6 +186,7 @@ void Natty::OnSignalingChange(PeerConnectionInterface::SignalingState new_state)
 
 void Natty::OnStateChange(
     PeerConnectionObserver::StateType state_changed) {
+  LOG(INFO) << "Peer Connection state change " << state_changed;
 }
 
 /* Once an ice candidate have been found PeerConnection will call the
@@ -308,45 +285,6 @@ void Natty::ReadMessage(const std::string& message) {
   }
 };
 
-/* Grabs the transport channel from the session description 
- *
- * Note from source: The Session object hosts the P2PTransport object and
- * requests creation of data channels. Although the Session object can
- * potentially host multiple instances and subclasses of Transport objects, the
- * current version of the code only defines and uses one instance of the
- * P2PTransport subclass.
- *
- */
-void Natty::InspectTransportChannel() {
-  const SessionDescriptionInterface* remote = 
-      peer_connection_->remote_description();
-  const cricket::SessionDescription* desc = remote->description();
-  const cricket::TransportInfos transport_infos = desc->transport_infos();
-  for (size_t i = 0; i < transport_infos.size(); ++i) {
-    const cricket::TransportInfo transport1 = transport_infos.at(i);
-    cricket::TransportDescription transport_desc = transport1.description;
-    LOG(INFO) << "transport desc connection role " << transport_desc.connection_role;
-    typedef std::vector<cricket::Candidate> Candidates;
-    Candidates cands = transport_desc.candidates;
-    for (size_t j = 0; j < cands.size(); ++j) {
-      LOG(INFO) << "candindate -> " << cands.at(j).ToString() << "\n";
-    }
-  }
-}
-
-/* This function is used to emit 5-tuples within the
- * P2PTransportChannel to stdout
- *
- * P2PTransportChannel represents a data channel between the local and remote
- * computers. This channel actually obscures a complex system designed for
- * robustness and performance. P2PTransportChannel manages a number of different
- * Connection objects, each of which is specialized for a different connection
- * type (UDP, TCP, etc). A Connection object actually wraps a pair of objects: a
- * Port subclass, representing the local connection; and an address representing
- * the remote connection. If a particular connection fails, P2PTransportChannel
- * will seamlessly switch to the next best connection.
- */
-
 /* Used when ICE has checked all candidate pairs
  * and failed to find a connection for at least one
  */
@@ -357,6 +295,8 @@ void Natty::OnFailure(const std::string& msg) {
   jmessage["message"] = msg;
   outfile << writer.write(jmessage);
   outfile.flush();
+  /* close peer connection session */
+  Shutdown();
 }
 
 void Natty::OnDataChannel(DataChannelInterface* data_channel) {
@@ -372,18 +312,14 @@ void Natty::OnServerConnectionFailure() {
 
 }
 
-void Natty::setMode(Natty::Mode m) {
-  mode = m;
-}
-
 void Natty::Init(bool offer) {
   InitializePeerConnection();
   if (offer) {
-    Natty::setMode(Natty::OFFER);
     peer_connection_->CreateOffer(this, NULL);
   }
 }
 
+/* read just opens an input stream for standard input */
 void Natty::ProcessInput() {
   Natty::InputStream is;
   is.read(this);
