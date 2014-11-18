@@ -109,6 +109,7 @@ class Natty
   void Shutdown();
   void ProcessInput();
   virtual void ReadMessage(const std::string& message);
+  virtual void ProcessIceCandidateMsg(const std::string& message, Json::Value& jmessage);
   
  protected:
   ~Natty();

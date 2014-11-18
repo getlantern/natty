@@ -101,7 +101,6 @@ std::string GetPeerConnectionString() {
 }
 
 bool Natty::InitializePeerConnection() {
-
   IceServers servers;
   IceServer server;
   FakeConstraints constraints;
@@ -151,9 +150,13 @@ bool Natty::InitializePeerConnection() {
 
 void Natty::Shutdown() {
   LOG(INFO) << "Deleting peer connection";
-  data_channel_->Close();
-  peer_connection_->Close();
-  peer_connection_ = NULL;
+  if (data_channel_) { 
+    data_channel_->Close();
+  }
+  if (peer_connection_) {
+    peer_connection_->Close();
+    peer_connection_ = NULL;
+  }
   peer_connection_factory_ = NULL;
   rtc::CleanupSSL();
   outfile.close();
@@ -164,6 +167,7 @@ void Natty::Shutdown() {
 //
 
 void Natty::OnError() {
+  /* should we shut down here? */
   LOG(INFO) << "Peer connection error encountered";
   LOG(INFO) << __FUNCTION__;
 }
@@ -218,6 +222,36 @@ void Natty::OnRenegotiationNeeded() {
   LOG(INFO) << "Renegotiation needed";
 }
 
+void Natty::ProcessIceCandidateMsg(const std::string& message, 
+                        Json::Value& jmessage) {
+  std::string sdp_mid;
+  int sdp_mlineindex = 0;
+  std::string sdp;
+  if (!GetStringFromJsonObject(jmessage, kCandidateSdpMidName, &sdp_mid) ||
+      !GetIntFromJsonObject(jmessage, kCandidateSdpMlineIndexName,
+                            &sdp_mlineindex) ||
+      !GetStringFromJsonObject(jmessage, kCandidateSdpName, &sdp)) {
+    LOG(INFO) << "Can't parse received message";
+    return;
+  }
+  rtc::scoped_ptr<IceCandidateInterface> candidate(
+      CreateIceCandidate(sdp_mid, sdp_mlineindex, sdp));
+  LOG(INFO) << "Remote candidate information";
+
+  if (!candidate.get()) {
+    LOG(WARNING) << "Can't parse received candidate message.";
+    return;
+  }
+  if (!peer_connection_->AddIceCandidate(candidate.get())) {
+    LOG(WARNING) << "Failed to apply the received candidate";
+    return;
+  }
+  LOG(INFO) << candidate.get()->candidate().ToString();
+  LOG(INFO) << " Received candidate :" << message;
+  return;
+
+}
+
 /* New natty JSON arrived on stdin
  * if type is defined, we have an SDP message
  * otherwise, it's a remote ICE candidate 
@@ -226,7 +260,6 @@ void Natty::ReadMessage(const std::string& message) {
   Json::Reader reader;
   Json::Value jmessage;
   std::string type;
-  std::string json_object;
 
   if (!reader.parse(message, jmessage)) {
     LOG(INFO) << "Received an unknown message.";
@@ -257,31 +290,8 @@ void Natty::ReadMessage(const std::string& message) {
     return;
   }
   else {
-    std::string sdp_mid;
-    int sdp_mlineindex = 0;
-    std::string sdp;
-    if (!GetStringFromJsonObject(jmessage, kCandidateSdpMidName, &sdp_mid) ||
-        !GetIntFromJsonObject(jmessage, kCandidateSdpMlineIndexName,
-          &sdp_mlineindex) ||
-        !GetStringFromJsonObject(jmessage, kCandidateSdpName, &sdp)) {
-      LOG(INFO) << "Can't parse received message";
-      return;
-    }
-    rtc::scoped_ptr<IceCandidateInterface> candidate(
-        CreateIceCandidate(sdp_mid, sdp_mlineindex, sdp));
-    LOG(INFO) << "Remote candidate information";
-
-    if (!candidate.get()) {
-      LOG(WARNING) << "Can't parse received candidate message.";
-      return;
-    }
-    if (!peer_connection_->AddIceCandidate(candidate.get())) {
-      LOG(WARNING) << "Failed to apply the received candidate";
-      return;
-    }
-    LOG(INFO) << candidate.get()->candidate().ToString();
-    LOG(INFO) << " Received candidate :" << message;
-    return;
+    /* ICE candidate message processing */
+    ProcessIceCandidateMsg(message, jmessage);  
   }
 };
 
