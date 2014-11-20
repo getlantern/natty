@@ -2,15 +2,31 @@
 
 Standalone WebRTC-based NAT traversal
 
-With peer-to-peer communcation, a set of tools to directly connect two endpoints is employed to bypass the intermediary barriers of NAT/firewall devices. WebRTC, a new project that enables real-time communication capabilities in web browsers, uses a trio of NAT traversal standards--ICE, STUN, and TURN--to help a peer discover the topology between itself and the peer it wishes to communicate with. These standards help to determine the best route possible, if it exists, through a given network topology.
+With peer-to-peer communication, a set of tools to directly connect two
+endpoints is employed to bypass the intermediary barriers of NAT/firewall
+devices. [WebRTC](http://www.webrtc.org/webrtc-native-code-package), a new
+project that enables real-time communication capabilities in web browsers, uses
+a trio of NAT traversal standards--ICE, STUN, and TURN--to help a peer discover
+the topology between itself and the peer it wishes to communicate with. These
+standards help to determine the best route possible, if it exists, through a
+given network topology.
 
 Natty extracts these NAT traversal tools as implemented in the WebRTC source.
-In keeping fashion with the standard itself, natty remains agnostic to
-signaling specifics. It forwards messages between a caller and signaler,
-facilitating an offer/answer exchange, and concentrates entirely on the NAT
-traversal process.
-Natty relies almost entirely on the ICE framework to perform NAT traversals. ICE works, for a given peer, by gathering a prioritized list of possible IP address and port candidates. This list of candidates is accumulated by natty and forwarded to the signaling intermediary. Once a full set of candidate pairs is available on a specific endpoint, natty relies on ICE to perform a series of connectivity checks.
-When/if a connectivity check succeeds, and a connection is successfully established, natty outputs the resultant 5-tuple(s) on both sides. Natty, by default, consumes and returns JSON messages. After multiple rounds of tests, if no pair is found, natty assumes no working candidate pair for connecting the peers exists and returns an error message, assuming some fallback mechanism is subsequently necessary.
+In keeping with the standard itself, natty remains agnostic to signaling
+specifics. It forwards messages between a caller and signaler, facilitating an
+offer/answer exchange, and concentrates entirely on the NAT traversal process.
+
+Natty relies almost entirely on the ICE framework to perform NAT traversals.
+ICE works, for a given peer, by gathering a prioritized list of possible IP
+address and port candidates. This list of candidates is accumulated by natty and
+forwarded to the signaling intermediary. Once a full set of candidate pairs is
+available on a specific endpoint, natty relies on ICE to perform a series of
+connectivity checks. When/if a connectivity check succeeds, and a connection is
+successfully established, natty outputs the resultant 5-tuple(s) on both sides.
+Natty, by default, consumes and returns JSON messages. After multiple rounds of
+tests, if no pair is found, natty assumes no working candidate pair for
+connecting the peers exists and returns an error message, assuming some fallback
+mechanism is subsequently necessary.
 
 ## Installation
 These instructions are also available in the webrtc-setup file. 
@@ -38,7 +54,8 @@ Building natty
 ninja -C build/src/out/Release
 ```
 
-If all goes well, the natty binary should be available in the build/src/out/Release directory.
+If all goes well, the natty binary should be available in the
+build/src/out/Release directory.
 
 ### Usage
 You communicate with a natty process over stdin/stdout.
@@ -52,7 +69,7 @@ You communicate with a natty process over stdin/stdout.
 Here's an example session:
 ```
 ./natty -offer -out offerer
-cat test
+cat offerer
 {"sdp":"v=0\r\no=- 4872732101493451958 2 IN IP4 127.0.0.1\r\ns=-\r\nt=0 0\r\na=msid-semantic: WMS\r\nm=application 9 DTLS/SCTP 5000\r\nc=IN IP4 0.0.0.0\r\na=ice-ufrag:t/JZ+l7sDBx99Zcy\r\na=ice-pwd:FWg9xOKBe51/2IMxWjkqqXYg\r\na=ice-options:google-ice\r\na=fingerprint:sha-1 46:BC:06:FE:C4:EC:D5:0B:CE:B9:FC:BE:55:3E:65:EB:85:28:26:06\r\na=setup:actpass\r\na=mid:data\r\na=sctpmap:5000 webrtc-datachannel 1024\r\n","type":"offer"}
 {"candidate":"candidate:2085243720 1 udp 2122063615 192.168.1.70 59631 typ host generation 0","sdpMLineIndex":0,"sdpMid":"datae}
 {"candidate":"candidate:852080568 1 tcp 1518083839 192.168.1.70 53788 typ host tcptype passive generation 0","sdpMLineIndex":0,"sdpMid":"data"}
@@ -64,7 +81,10 @@ cat test
 {"candidate":"candidate:852080568 1 tcp 1518083839 192.168.1.70 53790 typ host tcptype passive generation 0","sdpMLineIndex":0,"sdpMid":"data"}
 {"candidate":"candidate:2321167004 1 udp 1685855999 107.201.128.213 64492 typ srflx raddr 192.168.1.70 rport 64492 generation 0","sdpMLineIndex":0,"sdpMid":"data"}
 ```
-On both sides, if the NAT traversal succeeds, after a series of connectivity checks, you should see five tuples emitted on both the offerer and answerer side 
+
+On both sides, if the NAT traversal succeeds, after a series of connectivity
+checks, you should see five tuples emitted on both the offerer and answerer
+side:
 ```
 offer -> answer: {"local":"192.168.1.70:65410","proto":"udp","remote":"192.168.1.70:50746","type":"5-tuple"}
 
@@ -74,4 +94,5 @@ answer -> offer: {"local":"192.168.1.70:50746","proto":"udp","remote":"192.168.1
 ## Download
 [Windows](https://s3.amazonaws.com/bifurcate/windows/natty.exe) [(PGP sig)](https://s3.amazonaws.com/bifurcate/windows/natty.exe.asc), Linux [32](https://s3.amazonaws.com/bifurcate/linux/i386/natty)/[64](https://s3.amazonaws.com/bifurcate/linux/x86_64/natty), and [OS X](https://s3.amazonaws.com/bifurcate/osx/natty) [(PGP sig)](https://s3.amazonaws.com/bifurcate/osx/natty.asc)
                                                 
-A full demo using natty is available [here](https://github.com/getlantern/go-natty) using the [waddell](https://github.com/getlantern/waddell) signaling server.
+A full demo using natty is available [here](https://github.com/getlantern/go-natty)
+using the [waddell](https://github.com/getlantern/waddell) signaling server.
