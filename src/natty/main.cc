@@ -24,9 +24,7 @@ int main(int argc, char* argv[]) {
     rtc::LogMessage::LogToDebug(LOG_DEFAULT);
   }
 
-  /* InitializeSSL is where you confirm which TLS implementation you want to use
-   * for peer connection sessions 
-   */
+  /* Set up the crypto subsystem. */
   rtc::InitializeSSL();
   rtc::Thread* thread = rtc::Thread::Current();
 
@@ -35,9 +33,7 @@ int main(int argc, char* argv[]) {
   rtc::scoped_refptr<Natty> natty(
       new rtc::RefCountedObject<Natty>(thread));
 
-  /* OpenDumpFile checks if stdout should be redirected to an outfile */
-  natty.get()->OpenDumpFile(FLAG_out);
-  natty.get()->Init(FLAG_offer); 
+  natty.get()->Init(FLAG_offer, FLAG_out, FLAG_stuns); 
   
   natty.get()->ProcessInput();
   return 0;

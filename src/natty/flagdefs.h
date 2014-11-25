@@ -13,6 +13,7 @@ DEFINE_bool(autoconnect, false, "Connect to the server without user "
                                 "intervention.");
 DEFINE_string(out, "", "Natty stdout");  
 DEFINE_string(server, "localhost", "The server to connect to.");
+DEFINE_string(stuns, "stun:stun.l.google.com:19302", "List of STUN servers natty will use to gather ICE candidates");
 DEFINE_int(port, 8000,
            "The port on which the server is listening.");
 DEFINE_bool(autocall, false, "Call the first available other client on "

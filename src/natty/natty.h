@@ -20,10 +20,21 @@
 #include "webrtc/base/json.h"
 
 typedef webrtc::DataChannelInterface::DataState DCState;
+typedef webrtc::PeerConnectionInterface::IceServers IceServers;
+typedef webrtc::PeerConnectionInterface::IceServer IceServer;;
+typedef webrtc::PeerConnection::IceConnectionState IceConnState;
+
+// Names used for a IceCandidate JSON object
+static const char kCandidateSdpMidName[] = "sdpMid";
+static const char kCandidateSdpMlineIndexName[] = "sdpMLineIndex";
+static const char kCandidateSdpName[] = "candidate";
+static const char kSessionDescriptionTypeName[] = "type";
+static const char kSessionDescriptionSdpName[] = "sdp";
 
 class NattyDataChannelObserver 
 : public webrtc::DataChannelObserver {
  public:
+
   explicit NattyDataChannelObserver(webrtc::DataChannelInterface* channel)
       : channel_(channel), received_message_count_(0) {
         channel_->RegisterObserver(this);
@@ -103,10 +114,11 @@ class Natty
 
   bool connection_active() const;
 
-  virtual void Init(bool mode);
+  virtual void Init(bool mode, const char *out, const char *stuns);
   virtual void OpenDumpFile(const std::string& filename);
   bool InitializePeerConnection();
   void Shutdown();
+  void AddStunServers(IceServers *servers);
   void ProcessInput();
   virtual void ReadMessage(const std::string& message);
   virtual void ProcessIceCandidateMsg(const std::string& message, Json::Value& jmessage);
@@ -139,6 +151,10 @@ class Natty
   virtual void OnSuccess(webrtc::SessionDescriptionInterface* desc);
  
   rtc::scoped_refptr<webrtc::PeerConnectionInterface> peer_connection_;  
+  // List of STUN servers natty will use to 
+  // gather ICE candidates
+  std::string stun_servers_;
+
   rtc::scoped_refptr<webrtc::DataChannelInterface> data_channel_;
   NattyDataChannelObserver* data_channel_observer_;
 

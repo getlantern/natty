@@ -22,55 +22,21 @@
 #include "webrtc/base/json.h"
 #include "webrtc/base/logging.h"
 #include "talk/media/devices/devicemanager.h"
+#include <string.h>
 
 using namespace std;
 using namespace webrtc;
 
 #define DEBUG(fmt, ...) printf("%s:%d: " fmt, __FILE__, __LINE__, __VA_ARGS__);
 
-// Names used for a IceCandidate JSON object.
-const char kCandidateSdpMidName[] = "sdpMid";
-const char kCandidateSdpMlineIndexName[] = "sdpMLineIndex";
-const char kCandidateSdpName[] = "candidate";
-
-typedef PeerConnectionInterface::IceServers IceServers;
-typedef PeerConnectionInterface::IceServer IceServer;;
-typedef PeerConnection::IceConnectionState IceConnState;
-
-// Names used for a SessionDescription JSON object.
-const char kSessionDescriptionTypeName[] = "type";
-const char kSessionDescriptionSdpName[] = "sdp";
-
 void Natty::InputStream::read(Natty* natty) {
-  while (getline(std::cin, input) || 1) {
-    /* need to remove new lines or the SDP won't be valid */
-    if (input == "exit") {
-      natty->Shutdown();
-      break;
-    }
-
-    if (input.empty()) {
-      /* terminate input on empty line */
-      //std::cout << "\n";
-      continue;
-    }
+  while (getline(std::cin, input)) 
     natty->ReadMessage(input);  
-  }
-
 }
 
-string Natty::InputStream::build() const {
-  string str = ss.str();
-  str.erase(
-      std::remove(str.begin(), str.end(), '\n'), str.end()
-      ); 
-  return str;
+Natty::Natty(rtc::Thread* thread) : thread_(thread) {
+  
 }
-
-Natty::Natty(rtc::Thread* thread
-    )
-: thread_(thread) {
-  }
 
 Natty::~Natty() {
   if (outfile) {
@@ -100,9 +66,25 @@ std::string GetPeerConnectionString() {
   return GetEnvVarOrDefault("WEBRTC_CONNECT", "stun:stun.l.google.com:19302");
 }
 
+void Natty::AddStunServers(IceServers *servers) {
+  if (!strchr(stun_servers_.c_str(), ',')) {
+    /* only one STUN server */
+    IceServer server;
+    server.uri = stun_servers_;
+    servers->push_back(server);
+  } else {
+    std::istringstream iss(stun_servers_);
+    std::string serv;
+    while(getline(iss, serv, ',')) {
+      IceServer server;
+      server.uri = serv;
+      servers->push_back(server);
+    }
+  }
+}
+
 bool Natty::InitializePeerConnection() {
   IceServers servers;
-  IceServer server;
   FakeConstraints constraints;
   webrtc::InternalDataChannelInit dci;
   const string& dc_name = "datachannel";
@@ -129,8 +111,7 @@ bool Natty::InitializePeerConnection() {
   }
   LOG(INFO) << "Created peer connection factory";
 
-  server.uri = GetPeerConnectionString();
-  servers.push_back(server);
+  AddStunServers(&servers);
 
   /* Creating a peer connection object is when
    * we start to generate ICE candidates
@@ -322,11 +303,26 @@ void Natty::OnServerConnectionFailure() {
 
 }
 
-void Natty::Init(bool offer) {
+void Natty::Init(bool offer, const char* out, const char *stuns) {
+
+  if (!strlen(stuns)) {
+    LOG(LERROR) << "Can't specify invalid/empty STUN server";
+    std::exit(EXIT_FAILURE);
+  }
+
+  LOG(INFO) << "STUN server is " << stuns;
+
+  /* OpenDumpFile checks if stdout should be redirected to an outfile */
+  OpenDumpFile(out);
+
   InitializePeerConnection();
+
+  stun_servers_ = stuns;
+
   if (offer) {
     peer_connection_->CreateOffer(this, NULL);
   }
+
 }
 
 /* read just opens an input stream for standard input */
