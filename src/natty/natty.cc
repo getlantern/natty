@@ -45,6 +45,29 @@ Natty::~Natty() {
   ASSERT(peer_connection_.get() == NULL);
 }
 
+void Natty::Init(bool offer, const char* out, const char *stuns) {
+
+  if (!strlen(stuns)) {
+    LOG(LERROR) << "Can't specify invalid/empty STUN server";
+    std::exit(EXIT_FAILURE);
+  }
+
+  LOG(INFO) << "STUN server is " << stuns;
+
+  /* OpenDumpFile checks if stdout should be redirected to an outfile */
+  OpenDumpFile(out);
+
+  InitializePeerConnection();
+
+  stun_servers_ = stuns;
+
+  if (offer) {
+    peer_connection_->CreateOffer(this, NULL);
+  }
+
+}
+ 
+
 bool Natty::connection_active() const {
   return peer_connection_.get() != NULL;
 }
@@ -150,7 +173,7 @@ void Natty::Shutdown() {
 void Natty::OnError() {
   LOG(INFO) << "Peer connection error encountered";
   LOG(INFO) << __FUNCTION__;
-  OnFailure("Peer connection error encountered " << __FUNCTION__);
+  OnFailure("Peer connection error encountered ");
 }
 
 void Natty::OnAddStream(MediaStreamInterface* stream) {
@@ -299,28 +322,6 @@ void Natty::OnIceComplete() {
 
 // PeerConnectionObserver implementation.
 void Natty::OnServerConnectionFailure() {
-
-}
-
-void Natty::Init(bool offer, const char* out, const char *stuns) {
-
-  if (!strlen(stuns)) {
-    LOG(LERROR) << "Can't specify invalid/empty STUN server";
-    std::exit(EXIT_FAILURE);
-  }
-
-  LOG(INFO) << "STUN server is " << stuns;
-
-  /* OpenDumpFile checks if stdout should be redirected to an outfile */
-  OpenDumpFile(out);
-
-  InitializePeerConnection();
-
-  stun_servers_ = stuns;
-
-  if (offer) {
-    peer_connection_->CreateOffer(this, NULL);
-  }
 
 }
 
