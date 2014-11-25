@@ -248,7 +248,10 @@ void Natty::ReadMessage(const std::string& message) {
   }
   GetStringFromJsonObject(jmessage, kSessionDescriptionTypeName, &type);
 
-  if (!type.empty()) {
+  if (type.empty()) {
+    /* ICE candidate message processing */
+    ProcessIceCandidateMsg(message, jmessage);  
+  } else {
     std::string sdp;
     if (!GetStringFromJsonObject(jmessage, kSessionDescriptionSdpName, &sdp)) {
       LOG(INFO) << "Can't parse received session description message.";
@@ -269,10 +272,6 @@ void Natty::ReadMessage(const std::string& message) {
       LOG(INFO) << "signaling state " << peer_connection_->signaling_state();
     }
     return;
-  }
-  else {
-    /* ICE candidate message processing */
-    ProcessIceCandidateMsg(message, jmessage);  
   }
 };
 
