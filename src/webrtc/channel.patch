@@ -52,6 +52,7 @@
  }
  
  bool BaseChannel::ShouldSetupDtlsSrtp() const {
++ // Avoid doing any DTLS/SRTP setup
 -  return true;
 +  return false;
  }
