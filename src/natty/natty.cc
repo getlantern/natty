@@ -332,15 +332,12 @@ void Natty::ProcessInput() {
 
 }
 
-/* need to update this to accept stdout when the stdout
- * option is blank 
- *
- */
 void Natty::OpenDumpFile(const std::string& filename) {
   if (!filename.empty()) {
     outfile.open(filename.c_str());
   }
   else {
+    /* no output file so copy to the standard output stream */
     outfile.copyfmt(std::cout);
     outfile.clear(std::cout.rdstate());
     outfile.basic_ios<char>::rdbuf(std::cout.rdbuf());
