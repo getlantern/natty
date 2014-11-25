@@ -148,9 +148,9 @@ void Natty::Shutdown() {
 //
 
 void Natty::OnError() {
-  /* should we shut down here? */
   LOG(INFO) << "Peer connection error encountered";
   LOG(INFO) << __FUNCTION__;
+  OnFailure("Peer connection error encountered " << __FUNCTION__);
 }
 
 void Natty::OnAddStream(MediaStreamInterface* stream) {
