@@ -85,10 +85,6 @@ std::string GetEnvVarOrDefault(const char* env_var_name,
   return value;
 }
 
-std::string GetPeerConnectionString() {
-  return GetEnvVarOrDefault("WEBRTC_CONNECT", "stun:stun.l.google.com:19302");
-}
-
 void Natty::AddStunServers(IceServers *servers) {
   if (!strchr(stun_servers_.c_str(), ',')) {
     /* only one STUN server */
