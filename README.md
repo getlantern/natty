@@ -4,7 +4,7 @@ Standalone WebRTC-based NAT traversal
 
 With peer-to-peer communication, a set of tools to directly connect two
 endpoints is employed to bypass the intermediary barriers of NAT/firewall
-devices. [WebRTC](http://www.webrtc.org/webrtc-native-code-package), a new
+devices. [WebRTC](https://webrtc.org/), a new
 project that enables real-time communication capabilities in web browsers, uses
 a trio of NAT traversal standards--ICE, STUN, and TURN--to help a peer discover
 the topology between itself and the peer it wishes to communicate with. These
